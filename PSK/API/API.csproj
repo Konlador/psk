@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Database\Database.csproj" />
-    <ProjectReference Include="..\Domain.Impl\Domain.Impl.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
