@@ -1,0 +1,21 @@
+import "./App.css";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import UploadPage from "./pages/UploadPage/UploadPage";
+import HomePage from "./pages/HomePage/HomePage";
+
+function App() {
+  return (
+    <div className="App">
+      <BrowserRouter>
+        <Switch>
+          <Route path="/upload" component={UploadPage}>
+            <UploadPage></UploadPage>
+          </Route>
+          <Route path="/" component={HomePage}></Route>
+        </Switch>
+      </BrowserRouter>
+    </div>
+  );
+}
+
+export default App;
