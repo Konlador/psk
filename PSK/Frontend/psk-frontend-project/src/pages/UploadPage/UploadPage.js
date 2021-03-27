@@ -8,6 +8,25 @@ function UploadPage() {
     <>
       <Layout name="UPLOAD FILES">
         <UploadFile></UploadFile>
+        <UploadFile></UploadFile>
+
+        <UploadFile></UploadFile>
+        <UploadFile></UploadFile>
+        <UploadFile></UploadFile>
+
+        <UploadFile></UploadFile>
+        <UploadFile></UploadFile>
+        <UploadFile></UploadFile>
+        <UploadFile></UploadFile>
+
+        <UploadFile></UploadFile>
+        <UploadFile></UploadFile>
+        <UploadFile></UploadFile>
+        <UploadFile></UploadFile>
+
+        <UploadFile></UploadFile>
+        <UploadFile></UploadFile>
+        <UploadFile></UploadFile>
       </Layout>
     </>
   );
