@@ -1,0 +1,21 @@
+@import "../../../styles/index.scss";
+// @import 'styles/index';
+
+.navbar {
+  z-index: 10;
+  display: flex;
+  position: sticky;
+  justify-content: space-between;
+  align-items: center;
+  &__toolbar {
+    height: $navbar-height;
+  }
+  &__link {
+    font-size: 100%;
+    position: relative;
+    margin: 2rem;
+    color: $primary-color;
+    text-decoration: none;
+    font-weight: $font-weight-bold;
+  }
+}
