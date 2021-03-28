@@ -8,14 +8,9 @@ import "./videosPage.scss";
 function VideosPage() {
   return (
     <>
-      <React.Fragment>
-        <CssBaseline />
-        <Container maxWidth="lg">
-          <Layout name="VIDEOS">
-            <DisplayVideos></DisplayVideos>
-          </Layout>
-        </Container>
-      </React.Fragment>
+      <Layout name="VIDEOS">
+        <DisplayVideos></DisplayVideos>
+      </Layout>
     </>
   );
 }
