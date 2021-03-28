@@ -1,0 +1,13 @@
+@import "../../styles/index.scss";
+
+.layout {
+  position: relative;
+  &__main {
+    box-sizing: border-box;
+    flex: 1 1 auto;
+    margin: 4rem;
+    max-width: $container-content-width;
+    z-index: 5;
+    padding-bottom: 5vw;
+  }
+}

@@ -4,8 +4,7 @@ import { Layout } from "../../components/Layout/Layout";
 import "./homePage.scss";
 
 function HomePage() {
-  return null;
-  //<Layout></Layout>;
+  return <Layout name="Home"></Layout>;
 }
 
 export default HomePage;

@@ -1,0 +1,20 @@
+@import "../../../styles/index.scss";
+
+.footer {
+  align-items: center;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  bottom: 0;
+  background-color: $primary-color;
+  display: flex;
+  position: fixed;
+  height: $footer-height;
+  justify-content: flex-end;
+  left: 0;
+  text-transform: uppercase;
+  width: 100%;
+  z-index: 10;
+  &__text {
+    font-weight: $font-weight-bold;
+    margin-right: 3%;
+  }
+}
