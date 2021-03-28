@@ -5,7 +5,7 @@ export class MockVideoApi {
 
        const startIndex = page*rowsPerPage;
        const date = new Date();
-       for(let i = startIndex; i < startIndex+rowsPerPage; i++){
+       for(let i = startIndex; i < this.getVideosCount() &&  i < startIndex+rowsPerPage; i++){
             videos.push({
                 "title": "title"+(i+1), 
                 "size": Math.floor(Math.random() * 500)+1,
@@ -15,6 +15,10 @@ export class MockVideoApi {
 
        return videos;
     }  
+
+    getVideosCount(){
+        return 100;
+    }
 
     _getFormattedDate(date){
         let formattedDate = date.getFullYear();

@@ -96,11 +96,11 @@ export const DisplayVideos = () => {
       <TablePagination
         rowsPerPageOptions={[]}
         component="div"
-        count={-1}
+        count={videoApi.getVideosCount()}
         rowsPerPage={ROWS_PER_PAGE}
         page={page}
         onChangePage={handleChangePage}
-        labelDisplayedRows={({ from, to, count }) => `Displaying videos ${from}-${to}`}
+        labelDisplayedRows={({ from, to, count }) => `Displaying videos ${from}-${to} of total ${count}`}
       />
     </Paper>
   );
