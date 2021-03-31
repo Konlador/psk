@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.8.1" />
-    <PackageReference Include="Microsoft.Azure.Management.Media" Version="3.0.4" />
   </ItemGroup>
 
   <ItemGroup>

@@ -53,7 +53,7 @@ namespace API.Controllers
                 {
                 return Ok(await driveScope.StorageItems.GetAsync(itemId, cancellationToken));
                 }
-            catch (Exception e)
+            catch (Exception)
                 {
                 return StatusCode(StatusCodes.Status500InternalServerError);
                 }
