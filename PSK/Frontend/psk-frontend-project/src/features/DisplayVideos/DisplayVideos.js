@@ -8,28 +8,12 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import { MockVideoApi } from './MockVideoApi';
-
-const columns = [
-  {
-    id: 'title',
-    label: 'Title',
-    minWidth: 170,
-    align: 'left',
-  },
-  {
-    id: 'size',
-    label: 'Size',
-    minWidth: 170,
-    align: 'left',
-  },
-  {
-    id: 'uploadDate',
-    label: 'Upload date',
-    minWidth: 170,
-    align: 'left'
-  }
-];
+import MuiAlert from '@material-ui/lab/Alert';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import { useSelector, useDispatch } from 'react-redux';
+import { getAllVideos, requestMoreVideos } from './videosSlice';
+import COLUMNS from './Columns';
+import {VideoRow } from './VideoRow';
 
 const useStyles = makeStyles({
   root: {
@@ -40,31 +24,51 @@ const useStyles = makeStyles({
   },
 });
 
-const ROWS_PER_PAGE = 30;
-const videoApi = new MockVideoApi();
+const ROWS_PER_PAGE = 10;
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 export const DisplayVideos = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const videos = useSelector((state) => state.videos.items);
+  const videoStatus = useSelector(state => state.videos.status);
+  const error = useSelector(state => state.videos.error);
   const [page, setPage] = useState(0);
-  const [rows, setRows] = useState([]);
+
 
   useEffect(() => {
-   setRows(videoApi.getVideos(0, ROWS_PER_PAGE));
-  }, []);
-
+    if (videoStatus === 'idle') {
+      dispatch(getAllVideos({page, ROWS_PER_PAGE}));
+    }
+  }, [dispatch, page, videoStatus]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    setRows(videoApi.getVideos(newPage, ROWS_PER_PAGE));
+    dispatch(requestMoreVideos(page, ROWS_PER_PAGE));
   };
+
+  let status;
+  let rows;
+
+  if (videoStatus === 'loading') {
+    status = <LinearProgress />
+  } else if (videoStatus === 'succeeded') {
+    rows = videos.map((video) => (<VideoRow video={video}/>));
+  } else if (videoStatus === 'failed') {
+    status = <Alert severity="error">{error}</Alert>
+  }
 
   return (
     <Paper className={classes.root}>
+      {status}
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
               <TableRow>
-                {columns.map((column) => (
+                {COLUMNS.map((column) => (
                   <TableCell
                     key={column.id}
                     align={column.align}
@@ -76,31 +80,18 @@ export const DisplayVideos = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-            {rows.map((row) => {
-              return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.title}>
-                  {columns.map((column) => {
-                    const value = row[column.id];
-                    return (
-                      <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number' ? column.format(value) : value}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              );
-            })}
-          </TableBody>
+              {rows}
+            </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
         rowsPerPageOptions={[]}
         component="div"
-        count={videoApi.getVideosCount()}
+        count={-1}
         rowsPerPage={ROWS_PER_PAGE}
         page={page}
         onChangePage={handleChangePage}
-        labelDisplayedRows={({ from, to, count }) => `Displaying videos ${from}-${to} of total ${count}`}
+        labelDisplayedRows={({ from, to, count }) => `Displaying videos ${from}-${to}`}
       />
     </Paper>
   );

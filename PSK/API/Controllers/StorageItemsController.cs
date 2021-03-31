@@ -16,7 +16,7 @@ namespace API.Controllers
         {
         [HttpGet]
         [Route("{driveId:guid}")]
-        public async Task<ActionResult<IEnumerable<Drive>>> GetAll(
+        public async Task<ActionResult<IEnumerable<StorageItem>>> GetAll(
             [FromRoute, ModelBinder] IDriveScopeFactory driveScopeFactory,
             CancellationToken cancellationToken)
             {
@@ -33,7 +33,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("{driveId:guid}/{itemId:guid}")]
-        public async Task<ActionResult<Drive>> Get(
+        public async Task<ActionResult<StorageItem>> Get(
             [FromRoute, ModelBinder] IDriveScopeFactory driveScopeFactory,
             Guid itemId,
             CancellationToken cancellationToken)
@@ -51,7 +51,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("{driveId:guid}")]
-        public async Task<ActionResult<Drive>> Post(
+        public async Task<ActionResult<StorageItem>> Post(
             [FromRoute, ModelBinder] IDriveScopeFactory driveScopeFactory,
             [FromBody] StorageItem item,
             CancellationToken cancellationToken)
