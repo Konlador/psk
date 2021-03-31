@@ -1,32 +1,13 @@
 import React from "react";
 import { Layout } from "../../components/Layout/Layout";
-import { UploadFile } from "../../features/Upload/UploadFile";
+import UploadFiles from "../../components/UploadFiles/UploadFiles.component";
 import "./uploadPage.scss";
 
 function UploadPage() {
   return (
     <>
       <Layout name="UPLOAD FILES">
-        <UploadFile></UploadFile>
-        <UploadFile></UploadFile>
-
-        <UploadFile></UploadFile>
-        <UploadFile></UploadFile>
-        <UploadFile></UploadFile>
-
-        <UploadFile></UploadFile>
-        <UploadFile></UploadFile>
-        <UploadFile></UploadFile>
-        <UploadFile></UploadFile>
-
-        <UploadFile></UploadFile>
-        <UploadFile></UploadFile>
-        <UploadFile></UploadFile>
-        <UploadFile></UploadFile>
-
-        <UploadFile></UploadFile>
-        <UploadFile></UploadFile>
-        <UploadFile></UploadFile>
+        <UploadFiles></UploadFiles>
       </Layout>
     </>
   );
