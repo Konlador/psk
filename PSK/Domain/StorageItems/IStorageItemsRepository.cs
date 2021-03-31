@@ -14,6 +14,8 @@ namespace Domain.StorageItems
 
         Task<StorageItem> AddAsync(StorageItem item, CancellationToken cancellationToken);
 
+        Task<StorageItem> UpdateAsync(StorageItem item, CancellationToken cancellationToken);
+
         Task<bool> RemoveAsync(Guid itemId, CancellationToken cancellationToken);
         }
     }
