@@ -1,6 +1,7 @@
 ﻿using Domain;
 using Domain.Drives;
 using Domain.StorageItems;
+using Domain.Upload;
 using Microsoft.EntityFrameworkCore;
 
 namespace Database
@@ -11,5 +12,6 @@ namespace Database
 
         public DbSet<Drive> Drives { get; set; }
         public DbSet<StorageItem> StorageItems { get; set; }
+        public DbSet<UploadTransaction> UploadTransactions { get; set; }
         }
     }

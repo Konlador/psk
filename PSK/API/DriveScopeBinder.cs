@@ -29,7 +29,6 @@ namespace API
             var serviceProvider = bindingContext.HttpContext.RequestServices;
             var globalScope = serviceProvider.GetRequiredService<IGlobalScope>();
 
-            // check if driveId exists
             if (!await globalScope.Drives.ExistsAsync(driveId, CancellationToken.None))
                 {
                 throw new Exception($"DriveId {driveId} does not exist.");

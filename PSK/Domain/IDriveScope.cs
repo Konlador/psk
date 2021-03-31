@@ -1,4 +1,5 @@
 ﻿using Domain.StorageItems;
+using Domain.Upload;
 using System;
 
 namespace Domain
@@ -7,5 +8,6 @@ namespace Domain
         {
         Guid DriveId { get; }
         IStorageItemRepository StorageItems { get; }
+        IUploadTransactionRepository UploadTransactions { get; }
         }
     }
