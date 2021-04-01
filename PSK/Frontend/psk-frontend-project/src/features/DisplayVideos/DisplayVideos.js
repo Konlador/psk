@@ -12,8 +12,8 @@ import MuiAlert from '@material-ui/lab/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { useSelector, useDispatch } from 'react-redux';
 import { getAllVideos, requestMoreVideos } from './videosSlice';
-import COLUMNS from './Columns';
-import {VideoRow } from './VideoRow';
+import { COLUMNS }from './VideoConstants';
+import { VideoRow } from './VideoRow';
 
 const useStyles = makeStyles({
   root: {
@@ -24,6 +24,7 @@ const useStyles = makeStyles({
   },
 });
 
+// for now rows per page has no effect
 const ROWS_PER_PAGE = 10;
 
 function Alert(props) {
@@ -72,7 +73,7 @@ export const DisplayVideos = () => {
                   <TableCell
                     key={column.id}
                     align={column.align}
-                    style={{ minWidth: column.minWidth }}
+                    style={{ minWidth: column.minWidth, display: column.display }}
                   >
                     {column.label}
                   </TableCell>

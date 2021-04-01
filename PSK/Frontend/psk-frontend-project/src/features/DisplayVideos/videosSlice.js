@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import VideoParser from '../../helpers/parser';
+import { COLUMNS_NAMES }from './VideoConstants';
 
 const driveId = '88b4b3af-0d4b-448f-8d69-fddd823adbb0';
 const resource = `StorageItems/${driveId}`;
@@ -25,15 +27,15 @@ export const videosSlice = createSlice({
   },
   extraReducers: {
     [getAllVideos.pending]: (state, action) => {
-      state.status = 'loading'
+      state.status = 'loading';
     },
     [getAllVideos.fulfilled]: (state, action) => {
-      state.status = 'succeeded'
-      state.items = action.payload;
+      state.items = VideoParser.parseArray(COLUMNS_NAMES, action.payload);
+      state.status = 'succeeded';
     },
     [getAllVideos.rejected]: (state, action) => {
-      state.status = 'failed'
-      state.error = action.error.message
+      state.status = 'failed';
+      state.error = action.error.message;
     }
   }
 })

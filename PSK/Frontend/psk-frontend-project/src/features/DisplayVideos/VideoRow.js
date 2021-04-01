@@ -1,6 +1,7 @@
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
-import COLUMNS from './Columns';
+import { COLUMNS } from './VideoConstants';
+import { COLUMNS_NAMES } from './VideoConstants';
 
 export const VideoRow = (props) => {  
     return (
@@ -8,8 +9,8 @@ export const VideoRow = (props) => {
           {COLUMNS.map((column) => {
             const value = props.video[column.id];
             return (
-              <TableCell key={column.id} align={column.align}>
-                {column.format && typeof value === 'number' ? column.format(value) : value}
+              <TableCell key={column.id} align={column.align} style={{display: column.display}}>
+                {column.format && column.id === COLUMNS_NAMES[2] ? column.format(value) : value}
               </TableCell>
             );
           })}
