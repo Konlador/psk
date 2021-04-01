@@ -12,9 +12,20 @@ const initialState = {
   error: null
 }
 
-export const getAllVideos = createAsyncThunk('videos/getAllVideos', async (params) => {
-  const response = await axios.get(`${resource}`, {params});
-  return response.data;
+export const getAllVideos = createAsyncThunk('videos/getAllVideos', async (params, {rejectWithValue}) => {
+  try {
+    const response = await axios.get(`${resource}`, {params});
+    return response.data;
+  } catch (err) {
+    const error = err;
+
+    // response was not returned - return err to rejected promise
+    if (!error.response) {
+      throw err;
+    }
+    // response was returned - return validation errors from server to rejected promise
+    return rejectWithValue(err.response.data);
+  }
 })
 
 export const videosSlice = createSlice({
@@ -34,8 +45,13 @@ export const videosSlice = createSlice({
       state.status = 'succeeded';
     },
     [getAllVideos.rejected]: (state, action) => {
+       // get errors from payload if response was returned
+       if (action.payload) {
+        state.error = action.payload.toString();
+      } else {
+        state.error = action.error.message;
+      }
       state.status = 'failed';
-      state.error = action.error.message;
     }
   }
 })
