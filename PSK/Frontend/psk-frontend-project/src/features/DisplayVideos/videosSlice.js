@@ -5,7 +5,7 @@ import { COLUMNS_NAMES }from './VideoConstants';
 
 // TODO: get drive id after authentication
 const driveId = '88b4b3af-0d4b-448f-8d69-fddd823adbb0';
-const resource = `StorageItems/${driveId}`;
+const resource = `StorageItems/metadata/${driveId}`;
 
 const initialState = {
   items: [],
@@ -25,7 +25,7 @@ export const getAllVideos = createAsyncThunk('videos/getAllVideos', async (param
       throw err;
     }
     // response was returned - return validation errors from server to rejected promise
-    return rejectWithValue(err.response.data);
+    return rejectWithValue(err.response.status);
   }
 })
 
@@ -48,7 +48,7 @@ export const videosSlice = createSlice({
     [getAllVideos.rejected]: (state, action) => {
        // get errors from payload if response was returned
        if (action.payload) {
-        state.error = action.payload.toString();
+        state.error =`Failed with status: ${action.payload}`;
       } else {
         state.error = action.error.message;
       }
