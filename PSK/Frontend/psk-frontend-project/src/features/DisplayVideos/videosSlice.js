@@ -3,6 +3,7 @@ import axios from 'axios';
 import VideoParser from '../../helpers/parser';
 import { COLUMNS_NAMES }from './VideoConstants';
 
+// TODO: get drive id after authentication
 const driveId = '88b4b3af-0d4b-448f-8d69-fddd823adbb0';
 const resource = `StorageItems/${driveId}`;
 
