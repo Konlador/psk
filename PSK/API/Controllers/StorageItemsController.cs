@@ -7,11 +7,16 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using API.Attributes;
 
 namespace API.Controllers
     {
     [ApiController]
     [Route("[controller]")]
+    [AllowAnonymous]
+    [Authorize]
+    [AuthorizeDrive] //custom attribute, like annotation
     public class StorageItemsController : ControllerBase
         {
         [HttpGet]
@@ -21,6 +26,8 @@ namespace API.Controllers
             CancellationToken cancellationToken)
             {
             using var driveScope = driveScopeFactory.CreateInstance();
+            var name = HttpContext.User.Identity.Name; //email -> hash it
+          
             try
                 {
                 return Ok(await driveScope.StorageItems.GetAllAsync(cancellationToken));

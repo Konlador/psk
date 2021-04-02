@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Domain.Drives;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,6 +12,7 @@ namespace API.Controllers
     {
     [ApiController]
     [Route("[controller]")]
+    //[Authorize]
     public class DrivesController : ControllerBase
         {
         private readonly IGlobalScope m_globalScope;
