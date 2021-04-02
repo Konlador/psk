@@ -14,6 +14,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getAllVideos, requestMoreVideos } from './videosSlice';
 import { COLUMNS }from './VideoConstants';
 import { VideoRow } from './VideoRow';
+import { REQUEST_STATUS } from '../../common/constants';
 
 const useStyles = makeStyles({
   root: {
@@ -41,7 +42,7 @@ export const DisplayVideos = () => {
 
 
   useEffect(() => {
-    if (videoStatus === 'idle') {
+    if (videoStatus === REQUEST_STATUS.idle) {
       dispatch(getAllVideos({page, ROWS_PER_PAGE}));
     }
   }, [dispatch, page, videoStatus]);
@@ -54,11 +55,11 @@ export const DisplayVideos = () => {
   let status;
   let rows;
 
-  if (videoStatus === 'loading') {
+  if (videoStatus === REQUEST_STATUS.loading) {
     status = <LinearProgress />
-  } else if (videoStatus === 'succeeded') {
+  } else if (videoStatus === REQUEST_STATUS.succeded) {
     rows = videos.map((video) => (<VideoRow video={video}/>));
-  } else if (videoStatus === 'failed') {
+  } else if (videoStatus === REQUEST_STATUS.failed) {
     status = <Alert severity="error">{error}</Alert>
   }
 

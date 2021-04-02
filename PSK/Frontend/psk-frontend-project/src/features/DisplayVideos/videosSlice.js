@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import VideoParser from '../../helpers/parser';
-import { COLUMNS_NAMES }from './VideoConstants';
+import { COLUMNS_NAMES } from './VideoConstants';
+import { REQUEST_STATUS } from '../../common/constants';
 
 // TODO: get drive id after authentication
 const driveId = '88b4b3af-0d4b-448f-8d69-fddd823adbb0';
@@ -9,7 +10,7 @@ const resource = `StorageItems/metadata/${driveId}`;
 
 const initialState = {
   items: [],
-  status: 'idle',
+  status: REQUEST_STATUS.idle,
   error: null
 }
 
@@ -34,16 +35,16 @@ export const videosSlice = createSlice({
   initialState,
   reducers: {
     requestMoreVideos(state, action) {
-      state.status = 'idle';
+      state.status = REQUEST_STATUS.idle;
     },
   },
   extraReducers: {
     [getAllVideos.pending]: (state, action) => {
-      state.status = 'loading';
+      state.status = REQUEST_STATUS.loading;
     },
     [getAllVideos.fulfilled]: (state, action) => {
       state.items = VideoParser.parseArray(COLUMNS_NAMES, action.payload);
-      state.status = 'succeeded';
+      state.status = REQUEST_STATUS.succeeded;
     },
     [getAllVideos.rejected]: (state, action) => {
        // get errors from payload if response was returned
@@ -52,7 +53,7 @@ export const videosSlice = createSlice({
       } else {
         state.error = action.error.message;
       }
-      state.status = 'failed';
+      state.status = REQUEST_STATUS.failed;
     }
   }
 })
