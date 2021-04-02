@@ -79,6 +79,10 @@ export const DisplayVideos = () => {
                     {column.label}
                   </TableCell>
                 ))}
+                <TableCell
+                >
+                  Download
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

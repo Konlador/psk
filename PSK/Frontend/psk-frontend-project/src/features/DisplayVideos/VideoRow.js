@@ -1,5 +1,7 @@
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
+import GetAppSharpIcon from '@material-ui/icons/GetAppSharp';
+import Button from '@material-ui/core/Button';
 import { COLUMNS } from './VideoConstants';
 import { COLUMNS_NAMES } from './VideoConstants';
 
@@ -14,5 +16,8 @@ export const VideoRow = (props) => {
               </TableCell>
             );
           })}
+           <TableCell>
+                <Button variant="contained"><GetAppSharpIcon/></Button>
+            </TableCell>
         </TableRow>)
   }
