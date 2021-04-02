@@ -1,4 +1,5 @@
 ﻿using Domain.StorageItems;
+using Domain.Upload;
 using System;
 
 namespace Domain.Impl
@@ -9,6 +10,7 @@ namespace Domain.Impl
 
         public Guid DriveId { get; }
         public IStorageItemRepository StorageItems { get; }
+        public IUploadTransactionRepository UploadTransactions { get; }
 
         public DriveScope(IDatabaseContext databaseContext, Guid driveId)
             {

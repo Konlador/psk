@@ -8,6 +8,13 @@ namespace Domain.StorageItems
         Folder
         }
 
+    public enum StorageItemState
+        {
+        Uploading,
+        Uploaded,
+        InBin
+        }
+
     public class StorageItem
         {
         public Guid Id { get; set; }
@@ -17,5 +24,6 @@ namespace Domain.StorageItems
         public StorageItemType Type { get; set; }
         public DateTime TimeCreated { get; set; }
         public long Size { get; set; }
+        public StorageItemState State { get; set; }
         }
     }
