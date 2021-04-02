@@ -1,0 +1,21 @@
+@import "../../../styles/index.scss";
+.left-sidebar {
+  width: 15%;
+  background-color: rgb(156, 156, 174);
+
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  height: 100%;
+  &__content {
+    position: relative;
+    top: 15%;
+    color: white;
+    font-weight: 500;
+  }
+  &__nof {
+    position: relative;
+
+    top: 2rem;
+  }
+}
