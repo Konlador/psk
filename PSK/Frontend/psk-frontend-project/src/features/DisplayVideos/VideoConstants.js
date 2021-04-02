@@ -29,7 +29,7 @@ export const COLUMNS = [
             formattedDate += "0";
         }
 
-        formattedDate += date.getMonth();
+        formattedDate += date.getMonth()+1;
         formattedDate += "-";
 
         if(date.getDate() < 10){
