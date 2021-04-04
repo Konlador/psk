@@ -38,12 +38,28 @@ export const COLUMNS = [
 
         formattedDate += date.getDate();
 
-        return formattedDate;}
+        return formattedDate;
+      }
     },
     {
       id: COLUMNS_NAMES[3],
       label: 'Size',
       minWidth: 170,
-      align: 'left'
+      align: 'left',
+      format: (value) => {
+        const divider = 1024;
+        const initial = value;
+        value = initial;
+        const metrics = ['B', 'KB', 'MB', 'GB', 'TB'];
+
+        let possibleReduceCount = metrics.length-1;
+        while(value >= divider && possibleReduceCount > 0){
+          value = value/divider;
+          possibleReduceCount--;
+        }
+
+        const formattedValue = (value.toString().indexOf('.') !== -1 ? value.toFixed(2) : value) + ' ' + metrics[metrics.length - possibleReduceCount-1];
+        return formattedValue;
+      }
     }
   ];

@@ -12,7 +12,7 @@ export const VideoRow = (props) => {
             const value = props.video[column.id];
             return (
               <TableCell key={column.id} align={column.align} style={{display: column.display}}>
-                {column.format && column.id === COLUMNS_NAMES[2] ? column.format(value) : value}
+                {column.format != null ? column.format(value) : value}
               </TableCell>
             );
           })}
