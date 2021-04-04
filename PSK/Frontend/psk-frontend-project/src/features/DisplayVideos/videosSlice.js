@@ -34,9 +34,6 @@ export const videosSlice = createSlice({
   name: 'videos',
   initialState,
   reducers: {
-    requestMoreVideos(state, action) {
-      state.status = REQUEST_STATUS.idle;
-    },
   },
   extraReducers: {
     [getAllVideos.pending]: (state, action) => {
@@ -57,7 +54,5 @@ export const videosSlice = createSlice({
     }
   }
 })
-
-export const { requestMoreVideos } = videosSlice.actions;
 
 export default videosSlice.reducer;

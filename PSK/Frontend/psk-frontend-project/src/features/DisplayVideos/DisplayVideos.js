@@ -9,9 +9,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import MuiAlert from '@material-ui/lab/Alert';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { useSelector, useDispatch } from 'react-redux';
-import { getAllVideos, requestMoreVideos } from './videosSlice';
+import { getAllVideos } from './videosSlice';
 import { COLUMNS }from './VideoConstants';
 import { VideoRow } from './VideoRow';
 import { REQUEST_STATUS } from '../../common/constants';
@@ -25,7 +25,6 @@ const useStyles = makeStyles({
   },
 });
 
-// for now rows per page has no effect
 const ROWS_PER_PAGE = 10;
 
 function Alert(props) {
@@ -43,62 +42,64 @@ export const DisplayVideos = () => {
 
   useEffect(() => {
     if (videoStatus === REQUEST_STATUS.idle) {
-      dispatch(getAllVideos({page, ROWS_PER_PAGE}));
+      dispatch(getAllVideos());
     }
-  }, [dispatch, page, videoStatus]);
+  }, [dispatch, videoStatus]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    dispatch(requestMoreVideos(page, ROWS_PER_PAGE));
   };
 
-  let status;
+  let isLoading = false;
   let rows;
 
   if (videoStatus === REQUEST_STATUS.loading) {
-    status = <LinearProgress />
+    isLoading = true;
   } else if (videoStatus === REQUEST_STATUS.succeded) {
-    rows = videos.map((video) => (<VideoRow video={video}/>));
-  } else if (videoStatus === REQUEST_STATUS.failed) {
-    status = <Alert severity="error">{error}</Alert>
+    rows = videos.slice(page * ROWS_PER_PAGE, page * ROWS_PER_PAGE + ROWS_PER_PAGE)
+                 .map((video) => (<VideoRow video={video}/>));
   }
 
+
   return (
-    <Paper className={classes.root}>
-      {status}
-      <TableContainer className={classes.container}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-              <TableRow>
-                {COLUMNS.map((column) => (
+    <div className={classes.root}>
+      {error && <Alert severity="error">{error}</Alert>}
+      {!isLoading && !error ? 
+      <div>
+        <TableContainer className={classes.container}>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+                <TableRow>
+                  {COLUMNS.map((column) => (
+                    <TableCell
+                      key={column.id}
+                      align={column.align}
+                      style={{ minWidth: column.minWidth, display: column.display }}
+                    >
+                      {column.label}
+                    </TableCell>
+                  ))}
                   <TableCell
-                    key={column.id}
-                    align={column.align}
-                    style={{ minWidth: column.minWidth, display: column.display }}
                   >
-                    {column.label}
+                    Download
                   </TableCell>
-                ))}
-                <TableCell
-                >
-                  Download
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows}
-            </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[]}
-        component="div"
-        count={-1}
-        rowsPerPage={ROWS_PER_PAGE}
-        page={page}
-        onChangePage={handleChangePage}
-        labelDisplayedRows={({ from, to, count }) => `Displaying videos ${from}-${to}`}
-      />
-    </Paper>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows}
+              </TableBody>
+          </Table>
+        </TableContainer>
+     `` <TablePagination
+          rowsPerPageOptions={[]}
+          component="div"
+          count={videos.length}
+          rowsPerPage={ROWS_PER_PAGE}
+          page={page}
+          onChangePage={handleChangePage}
+          labelDisplayedRows={({ from, to, count }) => `Displaying videos ${from}-${to} of ${count}`}
+        />
+      </div> : isLoading ? <CircularProgress /> : null}
+    </div>
   );
 };
