@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs.Models;
 
 namespace Domain.Impl
     {
@@ -19,10 +20,13 @@ namespace Domain.Impl
             m_driveId = driveId;
             }
 
-        public async Task<IEnumerable<StorageItem>> GetAllAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<StorageItem>> GetAllAsync(StorageItemState[] states, CancellationToken cancellationToken)
             {
             return await m_dbContext.StorageItems
-                                    .Where(x => x.DriveId == m_driveId)
+                                    .Where(x =>
+                                        x.DriveId == m_driveId &&
+                                        (states.Length == 0 || states.Contains(x.State))
+                                    )
                                     .ToListAsync(cancellationToken);
             }
 
