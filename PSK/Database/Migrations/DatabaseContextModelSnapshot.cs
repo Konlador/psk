@@ -45,7 +45,7 @@ namespace Database.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ParentId")
+                    b.Property<Guid?>("ParentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<long>("Size")
@@ -55,6 +55,9 @@ namespace Database.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("TimeCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("TrashedTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Type")

@@ -21,12 +21,6 @@ namespace Domain.Impl.Upload
             m_transactions = transactions;
             }
 
-        public Uri GetDownloadUri(StorageItem item)
-            {
-            return m_blobContainerClient.GetBlobClient($"{item.DriveId}/{item.Name}")
-                                        .GenerateSasUri(BlobSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
-            }
-
         public async Task<UploadTransaction> StartTransaction(StorageItem item, CancellationToken cancellationToken)
             {
             var transaction = new UploadTransaction

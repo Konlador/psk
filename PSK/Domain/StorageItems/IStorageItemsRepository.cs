@@ -1,5 +1,4 @@
-﻿using Domain.Drives;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +7,7 @@ namespace Domain.StorageItems
     {
     public interface IStorageItemRepository
         {
-        Task<IEnumerable<StorageItem>> GetAllAsync(CancellationToken cancellationToken);
+        Task<IEnumerable<StorageItem>> GetAllAsync(StorageItemState[] states, CancellationToken cancellationToken);
 
         Task<StorageItem> GetAsync(Guid itemId, CancellationToken cancellationToken);
 
