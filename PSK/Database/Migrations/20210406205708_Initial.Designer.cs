@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20210331194802_StorageItemState")]
-    partial class StorageItemState
+    [Migration("20210406205708_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -47,7 +47,7 @@ namespace Database.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ParentId")
+                    b.Property<Guid?>("ParentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<long>("Size")
@@ -57,6 +57,9 @@ namespace Database.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("TimeCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("TrashedTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Type")

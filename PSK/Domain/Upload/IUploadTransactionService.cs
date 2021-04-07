@@ -7,8 +7,6 @@ namespace Domain.Upload
     {
     public interface IUploadTransactionService
         {
-        Uri GetDownloadUri(StorageItem item);
-
         Task<UploadTransaction> StartTransaction(StorageItem item, CancellationToken cancellationToken);
 
         Task<bool> CommitTransaction(Guid transactionId, StorageItem item, CancellationToken cancellationToken);

@@ -3,7 +3,9 @@ using Database;
 using Domain;
 using Domain.Drives;
 using Domain.Impl;
+using Domain.Impl.Management;
 using Domain.Impl.Upload;
+using Domain.Management;
 using Domain.Upload;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -50,6 +52,7 @@ namespace API
             services.AddScoped<IDriveRepository, DriveRepository>();
             services.AddScoped<IUploadTransactionRepository, UploadTransactionRepository>();
             services.AddScoped<IUploadTransactionService, UploadTransactionService>();
+            services.AddScoped<IManagementService, ManagementService>();
             services.AddScoped(_ => new BlobContainerClient(Configuration.GetConnectionString("PSKStorageAccount"), "drives"));
             }
 
