@@ -48,8 +48,6 @@ export const COLUMNS = [
       align: 'left',
       format: (value) => {
         const divider = 1024;
-        const initial = value;
-        value = initial;
         const metrics = ['B', 'KB', 'MB', 'GB', 'TB'];
 
         let possibleReduceCount = metrics.length-1;
