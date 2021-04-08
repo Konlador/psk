@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
-import GetAppSharpIcon from '@material-ui/icons/GetAppSharp';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
+import DownloadMenuItem from './DownloadMenuItem';
 import { COLUMNS } from './VideoConstants';
 
 const initialState = {
@@ -12,8 +11,9 @@ const initialState = {
   mouseY: null,
 };
 
-export const VideoRow = (props) => { 
+export const VideoRow = ({video}) => { 
   const [state, setState] = useState(initialState);
+
   const handleRightClick = (event) => {
     event.preventDefault();
     setState({
@@ -26,33 +26,30 @@ export const VideoRow = (props) => {
     setState(initialState);
   };
     return (
-        <TableRow onContextMenu = {handleRightClick} hover role="checkbox" tabIndex={-1} key={props.video.id}>
+        <TableRow onContextMenu = {handleRightClick} hover role="checkbox" tabIndex={-1} key={video.id}>
           {COLUMNS.map((column) => {
-            const value = props.video[column.id];
+            const value = video[column.id];
             return (
               <TableCell key={column.id} align={column.align} style={{display: column.display}}>
                 {column.format != null ? column.format(value) : value}
               </TableCell>
             );
           })}
-           <TableCell>
-                <Button variant="contained"><GetAppSharpIcon/></Button>
-            </TableCell>
-            <Menu
-        keepMounted
-        open={state.mouseY !== null}
-        onClose={handleClose}
-        anchorReference="anchorPosition"
-        anchorPosition={
-          state.mouseY !== null && state.mouseX !== null
-            ? { top: state.mouseY, left: state.mouseX }
-            : undefined
-        }
-      >
-        <MenuItem onClick={handleClose}>Play</MenuItem>
-        <MenuItem onClick={handleClose}>Rename</MenuItem>
-        <MenuItem onClick={handleClose}>Download</MenuItem>
-        <MenuItem onClick={handleClose}>Delete</MenuItem>
-      </Menu>
+          <Menu
+              keepMounted
+              open={state.mouseY !== null}
+              onClose={handleClose}
+              anchorReference="anchorPosition"
+              anchorPosition={
+                state.mouseY !== null && state.mouseX !== null
+                  ? { top: state.mouseY, left: state.mouseX }
+                  : undefined
+              }
+           >
+            <MenuItem onClick={handleClose}> Play </MenuItem>
+            <MenuItem onClick={handleClose}> Rename </MenuItem>
+            <DownloadMenuItem onClick={handleClose} itemId={video.id} name={video.name} />
+            <MenuItem onClick={handleClose}> Delete </MenuItem>
+          </Menu>
         </TableRow>)
   }

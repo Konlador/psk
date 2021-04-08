@@ -41,7 +41,7 @@ export const DisplayVideos = () => {
 
   useEffect(() => {
     if (videoStatus === REQUEST_STATUS.idle) {
-      dispatch(getAllVideos());
+      dispatch(getAllVideos({states: 1}));
     }
   }, [dispatch, videoStatus]);
 
@@ -78,10 +78,6 @@ export const DisplayVideos = () => {
                       {column.label}
                     </TableCell>
                   ))}
-                  <TableCell
-                  >
-                    Download
-                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
