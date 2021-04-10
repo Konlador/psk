@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit'
 import { downloadVideoUri } from './videosSlice';
 import { downloadVideo } from './videosSlice';
-import axios from 'axios';
 
 const DownloadMenuItem = ({itemId, name, onClick}) => { 
   const dispatch = useDispatch();
