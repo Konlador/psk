@@ -22,8 +22,8 @@ namespace Domain.Impl.Management
             {
             var sasBuilder = new BlobSasBuilder
                                  {
-                                 BlobContainerName = "drives",
-                                 BlobName = $"{item.DriveId}/{item.Name}",
+                                 BlobContainerName = m_blobContainerClient.Name,
+                                 BlobName = $"{item.DriveId}/{item.Id}",
                                  Resource = "b",
                                  ExpiresOn = DateTimeOffset.UtcNow.AddHours(1),
                                  ContentDisposition = $"attachment;filename={item.Name}"
@@ -31,13 +31,13 @@ namespace Domain.Impl.Management
 
             sasBuilder.SetPermissions(BlobSasPermissions.Read);
 
-            return m_blobContainerClient.GetBlobClient($"{item.DriveId}/{item.Name}")
+            return m_blobContainerClient.GetBlobClient($"{item.DriveId}/{item.Id}")
                                         .GenerateSasUri(sasBuilder);
             }
 
         public async Task DeleteStorageItem(IDriveScope driveScope, StorageItem item)
             {
-            var blob = m_blobContainerClient.GetBlobClient($"{item.DriveId}/{item.Name}");
+            var blob = m_blobContainerClient.GetBlobClient($"{item.DriveId}/{item.Id}");
             await blob.GetBlobLeaseClient().BreakAsync();
             await blob.DeleteIfExistsAsync();
 
