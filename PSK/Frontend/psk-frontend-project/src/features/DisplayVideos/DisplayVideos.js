@@ -5,7 +5,6 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import MuiAlert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -24,8 +23,6 @@ const useStyles = makeStyles({
   },
 });
 
-const ROWS_PER_PAGE = 10;
-
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -36,18 +33,12 @@ export const DisplayVideos = () => {
   const videos = useSelector((state) => state.videos.items);
   const videoStatus = useSelector(state => state.videos.status);
   const error = useSelector(state => state.videos.error);
-  const [page, setPage] = useState(0);
-
 
   useEffect(() => {
     if (videoStatus === REQUEST_STATUS.idle) {
-      dispatch(getAllVideos({states: 1}));
+      dispatch(getAllVideos({states: [0, 1]}));
     }
   }, [dispatch, videoStatus]);
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
 
   let isLoading = false;
   let rows;
@@ -55,10 +46,8 @@ export const DisplayVideos = () => {
   if (videoStatus === REQUEST_STATUS.loading) {
     isLoading = true;
   } else if (videoStatus === REQUEST_STATUS.succeded) {
-    rows = videos.slice(page * ROWS_PER_PAGE, page * ROWS_PER_PAGE + ROWS_PER_PAGE)
-                 .map((video) => (<VideoRow video={video}/>));
+    rows = videos.map((video) => (<VideoRow video={video}/>));
   }
-
 
   return (
     <div className={classes.root}>
@@ -85,15 +74,6 @@ export const DisplayVideos = () => {
               </TableBody>
           </Table>
         </TableContainer>
-     `` <TablePagination
-          rowsPerPageOptions={[]}
-          component="div"
-          count={videos.length}
-          rowsPerPage={ROWS_PER_PAGE}
-          page={page}
-          onChangePage={handleChangePage}
-          labelDisplayedRows={({ from, to, count }) => `Displaying videos ${from}-${to} of ${count}`}
-        />
       </div> : isLoading ? <CircularProgress /> : null}
     </div>
   );

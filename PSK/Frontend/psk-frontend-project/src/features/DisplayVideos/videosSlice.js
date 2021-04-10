@@ -30,9 +30,24 @@ export const getAllVideos = createAsyncThunk('videos/getAllVideos', async (param
 })
 
 
-export const downloadVideo = createAsyncThunk('videos/downloadVideo', async (itemId, {rejectWithValue}) => {
+export const downloadVideoUri = createAsyncThunk('videos/downloadVideoUri', async (itemId, {rejectWithValue}) => {
   try {
     const response = await axios.get(`/api/drive/${driveId}/files/${itemId}/download`);
+    return response.data;
+  } catch (err) {
+    const error = err;
+
+    if (!error.response) {
+      throw err;
+    }
+
+    return rejectWithValue(err.response.status);
+  }
+})
+
+export const downloadVideo = createAsyncThunk('videos/downloadVideo', async (url, {rejectWithValue}) => {
+  try {
+    const response = await axios.get(url, {responseType: "arraybuffer"});
     return response.data;
   } catch (err) {
     const error = err;
@@ -66,7 +81,7 @@ export const videosSlice = createSlice({
         state.error = action.error.message;
       }
       state.status = REQUEST_STATUS.failed;
-    }
+    },
   }
 })
 

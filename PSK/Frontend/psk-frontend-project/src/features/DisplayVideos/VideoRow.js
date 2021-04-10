@@ -4,6 +4,7 @@ import TableCell from '@material-ui/core/TableCell';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import DownloadMenuItem from './DownloadMenuItem';
+import PlayMenuItem from './PlayMenuItem';
 import { COLUMNS } from './VideoConstants';
 
 const initialState = {
@@ -13,20 +14,29 @@ const initialState = {
 
 export const VideoRow = ({video}) => { 
   const [state, setState] = useState(initialState);
+  const [contextOpen, setContextOpen] = useState(false);
 
   const handleRightClick = (event) => {
     event.preventDefault();
-    setState({
-      mouseX: event.clientX - 2,
-      mouseY: event.clientY - 4,
-    });
+    setContextOpen(!contextOpen);
+    if(contextOpen){
+      setState(initialState);
+    }
+    else{
+      setState({
+        mouseX: event.clientX - 2,
+        mouseY: event.clientY - 4,
+      });
+    }
   };
 
   const handleClose = () => {
+    setContextOpen(false);
     setState(initialState);
   };
     return (
-        <TableRow onContextMenu = {handleRightClick} hover role="checkbox" tabIndex={-1} key={video.id}>
+        <TableRow onContextMenu = {handleRightClick} hover role="checkbox" 
+        tabIndex={-1} key={video.id} style={{backgroundColor: video.state === 1 ? 'white' : '#b6dcde',}}>
           {COLUMNS.map((column) => {
             const value = video[column.id];
             return (
@@ -46,10 +56,10 @@ export const VideoRow = ({video}) => {
                   : undefined
               }
            >
-            <MenuItem onClick={handleClose}> Play </MenuItem>
+            {video.state === 1 && <PlayMenuItem onClick={handleClose} itemId={video.id} name={video.name} />}
             <MenuItem onClick={handleClose}> Rename </MenuItem>
-            <DownloadMenuItem onClick={handleClose} itemId={video.id} name={video.name} />
-            <MenuItem onClick={handleClose}> Delete </MenuItem>
+            {video.state === 1 && <DownloadMenuItem onClick={handleClose} itemId={video.id} name={video.name} />}
+            <MenuItem onClick={handleClose}> Bin </MenuItem>
           </Menu>
         </TableRow>)
   }

@@ -1,4 +1,4 @@
-export const COLUMNS_NAMES = ['id', 'name', 'timeCreated', 'size'];
+export const COLUMNS_NAMES = ['id', 'name', 'timeCreated', 'size', 'state'];
 
 export const COLUMNS = [
     {
