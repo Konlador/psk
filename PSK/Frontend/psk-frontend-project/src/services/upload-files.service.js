@@ -1,6 +1,5 @@
 import http from "../http-common";
-import axios from "axios";
-import { BlobServiceClient, BlobClient } from "@azure/storage-blob";
+import { BlobClient } from "@azure/storage-blob";
 const driveId = "982ecb26-309b-451a-973d-2d6f6e1b2e34";
 const url_base = `/api/drive/${driveId}`;
 
@@ -28,10 +27,10 @@ class UploadFilesService {
     blockClient.uploadData(file);
     return "uploadBlobResponse";
   }
-  //TODO
-  // getFiles() {
-  //   return http.get(`${url_base}/files`);
-  // }
+
+  getFiles() {
+    return http.get(`${url_base}/files`);
+  }
 }
 
 export default new UploadFilesService();

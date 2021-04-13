@@ -39,17 +39,10 @@ export default class UploadFiles extends Component {
       progress: 0,
       message: "",
       isError: false,
-      fileInfos: [],
+      fileName: "",
+      uploadedLink: "",
     };
   }
-
-  // componentDidMount() {
-  //   UploadService.getFiles().then((response) => {
-  //     this.setState({
-  //       fileInfos: response.data,
-  //     });
-  //   });
-  // }
 
   selectFile(event) {
     this.setState({
@@ -64,6 +57,7 @@ export default class UploadFiles extends Component {
     this.setState({
       progress: 0,
       currentFile: currentFile,
+      fileInfos: currentFile.name,
     });
 
     var transaction;
@@ -71,6 +65,9 @@ export default class UploadFiles extends Component {
     UploadService.upload(currentFile)
       .then((response) => {
         console.log("Responsas ", response);
+        this.setState({
+          progress: 33,
+        });
         // UploadService.uploadToURI(
         //   response.data.uploadUri,
         //   currentFile,
@@ -85,18 +82,16 @@ export default class UploadFiles extends Component {
         this.setState({
           message: response.data.message,
           isError: false,
+          progress: 66,
         });
       })
-      // .then((files) => {
-      //   this.setState({
-      //     fileInfos: files.data,
-      //   });
-      // })
-
       .then((response) => {
         UploadService.commitUpload(transaction.id);
         this.setState({
-          message: ` ${response} File uploaded successfully `,
+          progress: 100,
+          message: ` Your file has been successfully uploaded ☑`,
+          fileInfos: "",
+          uploadedLink: "Go to the file ->",
         });
       })
       .catch((error) => {
@@ -106,6 +101,7 @@ export default class UploadFiles extends Component {
           message: `Could not upload the file! error msg: ${error}`,
           currentFile: undefined,
           isError: true,
+          fileInfos: "",
         });
       });
 
@@ -120,8 +116,9 @@ export default class UploadFiles extends Component {
       currentFile,
       progress,
       message,
-      fileInfos,
+      fileName,
       isError,
+      uploadedLink,
     } = this.state;
 
     return (
@@ -132,7 +129,7 @@ export default class UploadFiles extends Component {
               <BorderLinearProgress
                 variant="buffer"
                 value={progress}
-                valueBuffer={1}
+                valueBuffer={0}
               />
             </Box>
             <Box minWidth={35}>
@@ -162,11 +159,7 @@ export default class UploadFiles extends Component {
             Choose Video File
           </Button>
         </label>
-        <div className="file-name">
-          {selectedFiles && selectedFiles.length > 0
-            ? selectedFiles[0].name
-            : null}
-        </div>
+
         <Button
           className="btn-upload"
           color="primary"
@@ -178,25 +171,37 @@ export default class UploadFiles extends Component {
         >
           Upload
         </Button>
+        <br></br>
+        <br></br>
 
+        <div className="file-name">
+          {selectedFiles && selectedFiles.length > 0
+            ? selectedFiles[0].name
+            : null}
+        </div>
         <Typography
           variant="subtitle2"
           className={`upload-message ${isError ? "error" : ""}`}
         >
           {message}
         </Typography>
+        <br></br>
+
+        <a href="/videos" className="link_to_videos">
+          {uploadedLink}
+        </a>
 
         <Typography variant="h6" className="list-header">
-          Your File
+          {fileName}
         </Typography>
-        {/* <ul className="list-group">
+        {/* <span className="list-group">
           {fileInfos &&
             fileInfos.map((file, index) => (
               <ListItem divider key={index}>
                 <a href={file.url}>{file.name}</a>
               </ListItem>
             ))}
-        </ul> */}
+        </span> */}
       </div>
     );
   }
