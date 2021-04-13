@@ -6,7 +6,7 @@ export const LeftSidebar = (props) => {
   return (
     <div className="left-sidebar">
       <div className="left-sidebar__content">
-        <Limiter value="89"></Limiter>
+        <Limiter value={89}></Limiter>
         <br />
         <span className="left-sidebar__nof">69420mb/100000mb</span>
         <br />

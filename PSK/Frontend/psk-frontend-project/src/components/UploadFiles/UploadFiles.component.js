@@ -11,6 +11,7 @@ import "./uploadFiles.scss";
 import UploadService from "../../services/upload-files.service";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import FileCopyRoundedIcon from "@material-ui/icons/FileCopyRounded";
+//------------LINEAR PROGRESS-------------------------------
 const BorderLinearProgress = withStyles((theme) => ({
   root: {
     height: 15,
@@ -24,6 +25,7 @@ const BorderLinearProgress = withStyles((theme) => ({
     backgroundColor: "#1a90ff",
   },
 }))(LinearProgress);
+//-----------------------------------------------------------
 
 export default class UploadFiles extends Component {
   constructor(props) {
@@ -41,19 +43,20 @@ export default class UploadFiles extends Component {
     };
   }
 
-  componentDidMount() {
-    UploadService.getFiles().then((response) => {
-      this.setState({
-        fileInfos: response.data,
-      });
-    });
-  }
+  // componentDidMount() {
+  //   UploadService.getFiles().then((response) => {
+  //     this.setState({
+  //       fileInfos: response.data,
+  //     });
+  //   });
+  // }
 
   selectFile(event) {
     this.setState({
       selectedFiles: event.target.files,
     });
   }
+  //---------------------UPLOAD---------------------------
 
   upload() {
     let currentFile = this.state.selectedFiles[0];
@@ -63,27 +66,44 @@ export default class UploadFiles extends Component {
       currentFile: currentFile,
     });
 
-    UploadService.upload(currentFile, (event) => {
-      this.setState({
-        progress: Math.round((100 * event.loaded) / event.total),
-      });
-    })
+    var transaction;
+
+    UploadService.upload(currentFile)
       .then((response) => {
+        console.log("Responsas ", response);
+        // UploadService.uploadToURI(
+        //   response.data.uploadUri,
+        //   currentFile,
+        //   (event) => {
+        //     this.setState({
+        //       progress: Math.round((100 * event.loaded) / event.total),
+        //     });
+        //   }
+        // );
+        transaction = response.data;
+        UploadService.uploadFile(response.data, currentFile);
         this.setState({
           message: response.data.message,
           isError: false,
         });
-        return UploadService.getFiles();
       })
-      .then((files) => {
+      // .then((files) => {
+      //   this.setState({
+      //     fileInfos: files.data,
+      //   });
+      // })
+
+      .then((response) => {
+        UploadService.commitUpload(transaction.id);
         this.setState({
-          fileInfos: files.data,
+          message: ` ${response} File uploaded successfully `,
         });
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log(error.response);
         this.setState({
           progress: 0,
-          message: "Could not upload the file!",
+          message: `Could not upload the file! error msg: ${error}`,
           currentFile: undefined,
           isError: true,
         });
@@ -93,7 +113,7 @@ export default class UploadFiles extends Component {
       selectedFiles: undefined,
     });
   }
-
+  //------------------------------------------------------
   render() {
     const {
       selectedFiles,
@@ -109,7 +129,11 @@ export default class UploadFiles extends Component {
         {currentFile && (
           <Box className="mb25" display="flex" alignItems="center">
             <Box width="100%" mr={1}>
-              <BorderLinearProgress variant="buffer" value={progress} />
+              <BorderLinearProgress
+                variant="buffer"
+                value={progress}
+                valueBuffer={1}
+              />
             </Box>
             <Box minWidth={35}>
               <Typography
@@ -165,14 +189,14 @@ export default class UploadFiles extends Component {
         <Typography variant="h6" className="list-header">
           Your File
         </Typography>
-        <ul className="list-group">
+        {/* <ul className="list-group">
           {fileInfos &&
             fileInfos.map((file, index) => (
               <ListItem divider key={index}>
                 <a href={file.url}>{file.name}</a>
               </ListItem>
             ))}
-        </ul>
+        </ul> */}
       </div>
     );
   }
