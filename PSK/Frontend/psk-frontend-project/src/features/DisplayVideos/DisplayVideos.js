@@ -15,9 +15,6 @@ import { VideoRow } from "./VideoRow";
 import { REQUEST_STATUS } from "../../common/constants";
 
 const useStyles = makeStyles({
-  // root: {
-  //   width: '100%',
-  // },
   container: {
     maxHeight: "60vh",
   },
