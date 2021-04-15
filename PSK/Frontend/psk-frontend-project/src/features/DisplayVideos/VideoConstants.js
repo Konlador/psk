@@ -1,4 +1,4 @@
-export const COLUMNS_NAMES = ['id', 'name', 'timeCreated', 'size'];
+export const COLUMNS_NAMES = ['id', 'name', 'timeCreated', 'size', 'state'];
 
 export const COLUMNS = [
     {
@@ -48,8 +48,6 @@ export const COLUMNS = [
       align: 'left',
       format: (value) => {
         const divider = 1024;
-        const initial = value;
-        value = initial;
         const metrics = ['B', 'KB', 'MB', 'GB', 'TB'];
 
         let possibleReduceCount = metrics.length-1;
