@@ -5,8 +5,7 @@ import { COLUMNS_NAMES } from './VideoConstants';
 import { REQUEST_STATUS } from '../../common/constants';
 
 // TODO: get drive id after authentication
-const driveId = '88b4b3af-0d4b-448f-8d69-fddd823adbb0';
-const resource = `StorageItems/metadata/${driveId}`;
+const driveId = '982ecb26-309b-451a-973d-2d6f6e1b2e34';
 
 const initialState = {
   items: [],
@@ -16,7 +15,7 @@ const initialState = {
 
 export const getAllVideos = createAsyncThunk('videos/getAllVideos', async (params, {rejectWithValue}) => {
   try {
-    const response = await axios.get(`${resource}`, {params});
+    const response = await axios.get(`/api/drive/${driveId}/files`, {params});
     return response.data;
   } catch (err) {
     const error = err;
@@ -26,6 +25,37 @@ export const getAllVideos = createAsyncThunk('videos/getAllVideos', async (param
       throw err;
     }
     // response was returned - return validation errors from server to rejected promise
+    return rejectWithValue(err.response.status);
+  }
+})
+
+
+export const downloadVideoUri = createAsyncThunk('videos/downloadVideoUri', async (itemId, {rejectWithValue}) => {
+  try {
+    const response = await axios.get(`/api/drive/${driveId}/files/${itemId}/download`);
+    return response.data;
+  } catch (err) {
+    const error = err;
+
+    if (!error.response) {
+      throw err;
+    }
+
+    return rejectWithValue(err.response.status);
+  }
+})
+
+export const downloadVideo = createAsyncThunk('videos/downloadVideo', async (url, {rejectWithValue}) => {
+  try {
+    const response = await axios.get(url, {responseType: "arraybuffer"});
+    return response.data;
+  } catch (err) {
+    const error = err;
+
+    if (!error.response) {
+      throw err;
+    }
+
     return rejectWithValue(err.response.status);
   }
 })
@@ -51,7 +81,7 @@ export const videosSlice = createSlice({
         state.error = action.error.message;
       }
       state.status = REQUEST_STATUS.failed;
-    }
+    },
   }
 })
 
