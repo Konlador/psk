@@ -12,7 +12,7 @@ namespace API.Controllers
     {
     [ApiController]
     [Route("[controller]")]
-    //[Authorize]
+    [Authorize]
     public class DrivesController : ControllerBase
         {
         private readonly IGlobalScope m_globalScope;

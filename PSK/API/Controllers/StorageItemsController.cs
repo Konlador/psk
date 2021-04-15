@@ -14,9 +14,7 @@ namespace API.Controllers
     {
     [ApiController]
     [Route("[controller]")]
-    [AllowAnonymous]
     [Authorize]
-    [AuthorizeDrive] //custom attribute, like annotation
     public class StorageItemsController : ControllerBase
         {
         private readonly IUploadTransactionService m_uploadTransactionService;
@@ -31,13 +29,12 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("metadata/{driveId:guid}")]
+        [AuthorizeDrive]
         public async Task<ActionResult<IEnumerable<StorageItem>>> GetAll(
             [FromRoute, ModelBinder] IDriveScopeFactory driveScopeFactory,
             CancellationToken cancellationToken)
             {
             using var driveScope = driveScopeFactory.CreateInstance();
-            var name = HttpContext.User.Identity.Name; //email -> hash it
-          
             try
                 {
                 return Ok(await driveScope.StorageItems.GetAllAsync(cancellationToken));

@@ -55,8 +55,10 @@ namespace API
             services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("PSKDB")));
 
-            services.AddMvc(options =>
-                options.ModelBinderProviders.Insert(0, new DriveScopeBinderProvider()));
+            services.AddMvc(options => {
+                options.ModelBinderProviders.Insert(0, new DriveScopeBinderProvider());
+                //options.Filters.Add("nurodyti filtra");
+            });
 
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" }); });
