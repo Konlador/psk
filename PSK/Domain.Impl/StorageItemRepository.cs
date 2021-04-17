@@ -21,8 +21,8 @@ namespace Domain.Impl
 
         public async Task<IEnumerable<StorageItem>> GetWithQueryAsync(StorageItemQuery query, CancellationToken cancellationToken)
             {
-            if(query.FlattenAllDescendants == true)
-                return await GetWithQueryFlattened(query, cancellationToken);
+            if(query.FlattenAllDescendants && query.ParentId != null)
+                return await GetWithQueryRecursively(query, cancellationToken);
 
             return await GetWithQuerySimple(query, cancellationToken);
             }
@@ -34,15 +34,15 @@ namespace Domain.Impl
             if(query != null)
                 {
                 dbQuery = dbQuery.Where(x =>
-                                            x.ParentId == query.ParentId &&
-                                            (query.States == null || query.States.Length == 0 || query.States.Contains(x.State))
-                    );
+                                            (query.FlattenAllDescendants || x.ParentId == query.ParentId) &&
+                                            (query.States == null || query.States.Length == 0 || query.States.Contains(x.State)) &&
+                                            (query.IsTrashedExplicitly == null || query.IsTrashedExplicitly == x.TrashedExplicitly));
                 }
 
             return await dbQuery.ToListAsync(cancellationToken);
             }
 
-        private Task<IEnumerable<StorageItem>> GetWithQueryFlattened(StorageItemQuery query, CancellationToken cancellationToken)
+        private Task<IEnumerable<StorageItem>> GetWithQueryRecursively(StorageItemQuery query, CancellationToken cancellationToken)
             {
             var filteredItems = new List<StorageItem>();
 
