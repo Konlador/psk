@@ -17,9 +17,6 @@ import PropTypes from "prop-types";
 import "./displayVideos.scss";
 
 const useStyles = makeStyles({
-  // root: {
-  //   width: '100%',
-  // },
   container: {
     maxHeight: "60vh",
   },

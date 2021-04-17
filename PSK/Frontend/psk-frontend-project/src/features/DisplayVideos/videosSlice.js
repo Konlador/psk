@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
 import VideoParser from '../../helpers/parser';
 import { COLUMNS_NAMES } from './VideoConstants';
 import { REQUEST_STATUS } from '../../common/constants';
+import http from "../../http-common";
 
 // TODO: get drive id after authentication
 const driveId = '982ecb26-309b-451a-973d-2d6f6e1b2e34';
@@ -15,7 +15,7 @@ const initialState = {
 
 export const getAllVideos = createAsyncThunk('videos/getAllVideos', async (params, {rejectWithValue}) => {
   try {
-    const response = await axios.get(`/api/drive/${driveId}/files`, {params});
+    const response = await http.get(`/api/drive/${driveId}/files`, {params});
     return response.data;
   } catch (err) {
     const error = err;
@@ -32,22 +32,7 @@ export const getAllVideos = createAsyncThunk('videos/getAllVideos', async (param
 
 export const downloadVideoUri = createAsyncThunk('videos/downloadVideoUri', async (itemId, {rejectWithValue}) => {
   try {
-    const response = await axios.get(`/api/drive/${driveId}/files/${itemId}/download`);
-    return response.data;
-  } catch (err) {
-    const error = err;
-
-    if (!error.response) {
-      throw err;
-    }
-
-    return rejectWithValue(err.response.status);
-  }
-})
-
-export const downloadVideo = createAsyncThunk('videos/downloadVideo', async (url, {rejectWithValue}) => {
-  try {
-    const response = await axios.get(url, {responseType: "arraybuffer"});
+    const response = await http.get(`/api/drive/${driveId}/files/${itemId}/download`);
     return response.data;
   } catch (err) {
     const error = err;
