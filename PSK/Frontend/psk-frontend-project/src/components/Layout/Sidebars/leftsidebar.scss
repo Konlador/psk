@@ -18,4 +18,13 @@
 
     top: 2rem;
   }
+  &__link {
+    position: relative;
+    top: 5rem;
+    text-decoration: none;
+    color: white;
+  }
+  &__link:hover {
+    color: black;
+  }
 }
