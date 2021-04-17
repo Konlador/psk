@@ -194,14 +194,14 @@ export default class UploadFiles extends Component {
         <Typography variant="h6" className="list-header">
           {fileName}
         </Typography>
-        {/* <span className="list-group">
-          {fileInfos &&
+        <span className="list-group">
+          {/* {fileInfos &&
             fileInfos.map((file, index) => (
               <ListItem divider key={index}>
                 <a href={file.url}>{file.name}</a>
               </ListItem>
-            ))}
-        </span> */}
+            ))} */}
+        </span>
       </div>
     );
   }
