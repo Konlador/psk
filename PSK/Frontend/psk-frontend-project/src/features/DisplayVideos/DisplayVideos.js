@@ -55,6 +55,7 @@ export const DisplayVideos = () => {
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
+                  <TableCell />
                   {COLUMNS.map((column) => (
                     <TableCell
                       key={column.id}

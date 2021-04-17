@@ -21,7 +21,7 @@ namespace API.Controllers
             m_managementService = managementService;
             }
 
-        [HttpGet]
+        [HttpPut]
         [Route("files/{itemId:guid}/rename")]
         public async Task<ActionResult<string>> Rename(
             [FromRoute, ModelBinder] IDriveScopeFactory driveScopeFactory,
