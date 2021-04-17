@@ -5,9 +5,31 @@ using System.Threading.Tasks;
 
 namespace Domain.StorageItems
     {
+    public class StorageItemQuery
+        {
+        /// <summary>
+        /// The states of items that are included in the query.
+        /// If no states are specified, then all states are included.
+        /// </summary>
+        public StorageItemState[] States { get; set; }
+
+        /// <summary>
+        /// The ID of the parent/ancestor folder for items that are included in the query.
+        /// If null, then all items in the drive are included.
+        /// </summary>
+        public Guid? ParentId { get; set; }
+
+        /// <summary>
+        /// When true, all descendants of the parent (if any) is flattened to a 1D list.
+        /// </summary>
+        public bool? FlattenAllDescendants { get; set; } = false;
+        }
+
     public interface IStorageItemRepository
         {
-        Task<IEnumerable<StorageItem>> GetAllAsync(StorageItemState[] states, CancellationToken cancellationToken);
+        Task<IEnumerable<StorageItem>> GetWithQueryAsync(StorageItemQuery query, CancellationToken cancellationToken);
+
+        Task<IEnumerable<Folder>> GetParentsAsync(StorageItem item, CancellationToken cancellationToken);
 
         Task<StorageItem> GetAsync(Guid itemId, CancellationToken cancellationToken);
 
@@ -16,5 +38,11 @@ namespace Domain.StorageItems
         Task<StorageItem> UpdateAsync(StorageItem item, CancellationToken cancellationToken);
 
         Task<bool> RemoveAsync(Guid itemId, CancellationToken cancellationToken);
+
+        Task<StorageItem> TrashAsync(StorageItem item, DateTime trashTime, CancellationToken cancellationToken);
+
+        Task<StorageItem> RestoreAsync(StorageItem item, CancellationToken cancellationToken);
+
+        Task LoadFolderChildren(Folder folder, CancellationToken cancellationToken);
         }
     }
