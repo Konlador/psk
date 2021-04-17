@@ -3,7 +3,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { useDispatch } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit'
 import { downloadVideoUri } from './videosSlice';
-import { downloadVideo } from './videosSlice';
 
 const DownloadMenuItem = ({itemId, name, onClick}) => { 
   const dispatch = useDispatch();
@@ -21,12 +20,8 @@ const DownloadMenuItem = ({itemId, name, onClick}) => {
   const download = async () => {
     onClick();
     const uri = await getDownloadUri();
-    const video = await dispatch(downloadVideo(uri));
-    
-    var link = document.createElement("a");
-    link.href = window.URL.createObjectURL(
-      new Blob([video.data], { type: "application/octet-stream" })
-    );
+    const link = document.createElement("a");
+    link.href = uri;
     link.download = name;
     link.click();
   }
