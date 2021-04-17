@@ -22,7 +22,9 @@ namespace Domain.StorageItems
         /// <summary>
         /// When true, all descendants of the parent (if any) is flattened to a 1D list.
         /// </summary>
-        public bool? FlattenAllDescendants { get; set; } = false;
+        public bool FlattenAllDescendants { get; set; } = false;
+
+        public bool? IsTrashedExplicitly { get; set; }
         }
 
     public interface IStorageItemRepository
