@@ -4,14 +4,16 @@ using Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20210410193917_TrashedState")]
+    partial class TrashedState
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,10 +40,6 @@ namespace Database.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("DriveId")
                         .HasColumnType("uniqueidentifier");
@@ -70,13 +68,12 @@ namespace Database.Migrations
                     b.Property<DateTime?>("TrashedTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ParentId");
-
                     b.ToTable("StorageItems");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("StorageItem");
                 });
 
             modelBuilder.Entity("Domain.Upload.UploadTransaction", b =>
@@ -100,28 +97,6 @@ namespace Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UploadTransactions");
-                });
-
-            modelBuilder.Entity("Domain.StorageItems.Folder", b =>
-                {
-                    b.HasBaseType("Domain.StorageItems.StorageItem");
-
-                    b.HasDiscriminator().HasValue("Folder");
-                });
-
-            modelBuilder.Entity("Domain.StorageItems.StorageItem", b =>
-                {
-                    b.HasOne("Domain.StorageItems.Folder", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("Parent");
-                });
-
-            modelBuilder.Entity("Domain.StorageItems.Folder", b =>
-                {
-                    b.Navigation("Children");
                 });
 #pragma warning restore 612, 618
         }

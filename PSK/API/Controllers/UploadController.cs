@@ -24,17 +24,36 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("upload")]
-        public async Task<UploadTransaction> StartUploadTransaction(
+        public async Task<ActionResult<UploadTransaction>> StartUploadTransaction(
             [FromRoute, ModelBinder] IDriveScopeFactory driveScopeFactory,
             StorageItem item, CancellationToken cancellationToken)
             {
             using var driveScope = driveScopeFactory.CreateInstance();
 
-            item.Id = Guid.NewGuid();
-            item.DriveId = driveScope.DriveId;
-            item.State = StorageItemState.Uploading;
-            var transaction = await m_uploadTransactionService.StartTransaction(item, cancellationToken);
-            await driveScope.StorageItems.AddAsync(item, cancellationToken);
+            if(item.ParentId != null)
+                {
+                var parentFolder = await driveScope.StorageItems.GetAsync((Guid) item.ParentId, cancellationToken);
+                if(parentFolder == null)
+                    return NotFound($"Folder {item.ParentId} does not exist.");
+                if(parentFolder.GetType() != typeof(Folder))
+                    return BadRequest($"Item {item.ParentId} is not a folder.");
+                }
+
+            var fileName = item.Name;
+            if(string.IsNullOrWhiteSpace(fileName))
+                return BadRequest("File name can not be empty or only white space.");
+            fileName = fileName.Trim();
+
+            var file = new StorageItem
+                           {
+                           Id = Guid.NewGuid(),
+                           DriveId = driveScope.DriveId,
+                           Name = fileName,
+                           State = StorageItemState.Uploading,
+                           TimeCreated = DateTime.UtcNow
+                           };
+            var transaction = await m_uploadTransactionService.StartTransaction(file, cancellationToken);
+            await driveScope.StorageItems.AddAsync(file, cancellationToken);
 
             return transaction;
             }

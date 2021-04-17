@@ -30,17 +30,17 @@ namespace API.Controllers
             var item = await driveScope.StorageItems.GetAsync(itemId, cancellationToken);
             if(item == null)
                 return NotFound();
-
-            if(item.State == StorageItemState.Trashed)
+            if(item.Trashed)
                 return BadRequest("File already trashed.");
             if(item.State != StorageItemState.Uploaded)
                 return BadRequest("Storage item is not uploaded.");
 
-            item.State = StorageItemState.Trashed;
-            item.TrashedTime = DateTime.UtcNow;
-
-            await driveScope.StorageItems.UpdateAsync(item, cancellationToken);
-            return Ok(item);
+            var i = await driveScope.StorageItems.TrashAsync(item, DateTime.UtcNow, cancellationToken);
+            return Ok(new
+                          {
+                          i.Id, i.DriveId, i.ParentId, i.Name, i.TimeCreated, i.Size,
+                          i.State, i.Trashed, i.TrashedExplicitly, i.TrashedTime
+                          });
             }
 
         [HttpPost]
@@ -55,14 +55,15 @@ namespace API.Controllers
             if(item == null)
                 return NotFound();
 
-            if(item.State != StorageItemState.Trashed)
-                return BadRequest("File is not trashed.");
+            if(!item.TrashedExplicitly)
+                return BadRequest($"Item with the id '{item.Id}' is not trashed explicitly.");
 
-            item.State = StorageItemState.Uploaded;
-            item.TrashedTime = null;
-
-            await driveScope.StorageItems.UpdateAsync(item, cancellationToken);
-            return Ok(item);
+            var i = await driveScope.StorageItems.RestoreAsync(item, cancellationToken);
+            return Ok(new
+                          {
+                          i.Id, i.DriveId, i.ParentId, i.Name, i.TimeCreated, i.Size,
+                          i.State, i.Trashed, i.TrashedExplicitly, i.TrashedTime
+                          });
             }
 
         [HttpDelete]
@@ -75,9 +76,10 @@ namespace API.Controllers
 
             var item = await driveScope.StorageItems.GetAsync(itemId, cancellationToken);
             if(item == null)
-                {
                 return NotFound();
-                }
+
+            if(!item.TrashedExplicitly)
+                return BadRequest("File is not trashed explicitly.");
 
             await m_managementService.DeleteStorageItem(driveScope, item);
             return Ok();

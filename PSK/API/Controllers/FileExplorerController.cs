@@ -4,6 +4,8 @@ using Domain.StorageItems;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,13 +24,37 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("files")]
-        public async Task<ActionResult<IEnumerable<StorageItem>>> GetAll(
+        public async Task<ActionResult<dynamic>> GetFiles(
             [FromRoute, ModelBinder] IDriveScopeFactory driveScopeFactory,
-            CancellationToken cancellationToken,
-            [FromQuery] StorageItemState[] states)
+            [FromQuery] StorageItemQuery query,
+            CancellationToken cancellationToken)
             {
             using var driveScope = driveScopeFactory.CreateInstance();
-            return Ok(await driveScope.StorageItems.GetAllAsync(states, cancellationToken));
+
+            IEnumerable<dynamic> parentsResult;
+            if(query.ParentId == null)
+                {
+                parentsResult = Array.Empty<Folder>();
+                }
+            else
+                {
+                var directFolder = await driveScope.StorageItems.GetAsync((Guid) query.ParentId, cancellationToken);
+                if(directFolder == null || directFolder.GetType() != typeof(Folder))
+                    return BadRequest($"No folder found with id '{query.ParentId}'.");
+
+                var parents = (await driveScope.StorageItems.GetParentsAsync(directFolder, cancellationToken)).ToList();
+                parents.Insert(0, (Folder) directFolder);
+                parentsResult = parents.Select(p => new { p.Id, p.DriveId, p.Name, p.ParentId });
+                }
+
+            var items = await driveScope.StorageItems.GetWithQueryAsync(query, cancellationToken);
+            var itemsResult = items.Select(i => new
+                                          {
+                                          i.Id, i.DriveId, i.ParentId, i.Name, i.TimeCreated, i.Size,
+                                          i.State, i.Trashed, i.TrashedExplicitly, i.TrashedTime
+                                          });
+
+            return Ok(new {Parents = parentsResult, Items = itemsResult});
             }
 
         [HttpGet]
