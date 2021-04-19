@@ -4,14 +4,16 @@ using Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20210416181609_Folders")]
+    partial class Folders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,12 +28,6 @@ namespace Database.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<long>("Capacity")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("NumberOfFiles")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("TotalStorageUsed")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -75,6 +71,9 @@ namespace Database.Migrations
 
                     b.Property<DateTime?>("TrashedTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

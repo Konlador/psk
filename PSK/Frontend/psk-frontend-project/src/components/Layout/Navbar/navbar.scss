@@ -2,9 +2,13 @@
 // @import 'styles/index';
 
 .navbar {
+  // max-width: 1440px;
+  // min-width: 1000px;
+  // margin: auto;
   z-index: 10;
   display: flex;
   position: sticky;
+  margin-left: 15%;
 
   &__toolbar {
     height: $navbar-height;
@@ -12,12 +16,13 @@
   }
   &__link {
     min-width: 15vw;
+
     font-size: 100%;
     position: relative;
     color: $primary-color;
     text-decoration: none;
     font-weight: $font-weight-bold;
-    margin: 5rem;
+    margin: auto;
     &:hover {
       color: rgb(169, 174, 238);
     }

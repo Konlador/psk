@@ -1,11 +1,15 @@
 @import "../../styles/index.scss";
 
 .layout {
-  position: relative;
+  height: 100%;
   &__main {
+    padding-left: 15%;
+    max-width: 1440px;
+    margin: auto;
+    position: relative;
     box-sizing: border-box;
     flex: 1 1 auto;
-    margin: 4rem;
+    margin-top: 4rem;
     max-width: $container-content-width;
     z-index: 5;
     padding-bottom: 5vw;
