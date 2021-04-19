@@ -33,6 +33,13 @@ namespace Domain.Impl
             return addedEntry.Entity;
             }
 
+        public async Task<Drive> UpdateAsync(Drive drive, CancellationToken cancellationToken)
+        {
+            var modifiedEntry = m_dbContext.Drives.Attach(drive);
+            await m_dbContext.SaveChangesAsync(cancellationToken);
+            return modifiedEntry.Entity;
+        }
+
         public async Task<bool> RemoveAsync(Guid driveId, CancellationToken cancellationToken)
             {
             var drive = await m_dbContext.Drives.FindAsync(driveId);
@@ -48,5 +55,5 @@ namespace Domain.Impl
             {
             return await m_dbContext.Drives.FindAsync(driveId) != null;
             }
-        }
+    }
     }
