@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -13,9 +13,14 @@ import { REQUEST_STATUS } from '../../common/constants';
 
 const RenameMenuItem = ({itemId, name, onClick}) => { 
   const [open, setOpen] = React.useState(false);
-  const [newName, setNewName] = React.useState(name);
+  const [newName, setNewName] = React.useState('');
   const dispatch = useDispatch();
   const [renameStatus, setRenameStatus] = useState(REQUEST_STATUS.idle);
+  const [errorText, setErrorText] = useState('');
+
+  useEffect(() => {
+    setNewName(name);
+  }, [name]);
 
   const handleOpen = () => {
     setOpen(true);
@@ -23,6 +28,7 @@ const RenameMenuItem = ({itemId, name, onClick}) => {
 
   const handleClose = () => {
     setOpen(false);
+    setErrorText('');
     onClick(newName);
   };
 
@@ -31,17 +37,31 @@ const RenameMenuItem = ({itemId, name, onClick}) => {
   }
 
   const handleUpdate = (e) => {
-    if(newName !== name) {
+    /*if(newName === ''){
+      setErrorText("Name field is required");
+    }
+    else */if(newName !== name) {
       setRenameStatus(REQUEST_STATUS.loading);
 
       dispatch(renameVideo({itemId, newName}))
         .then(unwrapResult)
-        .then(() => setRenameStatus(REQUEST_STATUS.success))
-        .catch(() => {
-          //TODO show errros
+        .then(() => {
+          setRenameStatus(REQUEST_STATUS.success);
+          handleClose();
+        }) 
+        .catch((error) => {
+          if(error.message){
+            setErrorText(error.message)
+          }
+          else {
+            setErrorText(error)
+          }
+
           setRenameStatus(REQUEST_STATUS.failed);
-        })
-        .finally(() => handleClose());
+        });
+    }
+    else {
+      setErrorText('Nothing to update');
     }
     
     e.preventDefault();
@@ -59,9 +79,10 @@ const RenameMenuItem = ({itemId, name, onClick}) => {
               label="Name"
               id="name"
               type="text"
-              required
               defaultValue={name}
               onChange={onNameChanged}
+              error={errorText !== ""}
+              helperText={errorText}
               fullWidth
             />
           </DialogContent>

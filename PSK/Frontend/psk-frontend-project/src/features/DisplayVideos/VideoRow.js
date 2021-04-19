@@ -42,10 +42,11 @@ export const VideoRow = ({video}) => {
 
   const handleCloseRename = (newName) => {
     handleClose();
-    let updatedVideo = Object.assign({}, currentVideo);
-    
-    updatedVideo.name = newName;
-    setCurrentVideo(updatedVideo);
+    if(newName){
+      let updatedVideo = Object.assign({}, currentVideo);
+      updatedVideo.name = newName;
+      setCurrentVideo(updatedVideo);
+    }
   }
     return (
         <TableRow onContextMenu = {handleRightClick} hover role="checkbox" 

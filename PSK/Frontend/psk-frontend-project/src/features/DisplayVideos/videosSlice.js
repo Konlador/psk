@@ -60,7 +60,7 @@ export const renameVideo = createAsyncThunk('videos/renameVideo', async (params,
       throw err;
     }
     // response was returned - return validation errors from server to rejected promise
-    return rejectWithValue(err.response.status);
+    return rejectWithValue(err.response.data);
   }
 })
 
@@ -74,7 +74,7 @@ export const videosSlice = createSlice({
       state.status = REQUEST_STATUS.loading;
     },
     [getAllVideos.fulfilled]: (state, action) => {
-      state.items = VideoParser.parseArray(COLUMNS_NAMES, action.payload);
+      state.items = VideoParser.parseArray(COLUMNS_NAMES, action.payload.items);
       state.status = REQUEST_STATUS.succeeded;
     },
     [getAllVideos.rejected]: (state, action) => {
