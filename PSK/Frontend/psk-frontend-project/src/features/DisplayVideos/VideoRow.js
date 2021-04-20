@@ -5,6 +5,10 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import DownloadMenuItem from './DownloadMenuItem';
 import PlayMenuItem from './PlayMenuItem';
+import RenameMenuItem from './RenameMenuItem';
+import CheckIcon from '@material-ui/icons/Check';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { COLUMNS } from './VideoConstants';
 
 const initialState = {
@@ -15,6 +19,7 @@ const initialState = {
 export const VideoRow = ({video}) => { 
   const [state, setState] = useState(initialState);
   const [contextOpen, setContextOpen] = useState(false);
+  const [currentVideo, setCurrentVideo] = useState(video);
 
   const handleRightClick = (event) => {
     event.preventDefault();
@@ -34,11 +39,22 @@ export const VideoRow = ({video}) => {
     setContextOpen(false);
     setState(initialState);
   };
+
+  const handleCloseRename = (newName) => {
+    handleClose();
+    if(newName){
+      let updatedVideo = Object.assign({}, currentVideo);
+      updatedVideo.name = newName;
+      setCurrentVideo(updatedVideo);
+    }
+  }
     return (
         <TableRow onContextMenu = {handleRightClick} hover role="checkbox" 
-        tabIndex={-1} key={video.id} style={{backgroundColor: video.state === 1 ? 'white' : '#b6dcde',}}>
+        tabIndex={-1} key={currentVideo.id}>
+          <TableCell>{currentVideo.state === 0 ? <AutorenewIcon /> : 
+                currentVideo.state === 1 ? <CheckIcon /> :  <DeleteIcon />}</TableCell>
           {COLUMNS.map((column) => {
-            const value = video[column.id];
+            const value = currentVideo[column.id];
             return (
               <TableCell key={column.id} align={column.align} style={{display: column.display}}>
                 {column.format != null ? column.format(value) : value}
@@ -56,9 +72,9 @@ export const VideoRow = ({video}) => {
                   : undefined
               }
            >
-            {video.state === 1 && <PlayMenuItem onClick={handleClose} itemId={video.id} name={video.name} />}
-            <MenuItem onClick={handleClose}> Rename </MenuItem>
-            {video.state === 1 && <DownloadMenuItem onClick={handleClose} itemId={video.id} name={video.name} />}
+            {currentVideo.state === 1 && <PlayMenuItem onClick={handleClose} itemId={currentVideo.id} name={currentVideo.name} />}
+            <RenameMenuItem onClick={handleCloseRename} itemId={currentVideo.id} name={currentVideo.name} > Rename </RenameMenuItem>
+            {currentVideo.state === 1 && <DownloadMenuItem onClick={handleClose} itemId={currentVideo.id} name={currentVideo.name} />}
             <MenuItem onClick={handleClose}> Bin </MenuItem>
           </Menu>
         </TableRow>)
