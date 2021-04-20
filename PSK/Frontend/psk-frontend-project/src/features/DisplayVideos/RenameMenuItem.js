@@ -37,10 +37,10 @@ const RenameMenuItem = ({itemId, name, onClick}) => {
   }
 
   const handleUpdate = (e) => {
-    /*if(newName === ''){
+    if(newName === ''){
       setErrorText("Name field is required");
     }
-    else */if(newName !== name) {
+    else if(newName !== name) {
       setRenameStatus(REQUEST_STATUS.loading);
 
       dispatch(renameVideo({itemId, newName}))
