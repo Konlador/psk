@@ -46,33 +46,44 @@ export const DisplayVideos = (props) => {
 
   if (videoStatus === REQUEST_STATUS.loading) {
     isLoading = true;
-  } else if (videoStatus === REQUEST_STATUS.succeded) {
-    rows = videos.map((video) => <VideoRow video={video} />);
-  }
+  } 
 
   const dataColumns = [
     { field: "id", headerName: "ID", width: 70 },
-    { field: "firstName", headerName: "First name", width: 130 },
-    { field: "lastName", headerName: "Last name", width: 130 },
+    { field: "name", headerName: "name", width: 130 },
+    { field: "timeCreated", headerName: "timeCreated", width: 260 },
     {
-      field: "age",
-      headerName: "Age",
+      field: "size",
+      headerName: "size",
       type: "number",
       width: 90,
-    },
-    {
-      field: "fullName",
-      headerName: "Full name",
-      description: "This column has a value getter and is not sortable.",
-      sortable: false,
-      width: 160,
-      valueGetter: (params) =>
-        `${params.getValue("firstName") || ""} ${
-          params.getValue("lastName") || ""
-        }`,
-    },
-  ];
+      // format: (value) => {
+      //   const divider = 1024;
+      //   const metrics = ['B', 'KB', 'MB', 'GB', 'TB'];
 
+      //   let possibleReduceCount = metrics.length-1;
+      //   while(value >= divider && possibleReduceCount > 0){
+      //     value = value/divider;
+      //     possibleReduceCount--;
+      //   }
+
+      //   const formattedValue = (value.toString().indexOf('.') !== -1 ? value.toFixed(2) : value) + ' ' + metrics[metrics.length - possibleReduceCount-1];
+      //   return formattedValue;
+      // }
+    },
+    // {
+    //   field: "fullName",
+    //   headerName: "Full name",
+    //   description: "This column has a value getter and is not sortable.",
+    //   sortable: false,
+    //   width: 160,
+    //   valueGetter: (params) =>
+    //     `${params.getValue("firstName") || ""} ${
+    //       params.getValue("lastName") || ""
+    //     }`,
+    // },
+  ];
+  
   const dataRows = [
     { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
     { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },
@@ -84,51 +95,28 @@ export const DisplayVideos = (props) => {
     { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
     { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
   ];
-
+  // susideliot data
+  // double click - context menu onRowDoubleClick
+function handleClick(e) {
+    e.preventDefault();
+    console.log('The link was clicked.');
+  }
   return (
-    <>
-      <div style={{ height: 400, width: "100%" }}>
-        <DataGrid
-          rows={dataRows}
-          columns={dataColumns}
-          pageSize={5}
-          checkboxSelection
-        />
-      </div>
-      <div className="display-videos-table">
-        <div className={classes.root}>
-          {error && <Alert severity="error">{error}</Alert>}
-          {!isLoading && !error ? (
-            <div>
-              <TableContainer className={classes.container}>
-                <Table stickyHeader aria-label="sticky table">
-                  <TableHead>
-                    <TableRow>
-                      {COLUMNS.map((column) => (
-                        <TableCell
-                          key={column.id}
-                          align={column.align}
-                          style={{
-                            minWidth: column.minWidth,
-                            display: column.display,
-                          }}
-                        >
-                          {column.label}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>{rows}</TableBody>
-                </Table>
-              </TableContainer>
-            </div>
-          ) : isLoading ? (
-            <CircularProgress />
-          ) : null}
+
+ <div className="display-videos-table">
+      <div className={classes.root}>
+        {error && <Alert severity="error">{error}</Alert>}
+        {!isLoading && !error ? (
+          <div>
+                     <div style={{ height: 650, width: '100%' }}>
+      <DataGrid rows={videos} columns={dataColumns} pageSize={10} checkboxSelection  onRowDoubleClick={handleClick}/>
         </div>
+          </div>
+        ) : isLoading ? (
+          <CircularProgress />
+        ) : null}
       </div>
-    </>
-  );
+    </div>);
 };
 DisplayVideos.propTypes = { fileStatus: PropTypes.array };
 DisplayVideos.defaultProps = {

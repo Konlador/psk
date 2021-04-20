@@ -54,6 +54,25 @@ export const downloadVideoUri = createAsyncThunk(
   }
 );
 
+export const renameVideo = createAsyncThunk('videos/renameVideo', async (params, {rejectWithValue}) => {
+  const itemId = params.itemId;
+  const newName = params.newName;
+
+  try {
+    const response = await http.put(`/api/drive/${driveId}/files/${itemId}/rename?newName=${newName}`);
+    return response.data;
+  } catch (err) {
+    const error = err;
+
+    // response was not returned - return err to rejected promise
+    if (!error.response) {
+      throw err;
+    }
+    // response was returned - return validation errors from server to rejected promise
+    return rejectWithValue(err.response.data);
+  }
+})
+
 export const videosSlice = createSlice({
   name: "videos",
   initialState,
@@ -63,7 +82,7 @@ export const videosSlice = createSlice({
       state.status = REQUEST_STATUS.loading;
     },
     [getAllVideos.fulfilled]: (state, action) => {
-      state.items = VideoParser.parseArray(COLUMNS_NAMES, action.payload);
+      state.items = VideoParser.parseArray(COLUMNS_NAMES, action.payload.items);
       state.status = REQUEST_STATUS.succeeded;
     },
     [getAllVideos.rejected]: (state, action) => {
