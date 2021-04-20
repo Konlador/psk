@@ -19,7 +19,7 @@ namespace API.Controllers
             Guid itemId, [FromQuery, BindRequired] string newName, CancellationToken cancellationToken)
             {
             if(string.IsNullOrWhiteSpace(newName))
-                return BadRequest("hghh");
+                return BadRequest("Name is required");
 
             newName = newName.Trim();
 
