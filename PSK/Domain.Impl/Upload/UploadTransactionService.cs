@@ -31,7 +31,7 @@ namespace Domain.Impl.Upload
                                   Timestamp = DateTime.UtcNow
                                   };
 
-            transaction.UploadUri = m_blobContainerClient.GetBlobClient($"{item.DriveId}/{item.Name}")
+            transaction.UploadUri = m_blobContainerClient.GetBlobClient($"{item.DriveId}/{item.Id}")
                 .GenerateSasUri(BlobSasPermissions.Read | BlobSasPermissions.Write, DateTime.UtcNow.AddHours(1));
 
             await m_transactions.AddAsync(transaction, cancellationToken);
@@ -40,9 +40,11 @@ namespace Domain.Impl.Upload
 
         public async Task<bool> CommitTransaction(Guid transactionId, StorageItem item, CancellationToken cancellationToken)
             {
-            var blob = m_blobContainerClient.GetBlobClient($"{item.DriveId}/{item.Name}");
+
+            var blob = m_blobContainerClient.GetBlobClient($"{item.DriveId}/{item.Id}");
             var properties = await blob.GetPropertiesAsync();
-            // TODO: check if size is the same as promised
+
+
             if (properties.Value.ContentLength != item.Size)
             {
                 await blob.DeleteAsync();

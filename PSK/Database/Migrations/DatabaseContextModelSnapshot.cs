@@ -28,12 +28,6 @@ namespace Database.Migrations
                     b.Property<long>("Capacity")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("NumberOfFiles")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("TotalStorageUsed")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
 
                     b.ToTable("Drives");

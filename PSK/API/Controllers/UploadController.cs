@@ -61,7 +61,8 @@ namespace API.Controllers
                            DriveId = driveScope.DriveId,
                            Name = fileName,
                            State = StorageItemState.Uploading,
-                           TimeCreated = DateTime.UtcNow
+                           TimeCreated = DateTime.UtcNow,
+                           Size = item.Size
                            };
             var transaction = await m_uploadTransactionService.StartTransaction(file, cancellationToken);
             await driveScope.StorageItems.AddAsync(file, cancellationToken);
@@ -88,7 +89,6 @@ namespace API.Controllers
                 drive.NumberOfFiles += 1;
                 drive.TotalStorageUsed += item.Size;
                 await m_globalScope.Drives.UpdateAsync(drive, cancellationToken);
-
                 return Ok();
                 }
 

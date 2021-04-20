@@ -13,11 +13,13 @@ namespace API.Controllers
     public class BinController : ControllerBase
         {
         private readonly IManagementService m_managementService;
+        private readonly IGlobalScope m_globalScope;
 
-        public BinController(IManagementService managementService)
+        public BinController(IManagementService managementService, IGlobalScope globalScope)
             {
             m_managementService = managementService;
-            }
+            m_globalScope = globalScope;
+        }
 
         [HttpPost]
         [Route("files/{itemId:guid}/trash")]
@@ -75,11 +77,17 @@ namespace API.Controllers
             using var driveScope = driveScopeFactory.CreateInstance();
 
             var item = await driveScope.StorageItems.GetAsync(itemId, cancellationToken);
-            if(item == null)
-                return NotFound();
 
-            if(!item.TrashedExplicitly)
+
+            if (item == null) return NotFound();
+
+            if (!item.TrashedExplicitly) 
                 return BadRequest("File is not trashed explicitly.");
+
+            var drive = await m_globalScope.Drives.GetAsync(driveScope.DriveId, cancellationToken);
+            drive.TotalStorageUsed -= item.Size;
+            drive.NumberOfFiles -= 1;
+            await m_globalScope.Drives.UpdateAsync(drive, cancellationToken);
 
             await m_managementService.DeleteStorageItem(driveScope, item);
             return Ok();
