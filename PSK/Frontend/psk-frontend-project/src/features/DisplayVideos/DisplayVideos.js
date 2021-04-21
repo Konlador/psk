@@ -9,7 +9,9 @@ import { getAllVideos } from "./videosSlice";
 import { REQUEST_STATUS } from "../../common/constants";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
-
+import CheckIcon from "@material-ui/icons/Check";
+import AutorenewIcon from "@material-ui/icons/Autorenew";
+import DeleteIcon from "@material-ui/icons/Delete";
 import PropTypes from "prop-types";
 import "./displayVideos.scss";
 
@@ -66,12 +68,31 @@ export const DisplayVideos = (props) => {
       { label: "Edit" },
     ];
   };
+
+  const statusIcon = (icon_status) => {
+    console.log(icon_status);
+    return icon_status === 0 ? (
+      <AutorenewIcon />
+    ) : icon_status === 1 ? (
+      <CheckIcon />
+    ) : (
+      <DeleteIcon />
+    );
+  };
+
   const columns = [
     {
       name: "id",
       header: "Id",
       defaultVisible: false,
       defaultWidth: 60,
+    },
+    {
+      name: "status",
+      header: "Status",
+      defaultFlex: 0.3,
+      type: "number",
+      render: ({ value }) => console.log(videos),
     },
     { name: "name", header: "Name", defaultFlex: 2 },
     { name: "timeCreated", header: "Time Created", defaultFlex: 1 },
@@ -130,6 +151,7 @@ export const DisplayVideos = (props) => {
             nativeScroll={false}
             enableSelection
             multiSelect
+            theme="default-light"
             scrollProps={scrollProps}
             // onSelectionChange={onSelectionChange}
             onChange={() => console.log("Text changed")}

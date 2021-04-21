@@ -11,6 +11,9 @@ import "./uploadFiles.scss";
 import UploadService from "../../services/upload-files.service";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import FileCopyRoundedIcon from "@material-ui/icons/FileCopyRounded";
+import { Snackbars } from "../Layout/Snackbars/Snackbars";
+import { useState } from "react";
+
 //------------LINEAR PROGRESS-------------------------------
 const BorderLinearProgress = withStyles((theme) => ({
   root: {
@@ -41,8 +44,10 @@ export default class UploadFiles extends Component {
       isError: false,
       fileName: "",
       uploadedLink: "",
+      showSnackbar: false,
     };
   }
+  // const [showSnack, setShowSnack] = useState(false);
 
   selectFile(event) {
     this.setState({
@@ -50,7 +55,6 @@ export default class UploadFiles extends Component {
     });
   }
   //---------------------UPLOAD---------------------------
-
   upload() {
     let currentFile = this.state.selectedFiles[0];
 
@@ -92,6 +96,7 @@ export default class UploadFiles extends Component {
           message: ` Your file has been successfully uploaded ☑`,
           fileInfos: "",
           uploadedLink: "Go to the file ->",
+          showSnackbar: true,
         });
       })
       .catch((error) => {
@@ -119,6 +124,7 @@ export default class UploadFiles extends Component {
       fileName,
       isError,
       uploadedLink,
+      showSnackbar,
     } = this.state;
 
     return (
@@ -194,6 +200,14 @@ export default class UploadFiles extends Component {
         <Typography variant="h6" className="list-header">
           {fileName}
         </Typography>
+        <div>
+          <Snackbars
+            text="Your file has been successfully uploaded"
+            type="success"
+            show={showSnackbar}
+          ></Snackbars>
+        </div>
+
         <span className="list-group">
           {/* {fileInfos &&
             fileInfos.map((file, index) => (
