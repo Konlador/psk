@@ -13,12 +13,10 @@ namespace API.Controllers
     public class BinController : ControllerBase
         {
         private readonly IManagementService m_managementService;
-        private readonly IGlobalScope m_globalScope;
 
-        public BinController(IManagementService managementService, IGlobalScope globalScope)
+        public BinController(IManagementService managementService)
             {
             m_managementService = managementService;
-            m_globalScope = globalScope;
         }
 
         [HttpPost]
@@ -84,12 +82,7 @@ namespace API.Controllers
             if (!item.TrashedExplicitly) 
                 return BadRequest("File is not trashed explicitly.");
 
-            var drive = await m_globalScope.Drives.GetAsync(driveScope.DriveId, cancellationToken);
-            drive.TotalStorageUsed -= item.Size;
-            drive.NumberOfFiles -= 1;
-            await m_globalScope.Drives.UpdateAsync(drive, cancellationToken);
-
-            await m_managementService.DeleteStorageItem(driveScope, item);
+            await m_managementService.DeleteStorageItem(driveScope, item, cancellationToken);
             return Ok();
             }
         }
