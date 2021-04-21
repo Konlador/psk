@@ -28,7 +28,7 @@ export const Navbar = (props) => {
           <a href="/bin" className="navbar__link">
             <figure>
               <DeleteIcon />
-              <figcaption>Deleted Files</figcaption>
+              <figcaption>Bin</figcaption>
             </figure>
           </a>
         </Toolbar>

@@ -20,6 +20,28 @@ export const getAllVideos = createAsyncThunk(
       const response = await http.get(`/api/drive/${driveId}/files`, {
         params,
       });
+      console.log("this is getallvideos ", response.data);
+      return response.data;
+    } catch (err) {
+      const error = err;
+
+      // response was not returned - return err to rejected promise
+      if (!error.response) {
+        throw err;
+      }
+      // response was returned - return validation errors from server to rejected promise
+      return rejectWithValue(err.response.status);
+    }
+  }
+);
+export const getAllVideoss = createAsyncThunk(
+  "videos/getAllVideos",
+  async (params, { rejectWithValue }) => {
+    try {
+      const response = await http.get(`/api/drive/${driveId}/files`, {
+        params,
+      });
+      console.log("this is getallvideos ", response.data);
       return response.data;
     } catch (err) {
       const error = err;
@@ -54,24 +76,29 @@ export const downloadVideoUri = createAsyncThunk(
   }
 );
 
-export const renameVideo = createAsyncThunk('videos/renameVideo', async (params, {rejectWithValue}) => {
-  const itemId = params.itemId;
-  const newName = params.newName;
+export const renameVideo = createAsyncThunk(
+  "videos/renameVideo",
+  async (params, { rejectWithValue }) => {
+    const itemId = params.itemId;
+    const newName = params.newName;
 
-  try {
-    const response = await http.put(`/api/drive/${driveId}/files/${itemId}/rename?newName=${newName}`);
-    return response.data;
-  } catch (err) {
-    const error = err;
+    try {
+      const response = await http.put(
+        `/api/drive/${driveId}/files/${itemId}/rename?newName=${newName}`
+      );
+      return response.data;
+    } catch (err) {
+      const error = err;
 
-    // response was not returned - return err to rejected promise
-    if (!error.response) {
-      throw err;
+      // response was not returned - return err to rejected promise
+      if (!error.response) {
+        throw err;
+      }
+      // response was returned - return validation errors from server to rejected promise
+      return rejectWithValue(err.response.data);
     }
-    // response was returned - return validation errors from server to rejected promise
-    return rejectWithValue(err.response.data);
   }
-})
+);
 
 export const videosSlice = createSlice({
   name: "videos",

@@ -12,7 +12,7 @@ export const Layout = (props) => {
       <LeftSidebar></LeftSidebar>
       {/* <RightSidebar></RightSidebar> */}
       <main className="layout__main"> {props.children}</main>
-      <Footer className="layout__footer"></Footer>
+      {/* <Footer className="layout__footer"></Footer> */}
     </div>
   );
 };
