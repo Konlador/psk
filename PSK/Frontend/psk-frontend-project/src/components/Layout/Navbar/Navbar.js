@@ -18,6 +18,13 @@ export const Navbar = (props) => {
             </figure>
           </a>
 
+          <a href="/videosTest" className="navbar__link">
+            <figure>
+              <VideoLibraryIcon />
+              <figcaption>Your videos test</figcaption>
+            </figure>
+          </a>
+
           <a href="/upload" className="navbar__link">
             <figure>
               <BackupRoundedIcon />
