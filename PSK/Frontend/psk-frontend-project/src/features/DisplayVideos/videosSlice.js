@@ -1,6 +1,4 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import VideoParser from "../../helpers/parser";
-import { COLUMNS_NAMES } from "./VideoConstants";
 import { REQUEST_STATUS } from "../../common/constants";
 import http from "../../http-common";
 
@@ -20,7 +18,6 @@ export const getAllVideos = createAsyncThunk(
       const response = await http.get(`/api/drive/${driveId}/files`, {
         params,
       });
-      console.log("this is getallvideos ", response.data);
       return response.data;
     } catch (err) {
       const error = err;
@@ -41,7 +38,6 @@ export const getAllVideoss = createAsyncThunk(
       const response = await http.get(`/api/drive/${driveId}/files`, {
         params,
       });
-      console.log("this is getallvideos ", response.data);
       return response.data;
     } catch (err) {
       const error = err;
@@ -109,7 +105,7 @@ export const videosSlice = createSlice({
       state.status = REQUEST_STATUS.loading;
     },
     [getAllVideos.fulfilled]: (state, action) => {
-      state.items = VideoParser.parseArray(COLUMNS_NAMES, action.payload.items);
+      state.items = action.payload.items;
       state.status = REQUEST_STATUS.succeeded;
     },
     [getAllVideos.rejected]: (state, action) => {

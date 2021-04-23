@@ -7,7 +7,7 @@ function BinPage() {
   return (
     <>
       <Layout>
-        <DisplayVideos fileStatus={[2]}></DisplayVideos>
+        <DisplayVideos queryParams={{isTrashedExplicitly: true, states:  [0, 1]}} />
       </Layout>
     </>
   );

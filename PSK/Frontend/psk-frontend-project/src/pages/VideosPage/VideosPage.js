@@ -7,7 +7,7 @@ function VideosPage() {
   return (
     <>
       <Layout name="VIDEOS">
-        <DisplayVideos></DisplayVideos>
+        <DisplayVideos />
       </Layout>
     </>
   );
