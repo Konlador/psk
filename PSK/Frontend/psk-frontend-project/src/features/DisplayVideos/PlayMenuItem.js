@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -6,7 +6,6 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
-import MenuItem from '@material-ui/core/MenuItem';
 import VideoPlayer from './Stream/VideoPlayer';
 
 const styles = (theme) => ({
@@ -43,29 +42,27 @@ const DialogContent = withStyles((theme) => ({
 }))(MuiDialogContent);
  
 
-const PlayMenuItem = ({itemId, name, onClick}) => { 
-  const [open, setOpen] = React.useState(false);
+const PlayMenuItem = ({video, isOpen, close}) => { 
+  const [open, setOpen] = useState(isOpen);
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
+  useEffect(() => {
+    setOpen(isOpen);
+  }, [isOpen]);
 
   const handleClose = () => {
     setOpen(false);
-    onClick();
+    close();
   };
-
 
   return (
     <div>
-      <MenuItem onClick={handleOpen}>Play</MenuItem>
       <Dialog onClose={handleClose} 
       aria-labelledby="customized-dialog-title" open={open} fullWidth={true} maxWidth="sm">
         <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-          {name}
+          {video.name}
         </DialogTitle>
         <DialogContent dividers>
-          <VideoPlayer name={name} itemId={itemId}/>
+          <VideoPlayer name={video.name} itemId={video.id}/>
         </DialogContent>
       </Dialog>
     </div>
