@@ -1,13 +1,13 @@
 import React from "react";
 import { Layout } from "../../components/Layout/Layout";
-import { DisplayVideos } from "../../features/DisplayVideos/DisplayVideos";
+import { VideosList } from "../../features/DisplayVideos/VideosList";
 import "./binPage.scss";
 
 function BinPage() {
   return (
     <>
       <Layout>
-        <DisplayVideos queryParams={{isTrashedExplicitly: true, states:  [0, 1]}} />
+        <VideosList queryParams={{isTrashedExplicitly: true, states:  [0, 1]}} />
       </Layout>
     </>
   );

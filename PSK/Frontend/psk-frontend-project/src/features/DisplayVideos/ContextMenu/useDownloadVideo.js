@@ -1,8 +1,6 @@
-import React from 'react';
-import MenuItem from '@material-ui/core/MenuItem';
 import { useDispatch } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit'
-import { downloadVideoUri } from './videosSlice';
+import { downloadVideoUri } from '../videosSlice';
 
 const useDownloadVideo = () => { 
   const dispatch = useDispatch();

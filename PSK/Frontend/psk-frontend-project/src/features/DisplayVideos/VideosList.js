@@ -8,26 +8,30 @@ import { REQUEST_STATUS } from "../../common/constants";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import PropTypes from "prop-types";
-import PlayMenuItem from './PlayMenuItem';
-import MENU_ITEMS from './videoConstants';
-import useDownloadVideo from './useDownloadVideo';
-import "./displayVideos.scss";
+import PlayMenuItem from './ContextMenu/PlayMenuItem';
+import RenameMenuItem from './ContextMenu/RenameMenuItem';
+import BinMenuItem from './ContextMenu/BinMenuItem';
+import { MENU_ITEMS } from './videosConstants';
+import useDownloadVideo from './ContextMenu/useDownloadVideo';
+import useRestoreVideo from './ContextMenu/useRestoreVideo';
+import "./videosList.scss";
 
 
-export const DisplayVideos = ({ queryParams }) => {
+export const VideosList = ({ queryParams }) => {
   const dispatch = useDispatch();
   const videos = useSelector((state) => state.videos.items);
   const videoStatus = useSelector((state) => state.videos.status);
   const error = useSelector((state) => state.videos.error);
   const [contextVideo, setContextVideo] = useState({});
-  const [playOpen, setPlayOpen] = useState(false);
+  const [menuItemOpen, setMenuItemOpen] = useState(MENU_ITEMS.none);
   const downloadVideo = useDownloadVideo();
+  const restoreVideo = useRestoreVideo();
 
   useEffect(() => {
     if(videoStatus === REQUEST_STATUS.idle) {
       dispatch(getAllVideos(queryParams));
     }
-  }, [playOpen]);
+  }, [menuItemOpen]);
 
   const gridStyle = { minHeight: 550 };
 
@@ -43,28 +47,54 @@ export const DisplayVideos = ({ queryParams }) => {
     { name: "size", dir: -2 },
   ];
 
-  const openPlay = (video) => {
+  const openMenuItem = (video, menuItem) => {
     setContextVideo(video);
-    setPlayOpen(true);
+    setMenuItemOpen(menuItem);
   }
 
-  const closePlay = () => {
-    setPlayOpen(false);
+  const closeMenuItem = () => {
+    setMenuItemOpen(MENU_ITEMS.none);
   }
 
   const renderRowContextMenu = (menuProps, { rowProps }) => {
     menuProps.autoDismiss = true;
-    menuProps.items = [
-      {
-        label: <span style={{width: "100%"}} onClick={() => openPlay(rowProps.data)}>Play</span>
-      },
-      {
-        label: <span style={{width: "100%"}} onClick={() => downloadVideo(rowProps.data)}>Download</span>
-      },
-      { label: "Bin" },
-      { label: "Play" },
-      { label: "Edit" },
-    ];
+    menuProps.items = [];
+
+    const video = rowProps.data;
+
+    const playItem = { 
+      label: <div className="context-menu-item" onClick={() => openMenuItem(video, MENU_ITEMS.play)}>Play</div>
+    };
+
+    const downloadItem = {
+      label: <div className="context-menu-item" onClick={() => downloadVideo(video)}>Download</div>
+    };
+
+    const renameItem = {
+      label: <div className="context-menu-item" onClick={() => openMenuItem(video, MENU_ITEMS.rename)}>Rename</div>
+    };
+
+    const binItem = {
+      label: <div className="context-menu-item" onClick={() => openMenuItem(video, MENU_ITEMS.bin)}>Bin</div>
+    };
+
+    const restoreItem = {
+      label: <div className="context-menu-item" onClick={() => restoreVideo(video)}>Restore</div>
+    };
+
+    const deleteItem = {
+      label: <div className="context-menu-item" >Delete</div>
+    };
+
+    if(video.state === 1 && !video.trashedExplicitly) {
+      menuProps.items.push(playItem, downloadItem, renameItem, binItem);
+    } 
+    else if (video.state === 0) {
+      menuProps.items.push(renameItem);
+    } 
+    else if(video.trashedExplicitly) {
+      menuProps.items.push(restoreItem, deleteItem);
+    }
   };
   
 
@@ -129,7 +159,9 @@ export const DisplayVideos = ({ queryParams }) => {
             // onSelectionChange={onSelectionChange}
             onChange={() => console.log("Text changed")}
         />
-        <PlayMenuItem video={contextVideo} isOpen={playOpen} close={closePlay}/>
+        <PlayMenuItem video={contextVideo}  isOpen={menuItemOpen === MENU_ITEMS.play} close={closeMenuItem} />
+        <RenameMenuItem video={contextVideo}  isOpen={menuItemOpen === MENU_ITEMS.rename} close={closeMenuItem} />
+        <BinMenuItem video={contextVideo}  isOpen={menuItemOpen === MENU_ITEMS.bin} close={closeMenuItem} />
       </>)
   }
 
@@ -145,5 +177,5 @@ export const DisplayVideos = ({ queryParams }) => {
   );
 };
 
-DisplayVideos.propTypes = { queryParams: PropTypes.objectOf(PropTypes.object) };
-DisplayVideos.defaultProps = {queryParams: {states: [0, 1], isTrashedExplicitly: false}}
+VideosList.propTypes = { queryParams: PropTypes.objectOf(PropTypes.object) };
+VideosList.defaultProps = {queryParams: {states: [0, 1], isTrashedExplicitly: false}}
