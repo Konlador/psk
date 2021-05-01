@@ -2,7 +2,7 @@ import { React, useEffect, useState } from "react";
 import { Alert } from '@material-ui/lab';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useSelector, useDispatch } from "react-redux";
-import { getAllVideos } from "./videosSlice";
+import { getAllVideos, updateRestore, updateBin } from "./videosSlice";
 import { VIDEO_LIST_COLUMNS } from "./VideoListColumns";
 import { REQUEST_STATUS } from "../../common/constants";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
@@ -25,7 +25,10 @@ export const VideosList = ({ queryParams }) => {
   const [contextVideo, setContextVideo] = useState({});
   const [menuItemOpen, setMenuItemOpen] = useState(MENU_ITEMS.none);
   const downloadVideo = useDownloadVideo();
-  const restoreVideo = useRestoreVideo();
+  const restore = useRestoreVideo();
+  const restoreError = useSelector((state) => state.videos.restoreVideoError);
+  const restoreStatus = useSelector((state) => state.videos.restoreVideoStatus);
+  const binStatus = useSelector((state) => state.videos.binVideoStatus);
 
   useEffect(() => {
     if(videoStatus === REQUEST_STATUS.idle) {
@@ -79,7 +82,11 @@ export const VideosList = ({ queryParams }) => {
     };
 
     const restoreItem = {
-      label: <div className="context-menu-item" onClick={() => restoreVideo(video)}>Restore</div>
+      label: <div className="context-menu-item" onClick={() => {
+          setContextVideo(video);
+          restore(video);
+        }
+      }>Restore</div>
     };
 
     const deleteItem = {
@@ -130,6 +137,21 @@ export const VideosList = ({ queryParams }) => {
     }
   );
 
+  /******************** refresh table after bin, restore or delete *****************/
+  if (restoreStatus === REQUEST_STATUS.success) {
+    dispatch(updateRestore(contextVideo.id));
+  }
+  
+  if (restoreStatus === REQUEST_STATUS.failed) {
+    // TODO: show snackbar
+    console.log('Restore failed: ', restoreError);
+  }
+
+  if (binStatus === REQUEST_STATUS.success) {
+    dispatch(updateBin(contextVideo.id));
+  }
+  
+  /************************************* render page *******************************/
   let renderContent;
 
   if (videoStatus === REQUEST_STATUS.loading) {

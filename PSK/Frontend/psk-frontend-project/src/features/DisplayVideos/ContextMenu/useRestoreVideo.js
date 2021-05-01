@@ -1,14 +1,12 @@
 import { useDispatch } from 'react-redux';
-import { restoreVideo, updateRestore } from '../videosSlice';
+import { restoreVideo, resetRestore } from '../videosSlice';
 
 const useRestoreVideo = () => { 
   const dispatch = useDispatch();
 
   const restore = async (video) => {
-    //TODO: not working when error happens
-    dispatch(restoreVideo(video.id))
-        .then(dispatch(updateRestore(video.id)));
-    
+    dispatch(resetRestore());
+    dispatch(restoreVideo(video.id));
   }
 
   return restore;

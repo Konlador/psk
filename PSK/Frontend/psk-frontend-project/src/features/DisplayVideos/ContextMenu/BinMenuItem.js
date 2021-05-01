@@ -6,7 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import { useDispatch, useSelector } from 'react-redux';
 import useErrorStyles from "./useErrorStyles";
-import { binVideo, updateBin, resetBin } from '../videosSlice';
+import { binVideo, resetBin } from '../videosSlice';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { REQUEST_STATUS } from '../../../common/constants';
 
@@ -20,7 +20,6 @@ const BinMenuItem = ({ video, isOpen, close }) => {
 
   useEffect(() => {
     setOpen(isOpen);
-    return () => dispatch(resetBin());
   }, [isOpen]);
 
 
@@ -31,9 +30,8 @@ const BinMenuItem = ({ video, isOpen, close }) => {
 
 
   const handleBin = (e) => {
-    //TODO: not working when error happens
-    dispatch(binVideo(video.id))
-        .then(dispatch(updateBin(video.id)));
+    dispatch(resetBin());
+    dispatch(binVideo(video.id));
     handleClose();
     e.preventDefault();
   }

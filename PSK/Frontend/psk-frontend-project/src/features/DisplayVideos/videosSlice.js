@@ -12,6 +12,8 @@ const initialState = {
   error: null,
   binVideoStatus: REQUEST_STATUS.idle,
   binVideoError: null,
+  restoreVideoStatus: REQUEST_STATUS.idle,
+  restoreVideoError: null,
 };
 
 export const getAllVideos = createAsyncThunk(
@@ -153,17 +155,25 @@ export const videosSlice = createSlice({
     updateBin: (state, action) => {
       const id = action.payload;
       const itemToBinIndex = state.items.findIndex((item) => item.id === id);
+      state.binVideoError = null;
+      state.binVideoStatus = REQUEST_STATUS.idle;
       state.items.splice(itemToBinIndex, 1);
     },
     resetBin: (state) => {
-      state.binError = "";
-      state.binStatus = REQUEST_STATUS.idle;
+      state.binVideoError = "";
+      state.binVideoStatus = REQUEST_STATUS.idle;
     },
     updateRestore: (state, action) => {
       const id = action.payload;
       const itemToRestoreIndex = state.items.findIndex((item) => item.id === id);
+      state.restoreVideoError = null;
+      state.restoreVideoStatus = REQUEST_STATUS.idle;
       state.items.splice(itemToRestoreIndex, 1);
-    }
+    },
+    resetRestore: (state) => {
+      state.restoreVideoError = "";
+      state.restoreVideoStatus = REQUEST_STATUS.idle;
+    },
   },
   extraReducers: {
     [getAllVideos.pending]: (state,) => {
@@ -171,7 +181,7 @@ export const videosSlice = createSlice({
     },
     [getAllVideos.fulfilled]: (state, action) => {
       state.items = action.payload.items;
-      state.status = REQUEST_STATUS.succeeded;
+      state.status = REQUEST_STATUS.succees;
     },
     [getAllVideos.rejected]: (state, action) => {
       // get errors from payload if response was returned
@@ -188,19 +198,31 @@ export const videosSlice = createSlice({
       state.binVideoStatus = REQUEST_STATUS.loading;
     },
     [binVideo.fulfilled]: (state) => {
-      state.binVideoStatus = REQUEST_STATUS.succeeded;
+      state.binVideoStatus = REQUEST_STATUS.success;
     },
     [binVideo.rejected]: (state, action) => {
       if (action.payload) {
-        state.binVideoStatus = action.payload;;
+        state.binVideoError = action.payload;;
       } else {
         state.binVideoError = NETWORK_ERROR;
       }
       state.binVideoStatus = REQUEST_STATUS.failed;
     },
+    [restoreVideo.fulfilled]: (state) => {
+      state.restoreVideoStatus = REQUEST_STATUS.success;
+      console.log('restore fullfilled:', state.restoreVideoStatus);
+    },
+    [restoreVideo.rejected]: (state, action) => {
+      if (action.payload) {
+        state.restoreVideoError = action.payload;;
+      } else {
+        state.restoreVideoError = NETWORK_ERROR;
+      }
+      state.restoreVideoStatus = REQUEST_STATUS.failed;
+    },
   },
 });
 
-export const { updateName, updateBin, resetBin, updateRestore } = videosSlice.actions
+export const { updateName, updateBin, resetBin, updateRestore, resetRestore } = videosSlice.actions
 
 export default videosSlice.reducer;
