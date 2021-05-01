@@ -5,31 +5,32 @@ import TextField from '@material-ui/core/TextField';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import { useDispatch } from 'react-redux';
-import { renameVideo } from './videosSlice';
-import MenuItem from '@material-ui/core/MenuItem';
+import { renameVideo, updateName } from '../videosSlice';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { REQUEST_STATUS } from '../../common/constants';
+import { REQUEST_STATUS } from '../../../common/constants';
 
-const RenameMenuItem = ({itemId, name, onClick}) => { 
-  const [open, setOpen] = React.useState(false);
-  const [newName, setNewName] = React.useState('');
+const RenameMenuItem = ({ video, isOpen, close }) => { 
+  const [open, setOpen] = useState(false);
+  const [newName, setNewName] = useState('');
   const dispatch = useDispatch();
   const [renameStatus, setRenameStatus] = useState(REQUEST_STATUS.idle);
   const [errorText, setErrorText] = useState('');
 
   useEffect(() => {
-    setNewName(name);
-  }, [name]);
+    setOpen(isOpen);
+  }, [isOpen]);
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
 
-  const handleClose = () => {
+  const handleClose = (status = false) => {
     setOpen(false);
     setErrorText('');
-    onClick(newName);
+
+    if(status === true) {
+      dispatch(updateName({ id: video.id, newName }));
+    }
+
+    close();
   };
 
   const onNameChanged = (e) => {
@@ -40,14 +41,14 @@ const RenameMenuItem = ({itemId, name, onClick}) => {
     if(newName === ''){
       setErrorText("Name field is required");
     }
-    else if(newName !== name) {
+    else if(newName !== video.name) {
       setRenameStatus(REQUEST_STATUS.loading);
 
-      dispatch(renameVideo({itemId, newName}))
+      dispatch(renameVideo({itemId: video.id, newName}))
         .then(unwrapResult)
         .then(() => {
           setRenameStatus(REQUEST_STATUS.success);
-          handleClose();
+          handleClose(true);
         }) 
         .catch((error) => {
           if(error.message){
@@ -69,7 +70,6 @@ const RenameMenuItem = ({itemId, name, onClick}) => {
 
   return (
     <div>
-      <MenuItem onClick={handleOpen}>Rename</MenuItem>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <form onSubmit={handleUpdate}>
           <DialogContent>
@@ -79,7 +79,7 @@ const RenameMenuItem = ({itemId, name, onClick}) => {
               label="Name"
               id="name"
               type="text"
-              defaultValue={name}
+              defaultValue={video.name}
               onChange={onNameChanged}
               error={errorText !== ""}
               helperText={errorText}
