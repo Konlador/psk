@@ -14,6 +14,8 @@ const initialState = {
   binVideoError: null,
   restoreVideoStatus: REQUEST_STATUS.idle,
   restoreVideoError: null,
+  deleteVideoStatus: REQUEST_STATUS.idle,
+  deleteVideoError: null,
 };
 
 export const getAllVideos = createAsyncThunk(
@@ -143,6 +145,27 @@ export const restoreVideo = createAsyncThunk(
   }
 );
 
+export const deleteVideo = createAsyncThunk(
+  "videos/deleteVideo",
+  async (itemId, { rejectWithValue }) => {
+    try {
+      const response = await http.delete(
+        `/api/drive/${driveId}/files/${itemId}`
+      );
+      return response.data;
+    } catch (err) {
+      const error = err;
+
+      // response was not returned - return err to rejected promise
+      if (!error.response) {
+        throw err;
+      }
+      // response was returned - return validation errors from server to rejected promise
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
 export const videosSlice = createSlice({
   name: "videos",
   initialState,
@@ -152,28 +175,29 @@ export const videosSlice = createSlice({
       const itemToUpdateIndex = state.items.findIndex((item) => item.id === id);
       state.items[itemToUpdateIndex].name = newName;
     },
-    updateBin: (state, action) => {
-      const id = action.payload;
-      const itemToBinIndex = state.items.findIndex((item) => item.id === id);
-      state.binVideoError = null;
-      state.binVideoStatus = REQUEST_STATUS.idle;
-      state.items.splice(itemToBinIndex, 1);
-    },
     resetBin: (state) => {
       state.binVideoError = "";
       state.binVideoStatus = REQUEST_STATUS.idle;
     },
-    updateRestore: (state, action) => {
+    updateItems: (state, action) => {
       const id = action.payload;
       const itemToRestoreIndex = state.items.findIndex((item) => item.id === id);
       state.restoreVideoError = null;
       state.restoreVideoStatus = REQUEST_STATUS.idle;
+      state.deleteVideoError = null;
+      state.deleteVideoStatus = REQUEST_STATUS.idle;
+      state.binVideoError = null;
+      state.binVideoStatus = REQUEST_STATUS.idle;
       state.items.splice(itemToRestoreIndex, 1);
     },
     resetRestore: (state) => {
       state.restoreVideoError = "";
       state.restoreVideoStatus = REQUEST_STATUS.idle;
     },
+    resetDelete: (state) => {
+      state.deleteVideoError = "";
+      state.deleteVideoStatus = REQUEST_STATUS.idle;
+    }
   },
   extraReducers: {
     [getAllVideos.pending]: (state,) => {
@@ -210,7 +234,6 @@ export const videosSlice = createSlice({
     },
     [restoreVideo.fulfilled]: (state) => {
       state.restoreVideoStatus = REQUEST_STATUS.success;
-      console.log('restore fullfilled:', state.restoreVideoStatus);
     },
     [restoreVideo.rejected]: (state, action) => {
       if (action.payload) {
@@ -220,9 +243,20 @@ export const videosSlice = createSlice({
       }
       state.restoreVideoStatus = REQUEST_STATUS.failed;
     },
+    [deleteVideo.fulfilled]: (state) => {
+      state.deleteVideoStatus = REQUEST_STATUS.success;
+    },
+    [deleteVideo.rejected]: (state, action) => {
+      if (action.payload) {
+        state.deleteVideoError = action.payload;;
+      } else {
+        state.deleteVideoError = NETWORK_ERROR;
+      }
+      state.deleteVideoStatus = REQUEST_STATUS.failed;
+    },
   },
 });
 
-export const { updateName, updateBin, resetBin, updateRestore, resetRestore } = videosSlice.actions
+export const { updateName, updateItems, resetBin, resetRestore, resetDelete } = videosSlice.actions
 
 export default videosSlice.reducer;

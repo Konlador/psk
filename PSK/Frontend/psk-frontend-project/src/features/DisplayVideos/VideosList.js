@@ -2,7 +2,7 @@ import { React, useEffect, useState } from "react";
 import { Alert } from '@material-ui/lab';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useSelector, useDispatch } from "react-redux";
-import { getAllVideos, updateRestore, updateBin } from "./videosSlice";
+import { getAllVideos, updateItems } from "./videosSlice";
 import { VIDEO_LIST_COLUMNS } from "./VideoListColumns";
 import { REQUEST_STATUS } from "../../common/constants";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
@@ -11,6 +11,7 @@ import PropTypes from "prop-types";
 import PlayMenuItem from './ContextMenu/PlayMenuItem';
 import RenameMenuItem from './ContextMenu/RenameMenuItem';
 import BinMenuItem from './ContextMenu/BinMenuItem';
+import DeleteMenuItem from './ContextMenu/DeleteMenuItem';
 import { MENU_ITEMS } from './videosConstants';
 import useDownloadVideo from './ContextMenu/useDownloadVideo';
 import useRestoreVideo from './ContextMenu/useRestoreVideo';
@@ -29,6 +30,7 @@ export const VideosList = ({ queryParams }) => {
   const restoreError = useSelector((state) => state.videos.restoreVideoError);
   const restoreStatus = useSelector((state) => state.videos.restoreVideoStatus);
   const binStatus = useSelector((state) => state.videos.binVideoStatus);
+  const deleteStatus = useSelector((state) => state.videos.deleteVideoStatus);
 
   useEffect(() => {
     if(videoStatus === REQUEST_STATUS.idle) {
@@ -90,7 +92,7 @@ export const VideosList = ({ queryParams }) => {
     };
 
     const deleteItem = {
-      label: <div className="context-menu-item" >Delete</div>
+      label: <div className="context-menu-item" onClick={() => openMenuItem(video, MENU_ITEMS.delete)}>Delete</div>
     };
 
     if(video.state === 1 && !video.trashedExplicitly) {
@@ -139,7 +141,7 @@ export const VideosList = ({ queryParams }) => {
 
   /******************** refresh table after bin, restore or delete *****************/
   if (restoreStatus === REQUEST_STATUS.success) {
-    dispatch(updateRestore(contextVideo.id));
+    dispatch(updateItems(contextVideo.id));
   }
   
   if (restoreStatus === REQUEST_STATUS.failed) {
@@ -148,9 +150,13 @@ export const VideosList = ({ queryParams }) => {
   }
 
   if (binStatus === REQUEST_STATUS.success) {
-    dispatch(updateBin(contextVideo.id));
+    dispatch(updateItems(contextVideo.id));
   }
   
+  if (deleteStatus === REQUEST_STATUS.success) {
+    dispatch(updateItems(contextVideo.id));
+  }
+
   /************************************* render page *******************************/
   let renderContent;
 
@@ -184,6 +190,7 @@ export const VideosList = ({ queryParams }) => {
         <PlayMenuItem video={contextVideo}  isOpen={menuItemOpen === MENU_ITEMS.play} close={closeMenuItem} />
         <RenameMenuItem video={contextVideo}  isOpen={menuItemOpen === MENU_ITEMS.rename} close={closeMenuItem} />
         <BinMenuItem video={contextVideo}  isOpen={menuItemOpen === MENU_ITEMS.bin} close={closeMenuItem} />
+        <DeleteMenuItem video={contextVideo}  isOpen={menuItemOpen === MENU_ITEMS.delete} close={closeMenuItem} />
       </>)
   }
 
