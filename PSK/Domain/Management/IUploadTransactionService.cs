@@ -1,5 +1,6 @@
 ﻿using Domain.StorageItems;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Domain.Management
@@ -8,6 +9,6 @@ namespace Domain.Management
         {
         Uri GetDownloadUri(StorageItem item);
 
-        Task DeleteStorageItem(IDriveScope driveScope, StorageItem item);
+        Task DeleteStorageItem(IDriveScope driveScope, StorageItem item, CancellationToken cancellationToken);
         }
     }

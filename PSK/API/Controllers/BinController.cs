@@ -17,7 +17,7 @@ namespace API.Controllers
         public BinController(IManagementService managementService)
             {
             m_managementService = managementService;
-            }
+        }
 
         [HttpPost]
         [Route("files/{itemId:guid}/trash")]
@@ -75,13 +75,14 @@ namespace API.Controllers
             using var driveScope = driveScopeFactory.CreateInstance();
 
             var item = await driveScope.StorageItems.GetAsync(itemId, cancellationToken);
-            if(item == null)
-                return NotFound();
 
-            if(!item.TrashedExplicitly)
+
+            if (item == null) return NotFound();
+
+            if (!item.TrashedExplicitly) 
                 return BadRequest("File is not trashed explicitly.");
 
-            await m_managementService.DeleteStorageItem(driveScope, item);
+            await m_managementService.DeleteStorageItem(driveScope, item, cancellationToken);
             return Ok();
             }
         }
