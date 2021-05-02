@@ -40,10 +40,18 @@ namespace Domain.Impl.Upload
 
         public async Task<bool> CommitTransaction(Guid transactionId, StorageItem item, CancellationToken cancellationToken)
             {
-            var blob = m_blobContainerClient.GetBlobClient($"{item.DriveId}/{item.Id}");
-            // TODO: check if size is the same as promised
 
+            var blob = m_blobContainerClient.GetBlobClient($"{item.DriveId}/{item.Id}");
+            var properties = await blob.GetPropertiesAsync();
+
+
+            if (properties.Value.ContentLength != item.Size)
+            {
+                await blob.DeleteAsync();
+                return false;
+            }
             await blob.GetBlobLeaseClient().AcquireAsync(TimeSpan.MinValue, cancellationToken: cancellationToken);
+
             await m_transactions.RemoveAsync(transactionId, cancellationToken);
             return true;
             }
