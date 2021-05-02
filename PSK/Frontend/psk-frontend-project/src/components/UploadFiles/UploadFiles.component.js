@@ -96,7 +96,7 @@ export default class UploadFiles extends Component {
           message: ` Your file has been successfully uploaded ☑`,
           fileInfos: "",
           uploadedLink: "Go to the file ->",
-          showSnackbar: true,
+          // showSnackbar: true,
         });
       })
       .catch((error) => {
@@ -124,7 +124,7 @@ export default class UploadFiles extends Component {
       fileName,
       isError,
       uploadedLink,
-      showSnackbar,
+      //  showSnackbar,
     } = this.state;
 
     return (
@@ -200,13 +200,13 @@ export default class UploadFiles extends Component {
         <Typography variant="h6" className="list-header">
           {fileName}
         </Typography>
-        <div>
+        {/* <div>
           <Snackbars
             text="Your file has been successfully uploaded"
             type="success"
             show={showSnackbar}
           ></Snackbars>
-        </div>
+        </div> */}
 
         <span className="list-group">
           {/* {fileInfos &&
