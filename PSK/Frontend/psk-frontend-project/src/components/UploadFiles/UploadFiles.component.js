@@ -55,6 +55,8 @@ export default class UploadFiles extends Component {
     });
   }
   //---------------------UPLOAD---------------------------
+
+  // async
   upload() {
     let currentFile = this.state.selectedFiles[0];
 
@@ -62,11 +64,12 @@ export default class UploadFiles extends Component {
       progress: 0,
       currentFile: currentFile,
       fileInfos: currentFile.name,
+      message: "Initiating upload",
     });
 
     var transaction;
 
-    UploadService.upload(currentFile)
+    UploadService.startTransaction(currentFile)
       .then((response) => {
         console.log("Responsas ", response);
         this.setState({
@@ -82,21 +85,21 @@ export default class UploadFiles extends Component {
         //   }
         // );
         transaction = response.data;
-        UploadService.uploadFile(response.data, currentFile);
+        return UploadService.uploadFile(response.data, currentFile);
+      })
+      .then((response) => {
         this.setState({
-          message: response.data.message,
+          message: "Uploading started",
           isError: false,
           progress: 66,
         });
+        return UploadService.commitUpload(transaction.id);
       })
       .then((response) => {
-        UploadService.commitUpload(transaction.id);
         this.setState({
+          message: "Your file has been successfully uploaded",
+          isError: false,
           progress: 100,
-          message: ` Your file has been successfully uploaded ☑`,
-          fileInfos: "",
-          uploadedLink: "Go to the file ->",
-          // showSnackbar: true,
         });
       })
       .catch((error) => {

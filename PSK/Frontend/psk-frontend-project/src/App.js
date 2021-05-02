@@ -9,12 +9,8 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Switch>
-          <Route path="/upload" component={UploadPage}>
-            <UploadPage></UploadPage>
-          </Route>
-          <Route path="/videos" component={VideosPage}>
-            <VideosPage></VideosPage>
-          </Route>
+          <Route path="/upload" component={UploadPage}></Route>
+          <Route path="/videos" component={VideosPage}></Route>
           <Route path="/bin" component={BinPage}></Route>
           <Route path="/" component={HomePage}></Route>
         </Switch>
