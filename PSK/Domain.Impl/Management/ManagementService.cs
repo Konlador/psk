@@ -14,8 +14,8 @@ namespace Domain.Impl.Management
         {
         private class SubtreeStatistics
             {
-                    public long releasedStorage = 0;
-                    public int numberOfFilesReleased = 0;
+                    public long storage = 0;
+                    public int numberOfFiles = 0;
             }
         private readonly BlobContainerClient m_blobContainerClient;
         private readonly IGlobalScope m_globalScope;
@@ -48,19 +48,23 @@ namespace Domain.Impl.Management
 
         public async Task DeleteStorageItem(IDriveScope driveScope, StorageItem item, CancellationToken cancellationToken)
             {
-
-            SubtreeStatistics releasedStats = new SubtreeStatistics();
-            await DeleteStorageItemRecursively(driveScope, item, releasedStats);
-
             var drive = await m_globalScope.Drives.GetAsync(item.DriveId, cancellationToken);
-            drive.NumberOfFiles -= releasedStats.numberOfFilesReleased;
-            drive.TotalStorageUsed -= releasedStats.releasedStorage;
-            await m_globalScope.Drives.UpdateAsync(drive, cancellationToken);
-            
+            SubtreeStatistics releasedStats = new SubtreeStatistics();
+
+            try
+            {
+                await DeleteStorageItemRecursively(driveScope, item, releasedStats);
+            }
+            finally
+            {
+                drive.NumberOfFiles -= releasedStats.numberOfFiles;
+                drive.TotalStorageUsed -= releasedStats.storage;
+                await m_globalScope.Drives.UpdateAsync(drive, cancellationToken);
+            }            
 
             }
 
-        private async Task DeleteStorageItemRecursively(IDriveScope driveScope, StorageItem item, SubtreeStatistics releasedStats)
+        private async Task DeleteStorageItemRecursively(IDriveScope driveScope, StorageItem item, SubtreeStatistics driveStatistics)
             {
 
             if(item is Folder folder)
@@ -68,24 +72,15 @@ namespace Domain.Impl.Management
                 await driveScope.StorageItems.LoadFolderChildren(folder, CancellationToken.None);
 
                 foreach(var folderChild in folder.Children.ToList())
-                    await DeleteStorageItemRecursively(driveScope, folderChild, releasedStats);
+                    await DeleteStorageItemRecursively(driveScope, folderChild, driveStatistics);
                 }
             
             await DeleteBlob(item);
 
-            releasedStats.releasedStorage += item.Size;
-            releasedStats.numberOfFilesReleased += 1;
-            try
-            {
-                await driveScope.StorageItems.RemoveAsync(item.Id, CancellationToken.None);
-            }
-            catch (OperationCanceledException)
-            {
-                var drive = await m_globalScope.Drives.GetAsync(item.DriveId, CancellationToken.None);
-                drive.NumberOfFiles -= releasedStats.numberOfFilesReleased;
-                drive.TotalStorageUsed -= releasedStats.releasedStorage;
-                await m_globalScope.Drives.UpdateAsync(drive, CancellationToken.None);
-            }
+            driveStatistics.storage += item.Size;
+            driveStatistics.numberOfFiles += 1;
+            await driveScope.StorageItems.RemoveAsync(item.Id, CancellationToken.None);
+
             }
 
         private async Task DeleteBlob(StorageItem item)
