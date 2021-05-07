@@ -6,4 +6,3 @@ export const MENU_ITEMS = Object.freeze(
     delete: 3,
   }
 );
-

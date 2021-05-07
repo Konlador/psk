@@ -3,7 +3,7 @@ import { Alert } from "@material-ui/lab";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useSelector, useDispatch } from "react-redux";
 import { getAllVideos } from "./videosSlice";
-import { VIDEO_LIST_COLUMNS } from "./VideoListColumns";
+import { VIDEO_LIST_COLUMNS_MAIN, VIDEO_LIST_COLUMNS_BIN } from "./VideoListColumns";
 import { REQUEST_STATUS } from "../../common/constants";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
@@ -42,13 +42,13 @@ export const VideosList = ({ queryParams }) => {
 
   const defaultFilterValue = [
     { name: "name", operator: "startsWith", type: "string" },
-    { name: "timeCreated", operator: "gte", type: "number" },
+    { name: queryParams.isTrashedExplicitly ? "trashedTime" : "timeCreated", operator: "gte", type: "number" },
    // { name: "size", operator: "gte", type: "number" },
   ];
   //multiple column sort
   const defaultSortInfo = [
     { name: "name", dir: 1 },
-    { name: "timeCreated", dir: -1 },
+    { name: queryParams.isTrashedExplicitly ?  "trashedTime": "timeCreated", dir: -1 },
     { name: "size", dir: -2 },
   ];
 
@@ -197,7 +197,7 @@ export const VideosList = ({ queryParams }) => {
       <>
         <ReactDataGrid
           idProperty="id"
-          columns={VIDEO_LIST_COLUMNS}
+          columns={queryParams.isTrashedExplicitly ? VIDEO_LIST_COLUMNS_BIN : VIDEO_LIST_COLUMNS_MAIN}
           dataSource={videos}
           defaultFilterValue={defaultFilterValue}
           defaultSortInfo={defaultSortInfo}
