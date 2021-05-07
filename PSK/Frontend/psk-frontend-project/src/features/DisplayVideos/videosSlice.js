@@ -182,12 +182,6 @@ export const videosSlice = createSlice({
     updateItems: (state, action) => {
       const id = action.payload;
       const itemToRestoreIndex = state.items.findIndex((item) => item.id === id);
-      state.restoreVideoError = null;
-      state.restoreVideoStatus = REQUEST_STATUS.idle;
-      state.deleteVideoError = null;
-      state.deleteVideoStatus = REQUEST_STATUS.idle;
-      state.binVideoError = null;
-      state.binVideoStatus = REQUEST_STATUS.idle;
       state.items.splice(itemToRestoreIndex, 1);
     },
     resetRestore: (state) => {

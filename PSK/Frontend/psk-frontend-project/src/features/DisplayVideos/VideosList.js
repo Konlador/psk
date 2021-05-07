@@ -2,7 +2,7 @@ import { React, useEffect, useState } from "react";
 import { Alert } from '@material-ui/lab';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useSelector, useDispatch } from "react-redux";
-import { getAllVideos, updateItems } from "./videosSlice";
+import { getAllVideos } from "./videosSlice";
 import { VIDEO_LIST_COLUMNS } from "./VideoListColumns";
 import { REQUEST_STATUS } from "../../common/constants";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
@@ -10,11 +10,11 @@ import "@inovua/reactdatagrid-community/index.css";
 import PropTypes from "prop-types";
 import PlayMenuItem from './ContextMenu/PlayMenuItem';
 import RenameMenuItem from './ContextMenu/RenameMenuItem';
-import BinMenuItem from './ContextMenu/BinMenuItem';
 import DeleteMenuItem from './ContextMenu/DeleteMenuItem';
 import { MENU_ITEMS } from './videosConstants';
 import useDownloadVideo from './ContextMenu/useDownloadVideo';
 import useRestoreVideo from './ContextMenu/useRestoreVideo';
+import useBinVideo from './ContextMenu/useBinVideo';
 import "./videosList.scss";
 
 
@@ -26,11 +26,12 @@ export const VideosList = ({ queryParams }) => {
   const [contextVideo, setContextVideo] = useState({});
   const [menuItemOpen, setMenuItemOpen] = useState(MENU_ITEMS.none);
   const downloadVideo = useDownloadVideo();
-  const restore = useRestoreVideo();
+  const restoreVideo = useRestoreVideo();
   const restoreError = useSelector((state) => state.videos.restoreVideoError);
   const restoreStatus = useSelector((state) => state.videos.restoreVideoStatus);
+  const binVideo = useBinVideo();
   const binStatus = useSelector((state) => state.videos.binVideoStatus);
-  const deleteStatus = useSelector((state) => state.videos.deleteVideoStatus);
+  const binError = useSelector((state) => state.videos.binVideoError);
 
   useEffect(() => {
     if(videoStatus === REQUEST_STATUS.idle) {
@@ -43,7 +44,7 @@ export const VideosList = ({ queryParams }) => {
   const defaultFilterValue = [
     { name: "name", operator: "startsWith", type: "string" },
     { name: "timeCreated", operator: "gte", type: "number" },
-    { name: "size", operator: "gte", type: "number" },
+   // { name: "size", operator: "gte", type: "number" },
   ];
   //multiple column sort
   const defaultSortInfo = [
@@ -80,15 +81,11 @@ export const VideosList = ({ queryParams }) => {
     };
 
     const binItem = {
-      label: <div className="context-menu-item" onClick={() => openMenuItem(video, MENU_ITEMS.bin)}>Bin</div>
+      label: <div className="context-menu-item" onClick={() => binVideo(video)}>Bin</div>
     };
 
     const restoreItem = {
-      label: <div className="context-menu-item" onClick={() => {
-          setContextVideo(video);
-          restore(video);
-        }
-      }>Restore</div>
+      label: <div className="context-menu-item" onClick={() => restoreVideo(video)}>Restore</div>
     };
 
     const deleteItem = {
@@ -139,22 +136,15 @@ export const VideosList = ({ queryParams }) => {
     }
   );
 
-  /******************** refresh table after bin, restore or delete *****************/
-  if (restoreStatus === REQUEST_STATUS.success) {
-    dispatch(updateItems(contextVideo.id));
-  }
-  
+  /******************** show errors if restore or bin failed *****************/  
   if (restoreStatus === REQUEST_STATUS.failed) {
     // TODO: show snackbar
     console.log('Restore failed: ', restoreError);
   }
 
-  if (binStatus === REQUEST_STATUS.success) {
-    dispatch(updateItems(contextVideo.id));
-  }
-  
-  if (deleteStatus === REQUEST_STATUS.success) {
-    dispatch(updateItems(contextVideo.id));
+  if (binStatus === REQUEST_STATUS.failed) {
+    // TODO: show snackbar
+    console.log('Bin failed: ', binError);
   }
 
   /************************************* render page *******************************/
@@ -189,7 +179,6 @@ export const VideosList = ({ queryParams }) => {
         />
         <PlayMenuItem video={contextVideo}  isOpen={menuItemOpen === MENU_ITEMS.play} close={closeMenuItem} />
         <RenameMenuItem video={contextVideo}  isOpen={menuItemOpen === MENU_ITEMS.rename} close={closeMenuItem} />
-        <BinMenuItem video={contextVideo}  isOpen={menuItemOpen === MENU_ITEMS.bin} close={closeMenuItem} />
         <DeleteMenuItem video={contextVideo}  isOpen={menuItemOpen === MENU_ITEMS.delete} close={closeMenuItem} />
       </>)
   }

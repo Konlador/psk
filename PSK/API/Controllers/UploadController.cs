@@ -49,6 +49,7 @@ namespace API.Controllers
                            Id = Guid.NewGuid(),
                            DriveId = driveScope.DriveId,
                            Name = fileName,
+                           Size = item.Size,
                            State = StorageItemState.Uploading,
                            TimeCreated = DateTime.UtcNow
                            };

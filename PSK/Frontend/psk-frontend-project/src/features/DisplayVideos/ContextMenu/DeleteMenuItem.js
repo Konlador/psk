@@ -6,7 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import { useDispatch, useSelector } from 'react-redux';
 import useErrorStyles from "./useErrorStyles";
-import { deleteVideo, resetDelete } from '../videosSlice';
+import { deleteVideo, resetDelete, updateItems } from '../videosSlice';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { REQUEST_STATUS } from '../../../common/constants';
 
@@ -31,6 +31,7 @@ const DeleteMenuItem = ({ video, isOpen, close }) => {
 
   const handleBin = (e) => {
     dispatch(resetDelete());
+    dispatch(updateItems(video.id));
     dispatch(deleteVideo(video.id));
     handleClose();
     e.preventDefault();
