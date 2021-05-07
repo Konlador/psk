@@ -13,6 +13,8 @@ namespace Domain.Drives
 
         Task<Drive> AddAsync(Drive drive, CancellationToken cancellationToken);
 
+        Task<Drive> UpdateAsync(Drive drive, CancellationToken cancellationToken);
+
         Task<bool> RemoveAsync(Guid driveId, CancellationToken cancellationToken);
 
         Task<bool> ExistsAsync(Guid driveId, CancellationToken cancellationToken);

@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from "react";
-import { Alert } from '@material-ui/lab';
+import { Alert } from "@material-ui/lab";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useSelector, useDispatch } from "react-redux";
 import { getAllVideos } from "./videosSlice";
@@ -17,7 +17,6 @@ import useRestoreVideo from './ContextMenu/useRestoreVideo';
 import useBinVideo from './ContextMenu/useBinVideo';
 import "./videosList.scss";
 
-
 export const VideosList = ({ queryParams }) => {
   const dispatch = useDispatch();
   const videos = useSelector((state) => state.videos.items);
@@ -34,7 +33,7 @@ export const VideosList = ({ queryParams }) => {
   const binError = useSelector((state) => state.videos.binVideoError);
 
   useEffect(() => {
-    if(videoStatus === REQUEST_STATUS.idle) {
+    if (videoStatus === REQUEST_STATUS.idle) {
       dispatch(getAllVideos(queryParams));
     }
   }, [menuItemOpen]);
@@ -56,11 +55,11 @@ export const VideosList = ({ queryParams }) => {
   const openMenuItem = (video, menuItem) => {
     setContextVideo(video);
     setMenuItemOpen(menuItem);
-  }
+  };
 
   const closeMenuItem = () => {
     setMenuItemOpen(MENU_ITEMS.none);
-  }
+  };
 
   const renderRowContextMenu = (menuProps, { rowProps }) => {
     menuProps.autoDismiss = true;
@@ -68,41 +67,67 @@ export const VideosList = ({ queryParams }) => {
 
     const video = rowProps.data;
 
-    const playItem = { 
-      label: <div className="context-menu-item" onClick={() => openMenuItem(video, MENU_ITEMS.play)}>Play</div>
+    const playItem = {
+      label: (
+        <div
+          className="context-menu-item"
+          onClick={() => openMenuItem(video, MENU_ITEMS.play)}
+        >
+          Play
+        </div>
+      ),
     };
 
     const downloadItem = {
-      label: <div className="context-menu-item" onClick={() => downloadVideo(video)}>Download</div>
+      label: (
+        <div className="context-menu-item" onClick={() => downloadVideo(video)}>
+          Download
+        </div>
+      ),
     };
 
     const renameItem = {
-      label: <div className="context-menu-item" onClick={() => openMenuItem(video, MENU_ITEMS.rename)}>Rename</div>
+      label: (
+        <div
+          className="context-menu-item"
+          onClick={() => openMenuItem(video, MENU_ITEMS.rename)}
+        >
+          Rename
+        </div>
+      ),
     };
 
     const binItem = {
-      label: <div className="context-menu-item" onClick={() => binVideo(video)}>Bin</div>
+        label: (
+            <div
+            className="context-menu-item"
+                onClick={() => binVideo(video)}
+            >
+                Bin
+            </div>
+        ),
     };
 
     const restoreItem = {
-      label: <div className="context-menu-item" onClick={() => restoreVideo(video)}>Restore</div>
+      label: (
+        <div className="context-menu-item" onClick={() => restoreVideo(video)}>
+          Restore
+        </div>
+      ),
     };
 
     const deleteItem = {
       label: <div className="context-menu-item" onClick={() => openMenuItem(video, MENU_ITEMS.delete)}>Delete</div>
     };
 
-    if(video.state === 1 && !video.trashedExplicitly) {
+    if (video.state === 1 && !video.trashedExplicitly) {
       menuProps.items.push(playItem, downloadItem, renameItem, binItem);
-    } 
-    else if (video.state === 0) {
+    } else if (video.state === 0) {
       menuProps.items.push(renameItem);
-    } 
-    else if(video.trashedExplicitly) {
+    } else if (video.trashedExplicitly) {
       menuProps.items.push(restoreItem, deleteItem);
     }
   };
-  
 
   // const [selected, setSelected] = useState(null);
 
@@ -152,35 +177,47 @@ export const VideosList = ({ queryParams }) => {
 
   if (videoStatus === REQUEST_STATUS.loading) {
     renderContent = <CircularProgress />;
-  }
-  else if(error) {
+  } else if (error) {
     renderContent = <Alert severity="error">{error}</Alert>;
-  }
-  else {
+  } else {
     renderContent = (
       <>
         <ReactDataGrid
-            idProperty="id"
-            columns={VIDEO_LIST_COLUMNS}
-            dataSource={videos}
-            defaultFilterValue={defaultFilterValue}
-            defaultSortInfo={defaultSortInfo}
-            renderRowContextMenu={renderRowContextMenu}
-            showZebraRows={true}
-            style={gridStyle}
-            editable={true}
-            nativeScroll={false}
-            enableSelection
-            multiSelect
-            theme="default-light"
-            scrollProps={scrollProps}
-            // onSelectionChange={onSelectionChange}
-            onChange={() => console.log("Text changed")}
+          idProperty="id"
+          columns={VIDEO_LIST_COLUMNS}
+          dataSource={videos}
+          defaultFilterValue={defaultFilterValue}
+          defaultSortInfo={defaultSortInfo}
+          renderRowContextMenu={renderRowContextMenu}
+          showZebraRows={true}
+          style={gridStyle}
+          editable={true}
+          nativeScroll={false}
+          enableSelection
+          multiSelect
+          theme="default-light"
+          scrollProps={scrollProps}
+          // onSelectionChange={onSelectionChange}
+          onChange={() => console.log("Text changed")}
         />
-        <PlayMenuItem video={contextVideo}  isOpen={menuItemOpen === MENU_ITEMS.play} close={closeMenuItem} />
-        <RenameMenuItem video={contextVideo}  isOpen={menuItemOpen === MENU_ITEMS.rename} close={closeMenuItem} />
-        <DeleteMenuItem video={contextVideo}  isOpen={menuItemOpen === MENU_ITEMS.delete} close={closeMenuItem} />
-      </>)
+        <PlayMenuItem
+          video={contextVideo}
+          isOpen={menuItemOpen === MENU_ITEMS.play}
+          close={closeMenuItem}
+        />
+        <RenameMenuItem
+          video={contextVideo}
+          isOpen={menuItemOpen === MENU_ITEMS.rename}
+          close={closeMenuItem}
+        />
+        <DeleteMenuItem
+          video={contextVideo}
+          isOpen={menuItemOpen === MENU_ITEMS.delete}
+          close={closeMenuItem}
+        />
+
+      </>
+    );
   }
 
   return (
@@ -188,12 +225,12 @@ export const VideosList = ({ queryParams }) => {
       {/* <p>
         Selected rows: {selected == null ? "none" : JSON.stringify(selected)}.
       </p> */}
-      <div className="display-videos-table">
-        {renderContent}
-      </div>
+      <div className="display-videos-table">{renderContent}</div>
     </>
   );
 };
 
 VideosList.propTypes = { queryParams: PropTypes.objectOf(PropTypes.object) };
-VideosList.defaultProps = {queryParams: {states: [0, 1], isTrashedExplicitly: false}}
+VideosList.defaultProps = {
+  queryParams: { states: [0, 1], isTrashedExplicitly: false },
+};
