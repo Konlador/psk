@@ -63,7 +63,6 @@ namespace API.Controllers
                            Size = item.Size,
                            State = StorageItemState.Uploading,
                            TimeCreated = DateTime.UtcNow,
-                           Size = item.Size
                            };
             var transaction = await m_uploadTransactionService.StartTransaction(file, cancellationToken);
             await driveScope.StorageItems.AddAsync(file, cancellationToken);

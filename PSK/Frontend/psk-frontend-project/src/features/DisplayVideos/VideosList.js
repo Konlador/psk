@@ -80,7 +80,10 @@ export const VideosList = ({ queryParams }) => {
 
     const downloadItem = {
       label: (
-        <div className="context-menu-item" onClick={() => downloadVideo(video)}>
+        <div 
+          className="context-menu-item" 
+          onClick={() => downloadVideo(video)}
+        >
           Download
         </div>
       ),
@@ -99,25 +102,35 @@ export const VideosList = ({ queryParams }) => {
 
     const binItem = {
         label: (
-            <div
+          <div
             className="context-menu-item"
-                onClick={() => binVideo(video)}
-            >
-                Bin
-            </div>
+            onClick={() => binVideo(video)}
+          >
+            Bin
+          </div>
         ),
     };
 
     const restoreItem = {
       label: (
-        <div className="context-menu-item" onClick={() => restoreVideo(video)}>
+        <div 
+          className="context-menu-item" 
+          onClick={() => restoreVideo(video)}
+        >
           Restore
         </div>
       ),
     };
 
     const deleteItem = {
-      label: <div className="context-menu-item" onClick={() => openMenuItem(video, MENU_ITEMS.delete)}>Delete</div>
+      label: (
+        <div 
+          className="context-menu-item" 
+          onClick={() => openMenuItem(video, MENU_ITEMS.delete)}
+        >
+          Delete
+        </div>
+      ),
     };
 
     if (video.state === 1 && !video.trashedExplicitly) {

@@ -43,7 +43,7 @@ const DeleteMenuItem = ({ video, isOpen, close }) => {
         <form onSubmit={handleBin}>
           <DialogContent>
             <DialogContentText>
-                Do you really want to delete {video.name} permanently?
+                Do you really want to delete <b>{video.name}</b> permanently?
             </DialogContentText>
             <DialogContentText className={classes.error}>
             {deleteError && deleteError}
