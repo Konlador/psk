@@ -1,5 +1,5 @@
 import axios from "axios";
-import Qs from 'qs';
+import Qs from "qs";
 
 export default axios.create({
   baseURL: "https://localhost:44394/",

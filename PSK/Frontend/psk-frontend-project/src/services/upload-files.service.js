@@ -4,7 +4,7 @@ const driveId = "982ecb26-309b-451a-973d-2d6f6e1b2e34";
 const url_base = `/api/drive/${driveId}`;
 
 class UploadFilesService {
-  upload(file) {
+  startTransaction(file) {
     let data = {
       name: file.name,
       type: 0, //file.type, 0 - file, 1 - folder
@@ -24,8 +24,7 @@ class UploadFilesService {
   uploadFile(storageItem, file) {
     var blobClient = new BlobClient(storageItem.uploadUri);
     var blockClient = blobClient.getBlockBlobClient();
-    blockClient.uploadData(file);
-    return "uploadBlobResponse";
+    return blockClient.uploadData(file);
   }
 
   getFiles() {
