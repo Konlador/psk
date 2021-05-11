@@ -33,10 +33,8 @@ export const VideosList = ({ queryParams }) => {
   const binError = useSelector((state) => state.videos.binVideoError);
 
   useEffect(() => {
-    if (videoStatus === REQUEST_STATUS.idle) {
-      dispatch(getAllVideos(queryParams));
-    }
-  }, [menuItemOpen]);
+    dispatch(getAllVideos(queryParams));
+  }, []);
 
   const gridStyle = { minHeight: 550 };
 

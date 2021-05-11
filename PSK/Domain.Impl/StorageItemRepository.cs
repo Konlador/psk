@@ -122,6 +122,7 @@ namespace Domain.Impl
             {
             await TrashRecursively(item, trashTime, cancellationToken);
             item.TrashedExplicitly = true;
+            item.TrashedTime = trashTime;
             await m_dbContext.SaveChangesAsync(cancellationToken);
             return item;
             }

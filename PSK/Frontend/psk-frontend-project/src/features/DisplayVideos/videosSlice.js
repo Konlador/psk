@@ -34,7 +34,7 @@ export const getAllVideos = createAsyncThunk(
         throw err;
       }
       // response was returned - return validation errors from server to rejected promise
-      return rejectWithValue(err.response.status);
+      return rejectWithValue(err.response.data);
     }
   }
 );
@@ -54,7 +54,7 @@ export const getAllVideoss = createAsyncThunk(
         throw err;
       }
       // response was returned - return validation errors from server to rejected promise
-      return rejectWithValue(err.response.status);
+      return rejectWithValue(err.response.data);
     }
   }
 );
@@ -74,7 +74,7 @@ export const downloadVideoUri = createAsyncThunk(
         throw err;
       }
 
-      return rejectWithValue(err.response.status);
+      return rejectWithValue(err.response.data);
     }
   }
 );
