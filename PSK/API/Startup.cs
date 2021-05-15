@@ -14,6 +14,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Azure;
+using Azure.Core.Extensions;
+using System;
 
 namespace API
     {
@@ -46,7 +49,7 @@ namespace API
                 options.ModelBinderProviders.Insert(0, new DriveScopeBinderProvider()));
 
             services.AddControllers();
-            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" }); });
+            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "MediaDrives", Version = "v1" }); });
 
             services.AddScoped<IGlobalScope, GlobalScope>();
             services.AddScoped<IDriveRepository, DriveRepository>();
@@ -54,17 +57,18 @@ namespace API
             services.AddScoped<IUploadTransactionService, UploadTransactionService>();
             services.AddScoped<IManagementService, ManagementService>();
             services.AddScoped(_ => new BlobContainerClient(Configuration.GetConnectionString("PSKStorageAccount"), "drives"));
+            services.AddAzureClients(builder =>
+                {
+                builder.AddBlobServiceClient(Configuration["ConnectionStrings:PSKStorageAccount:blob"], true);
+                });
             }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
             {
-            if (env.IsDevelopment())
-                {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
-                }
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
 
             app.UseHttpsRedirection();
 
@@ -75,6 +79,16 @@ namespace API
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            }
+        }
+    internal static class StartupExtensions
+        {
+        public static IAzureClientBuilder<BlobServiceClient, BlobClientOptions> AddBlobServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
+            {
+            if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out var serviceUri))
+                return builder.AddBlobServiceClient(serviceUri);
+
+            return builder.AddBlobServiceClient(serviceUriOrConnectionString);
             }
         }
     }
