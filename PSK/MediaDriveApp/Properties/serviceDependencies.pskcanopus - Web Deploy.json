@@ -5,6 +5,12 @@
       "type": "mssql.azure",
       "connectionId": "PSKDB",
       "secretStore": "AzureAppSettings"
+    },
+    "storage1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Storage/storageAccounts/storagepsk",
+      "type": "storage.azure",
+      "connectionId": "PSKStorageAccount",
+      "secretStore": "AzureAppSettings"
     }
   }
 }
