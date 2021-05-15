@@ -1,0 +1,54 @@
+{
+  "name": "psk-frontend-project",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@azure/storage-blob": "^12.5.0",
+    "@inovua/reactdatagrid-community": "^4.1.7",
+    "@material-ui/core": "^4.11.3",
+    "@material-ui/data-grid": "^4.0.0-alpha.25",
+    "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "*",
+    "@reduxjs/toolkit": "^1.5.1",
+    "@testing-library/jest-dom": "^5.11.9",
+    "@testing-library/react": "^11.2.5",
+    "@testing-library/user-event": "^12.7.1",
+    "axios": "^0.21.1",
+    "faker": "^5.5.3",
+    "moment": "^2.29.1",
+    "notistack": "^1.0.6",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-download-link": "^2.3.0",
+    "react-redux": "^7.2.3",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.2",
+    "sass": "^1.32.8",
+    "web-vitals": "^1.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "node ./update-build.js && react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "buildDate": 1621083912490
+}
