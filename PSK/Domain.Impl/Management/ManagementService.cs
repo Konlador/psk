@@ -12,11 +12,6 @@ namespace Domain.Impl.Management
     {
     public class ManagementService : IManagementService
         {
-        private class SubtreeStatistics
-            {
-                    public long storage = 0;
-                    public int numberOfFiles = 0;
-            }
         private readonly BlobContainerClient m_blobContainerClient;
         private readonly IGlobalScope m_globalScope;
 
@@ -46,27 +41,31 @@ namespace Domain.Impl.Management
                                         .GenerateSasUri(sasBuilder);
             }
 
+        private class SubtreeStatistics
+            {
+            public long StorageSize;
+            public int NumberOfFiles;
+            }
+
         public async Task DeleteStorageItem(IDriveScope driveScope, StorageItem item, CancellationToken cancellationToken)
             {
             var drive = await m_globalScope.Drives.GetAsync(item.DriveId, cancellationToken);
-            SubtreeStatistics releasedStats = new SubtreeStatistics();
+            var releasedStats = new SubtreeStatistics();
 
             try
-            {
+                {
                 await DeleteStorageItemRecursively(driveScope, item, releasedStats);
-            }
+                }
             finally
-            {
-                drive.NumberOfFiles -= releasedStats.numberOfFiles;
-                drive.TotalStorageUsed -= releasedStats.storage;
+                {
+                drive.NumberOfFiles -= releasedStats.NumberOfFiles;
+                drive.TotalStorageUsed -= releasedStats.StorageSize;
                 await m_globalScope.Drives.UpdateAsync(drive, cancellationToken);
-            }            
-
+                }            
             }
 
         private async Task DeleteStorageItemRecursively(IDriveScope driveScope, StorageItem item, SubtreeStatistics driveStatistics)
             {
-
             if(item is Folder folder)
                 {
                 await driveScope.StorageItems.LoadFolderChildren(folder, CancellationToken.None);
@@ -77,10 +76,9 @@ namespace Domain.Impl.Management
             
             await DeleteBlob(item);
 
-            driveStatistics.storage += item.Size;
-            driveStatistics.numberOfFiles += 1;
+            driveStatistics.StorageSize += item.Size;
+            driveStatistics.NumberOfFiles += 1;
             await driveScope.StorageItems.RemoveAsync(item.Id, CancellationToken.None);
-
             }
 
         private async Task DeleteBlob(StorageItem item)
