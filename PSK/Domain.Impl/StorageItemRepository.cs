@@ -121,6 +121,7 @@ namespace Domain.Impl
         public async Task<StorageItem> TrashAsync(StorageItem item, DateTime trashTime, CancellationToken cancellationToken)
             {
             await TrashRecursively(item, trashTime, cancellationToken);
+            item.TrashedTime = trashTime;
             item.TrashedExplicitly = true;
             await m_dbContext.SaveChangesAsync(cancellationToken);
             return item;

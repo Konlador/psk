@@ -1,36 +1,19 @@
 import React, { Component } from "react";
-import LinearProgress from "@material-ui/core/LinearProgress";
 import {
   Box,
   Typography,
   Button,
-  ListItem,
-  withStyles,
 } from "@material-ui/core";
 import "./uploadFiles.scss";
 import UploadService from "../../services/upload-files.service";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import FileCopyRoundedIcon from "@material-ui/icons/FileCopyRounded";
 import { Snackbars } from "../Layout/Snackbars/Snackbars";
-import { useState } from "react";
+import BorderLinearProgress from "../Loaders/BorderLinearProgress";
+import { connect } from "react-redux";
+import { start, increaseProgress, reset } from "./uploadSlice";
 
-//------------LINEAR PROGRESS-------------------------------
-const BorderLinearProgress = withStyles((theme) => ({
-  root: {
-    height: 15,
-    borderRadius: 5,
-  },
-  colorPrimary: {
-    backgroundColor: "#EEEEEE",
-  },
-  bar: {
-    borderRadius: 5,
-    backgroundColor: "#1a90ff",
-  },
-}))(LinearProgress);
-//-----------------------------------------------------------
-
-export default class UploadFiles extends Component {
+class UploadFiles extends Component {
   constructor(props) {
     super(props);
     this.selectFile = this.selectFile.bind(this);
@@ -67,6 +50,8 @@ export default class UploadFiles extends Component {
       message: "Initiating upload",
     });
 
+    this.props.start();
+
     var transaction;
 
     UploadService.startTransaction(currentFile)
@@ -75,6 +60,8 @@ export default class UploadFiles extends Component {
         this.setState({
           progress: 33,
         });
+
+        this.props.increaseProgress(33);
         // UploadService.uploadToURI(
         //   response.data.uploadUri,
         //   currentFile,
@@ -93,6 +80,9 @@ export default class UploadFiles extends Component {
           isError: false,
           progress: 66,
         });
+
+        this.props.increaseProgress(66);
+
         return UploadService.commitUpload(transaction.id);
       })
       .then((response) => {
@@ -101,6 +91,8 @@ export default class UploadFiles extends Component {
           isError: false,
           progress: 100,
         });
+
+        this.props.increaseProgress(100);
       })
       .catch((error) => {
         console.log(error.response);
@@ -111,6 +103,8 @@ export default class UploadFiles extends Component {
           isError: true,
           fileInfos: "",
         });
+
+        this.props.reset();
       });
 
     this.setState({
@@ -223,3 +217,7 @@ export default class UploadFiles extends Component {
     );
   }
 }
+
+const mapDispatchToProps = { start, increaseProgress, reset };
+
+export default connect(null, mapDispatchToProps)(UploadFiles);

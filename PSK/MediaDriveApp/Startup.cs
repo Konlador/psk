@@ -48,6 +48,17 @@ namespace MediaDriveApp
             services.AddMvc(options =>
                 options.ModelBinderProviders.Insert(0, new DriveScopeBinderProvider()));
 
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy("CorsPolicy", policy =>
+                {
+                    policy
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .WithOrigins("http://localhost:3000");
+                });
+            });
+
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "MediaDrives", Version = "v1" }); });
 
@@ -86,6 +97,8 @@ namespace MediaDriveApp
             app.UseSpaStaticFiles();
 
             app.UseRouting();
+
+            app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {
