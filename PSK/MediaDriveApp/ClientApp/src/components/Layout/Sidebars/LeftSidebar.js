@@ -14,8 +14,10 @@ export const LeftSidebar = (props) => {
 
 
   useEffect(() => {
-    dispatch(getLimiters({}));
-  }, []);
+    if (status === REQUEST_STATUS.idle) {
+      dispatch(getLimiters({}));
+    }
+  }, [status]);
 
   const convertToMb = (value) => parseInt(value / (1024 * 1024));
 

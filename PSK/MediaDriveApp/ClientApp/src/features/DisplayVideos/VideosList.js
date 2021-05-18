@@ -2,7 +2,7 @@ import { React, useEffect, useState, useCallback } from "react";
 import { Alert } from "@material-ui/lab";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useSelector, useDispatch } from "react-redux";
-import { getAllVideos } from "./videosSlice";
+import { getAllVideos, resetDelete } from "./videosSlice";
 import { VIDEO_LIST_COLUMNS_MAIN, VIDEO_LIST_COLUMNS_BIN } from "./VideoListColumns";
 import { REQUEST_STATUS } from "../../common/constants";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
@@ -16,6 +16,7 @@ import { MENU_ITEMS } from './videosConstants';
 import useDownloadVideo from './ContextMenu/useDownloadVideo';
 import useRestoreVideo from './ContextMenu/useRestoreVideo';
 import useBinVideo from './ContextMenu/useBinVideo';
+import { reset as resetLimiters } from "../../components/Layout/Sidebars/limiterSlice";
 import SearchBar from "./SearchBar";
 import "./videosList.scss";
 
@@ -33,6 +34,7 @@ export const VideosList = ({ queryParams }) => {
   const binVideo = useBinVideo();
   const binStatus = useSelector((state) => state.videos.binVideoStatus);
   const binError = useSelector((state) => state.videos.binVideoError);
+  const deleteStatus = useSelector((state) => state.videos.deleteVideoStatus);
   const [searchString, setSearchString] = useState('');
 
   useEffect(() => {
@@ -176,7 +178,7 @@ export const VideosList = ({ queryParams }) => {
     return filter(videos, filterValue);
   };
 
-  /******************** show errors if restore or bin failed *****************/  
+  /******************** handle actions results  *****************/  
   if (restoreStatus === REQUEST_STATUS.failed) {
     // TODO: show snackbar
     console.log('Restore failed: ', restoreError);
@@ -185,6 +187,13 @@ export const VideosList = ({ queryParams }) => {
   if (binStatus === REQUEST_STATUS.failed) {
     // TODO: show snackbar
     console.log('Bin failed: ', binError);
+  }
+
+  console.log(deleteStatus);
+
+  if (deleteStatus === REQUEST_STATUS.success) {
+    dispatch(resetLimiters());
+    dispatch(resetDelete());
   }
 
   /******************************* render page *******************************/

@@ -35,7 +35,9 @@ export const limitersSlice = createSlice({
   name: "limiters",
   initialState,
   reducers: {
-
+    reset: (state) => {
+      state.status = REQUEST_STATUS.idle;
+    },
   },
   extraReducers: {
     [getLimiters.pending]: (state,) => {
@@ -56,6 +58,8 @@ export const limitersSlice = createSlice({
     },
   },
 });
+
+export const { reset } = limitersSlice.actions;
 
 export const selectLimiters = (state) => state.limiters;
 

@@ -12,6 +12,7 @@ import { Snackbars } from "../Layout/Snackbars/Snackbars";
 import BorderLinearProgress from "../Loaders/BorderLinearProgress";
 import { connect } from "react-redux";
 import { start, increaseProgress, reset } from "./uploadSlice";
+import { reset as resetLimiters } from "../Layout/Sidebars/limiterSlice";
 
 class UploadFiles extends Component {
   constructor(props) {
@@ -93,6 +94,7 @@ class UploadFiles extends Component {
         });
 
         this.props.increaseProgress(100);
+        this.props.resetLimiters();
       })
       .catch((error) => {
         console.log(error.response);
@@ -218,6 +220,6 @@ class UploadFiles extends Component {
   }
 }
 
-const mapDispatchToProps = { start, increaseProgress, reset };
+const mapDispatchToProps = { start, increaseProgress, reset, resetLimiters };
 
 export default connect(null, mapDispatchToProps)(UploadFiles);

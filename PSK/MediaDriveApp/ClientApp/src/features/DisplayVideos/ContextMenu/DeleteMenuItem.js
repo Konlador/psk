@@ -29,7 +29,7 @@ const DeleteMenuItem = ({ video, isOpen, close }) => {
   };
 
 
-  const handleBin = (e) => {
+  const handleDelete = (e) => {
     dispatch(resetDelete());
     dispatch(updateItems(video.id));
     dispatch(deleteVideo(video.id));
@@ -40,7 +40,7 @@ const DeleteMenuItem = ({ video, isOpen, close }) => {
   return (
     <div>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <form onSubmit={handleBin}>
+        <form onSubmit={handleDelete}>
           <DialogContent>
             <DialogContentText>
                 Do you really want to delete <b>{video.name}</b> permanently?
