@@ -38,26 +38,6 @@ export const getAllVideos = createAsyncThunk(
     }
   }
 );
-export const getAllVideoss = createAsyncThunk(
-  "videos/getAllVideos",
-  async (params, { rejectWithValue }) => {
-    try {
-      const response = await http.get(`/api/drive/${driveId}/files`, {
-        params,
-      });
-      return response.data;
-    } catch (err) {
-      const error = err;
-
-      // response was not returned - return err to rejected promise
-      if (!error.response) {
-        throw err;
-      }
-      // response was returned - return validation errors from server to rejected promise
-      return rejectWithValue(err.response.status);
-    }
-  }
-);
 
 export const downloadVideoUri = createAsyncThunk(
   "videos/downloadVideoUri",
@@ -199,7 +179,7 @@ export const videosSlice = createSlice({
     },
     [getAllVideos.fulfilled]: (state, action) => {
       state.items = action.payload.items;
-      state.status = REQUEST_STATUS.succees;
+      state.status = REQUEST_STATUS.success;
     },
     [getAllVideos.rejected]: (state, action) => {
       // get errors from payload if response was returned
