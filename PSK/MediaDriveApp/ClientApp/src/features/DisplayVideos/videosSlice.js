@@ -231,6 +231,6 @@ export const videosSlice = createSlice({
   },
 });
 
-export const { updateName, updateItems, resetBin, resetRestore, resetDelete } = videosSlice.actions
+export const { updateName, updateItems, resetBin, resetRestore, resetDelete } = videosSlice.actions;
 
 export default videosSlice.reducer;
