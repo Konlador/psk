@@ -33,6 +33,7 @@ export const VideosList = ({ queryParams }) => {
   const binVideo = useBinVideo();
   const binStatus = useSelector((state) => state.videos.binVideoStatus);
   const binError = useSelector((state) => state.videos.binVideoError);
+  const [searchString, setSearchString] = useState('');
 
   useEffect(() => {
     dispatch(getAllVideos(queryParams));
@@ -168,14 +169,11 @@ export const VideosList = ({ queryParams }) => {
     }
   );
 
-  const [dataSource, setDataSource] = useState(videos);
-
-  const handleSearch = (searchString) => {
+  const getDataSource = () => {
     const filterValue = [
       { name: 'name', operator: 'contains', type: 'string', value: searchString }
     ];
-    const data = filter(videos, filterValue)
-    setDataSource(data);
+    return filter(videos, filterValue);
   };
 
   /******************** show errors if restore or bin failed *****************/  
@@ -199,11 +197,11 @@ export const VideosList = ({ queryParams }) => {
   } else {
     renderContent = (
       <>
-        <SearchBar onChange={handleSearch}/>
+        <SearchBar onChange={setSearchString}/>
         <ReactDataGrid
           idProperty="id"
           columns={queryParams.isTrashedExplicitly ? VIDEO_LIST_COLUMNS_BIN : VIDEO_LIST_COLUMNS_MAIN}
-          dataSource={dataSource}
+          dataSource={getDataSource}
           enableFiltering={false} 
           renderRowContextMenu={renderRowContextMenu}
           showZebraRows={true}
