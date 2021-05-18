@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react";
+import { React, useEffect, useState, useCallback } from "react";
 import { Alert } from "@material-ui/lab";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useSelector, useDispatch } from "react-redux";
@@ -6,6 +6,7 @@ import { getAllVideos } from "./videosSlice";
 import { VIDEO_LIST_COLUMNS_MAIN, VIDEO_LIST_COLUMNS_BIN } from "./VideoListColumns";
 import { REQUEST_STATUS } from "../../common/constants";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
+import filter from '@inovua/reactdatagrid-community/filter'
 import "@inovua/reactdatagrid-community/index.css";
 import PropTypes from "prop-types";
 import PlayMenuItem from './ContextMenu/PlayMenuItem';
@@ -15,6 +16,7 @@ import { MENU_ITEMS } from './videosConstants';
 import useDownloadVideo from './ContextMenu/useDownloadVideo';
 import useRestoreVideo from './ContextMenu/useRestoreVideo';
 import useBinVideo from './ContextMenu/useBinVideo';
+import SearchBar from "./SearchBar";
 import "./videosList.scss";
 
 export const VideosList = ({ queryParams }) => {
@@ -38,17 +40,11 @@ export const VideosList = ({ queryParams }) => {
 
   const gridStyle = { minHeight: 550 };
 
-  const defaultFilterValue = [
-    { name: "name", operator: "startsWith", type: "string" },
-    { name: queryParams.isTrashedExplicitly ? "trashedTime" : "timeCreated", operator: "gte", type: "number" },
-   // { name: "size", operator: "gte", type: "number" },
-  ];
-  //multiple column sort
-  const defaultSortInfo = [
-    { name: "name", dir: 1 },
-    { name: queryParams.isTrashedExplicitly ?  "trashedTime": "timeCreated", dir: -1 },
-    { name: "size", dir: -2 },
-  ];
+  /*const defaultFilterValue = [
+    { name: "name", operator: "contains", type: "string", value: '' },
+    { name: queryParams.isTrashedExplicitly ? "trashedTime" : "timeCreated", operator: "after", type: "date", value: '' },
+    { name: "size", operator: "gte", type: "number", value: '' },
+  ];*/
 
   const openMenuItem = (video, menuItem) => {
     setContextVideo(video);
@@ -172,6 +168,16 @@ export const VideosList = ({ queryParams }) => {
     }
   );
 
+  const [dataSource, setDataSource] = useState(videos);
+
+  const handleSearch = (searchString) => {
+    const filterValue = [
+      { name: 'name', operator: 'contains', type: 'string', value: searchString }
+    ];
+    const data = filter(videos, filterValue)
+    setDataSource(data);
+  };
+
   /******************** show errors if restore or bin failed *****************/  
   if (restoreStatus === REQUEST_STATUS.failed) {
     // TODO: show snackbar
@@ -183,7 +189,7 @@ export const VideosList = ({ queryParams }) => {
     console.log('Bin failed: ', binError);
   }
 
-  /************************************* render page *******************************/
+  /******************************* render page *******************************/
   let renderContent;
 
   if (videoStatus === REQUEST_STATUS.loading) {
@@ -193,22 +199,20 @@ export const VideosList = ({ queryParams }) => {
   } else {
     renderContent = (
       <>
+        <SearchBar onChange={handleSearch}/>
         <ReactDataGrid
           idProperty="id"
           columns={queryParams.isTrashedExplicitly ? VIDEO_LIST_COLUMNS_BIN : VIDEO_LIST_COLUMNS_MAIN}
-          dataSource={videos}
-          defaultFilterValue={defaultFilterValue}
-          defaultSortInfo={defaultSortInfo}
+          dataSource={dataSource}
+          enableFiltering={false} 
           renderRowContextMenu={renderRowContextMenu}
           showZebraRows={true}
           style={gridStyle}
-          editable={true}
           nativeScroll={false}
           enableSelection
           multiSelect
           theme="default-light"
           scrollProps={scrollProps}
-          // onSelectionChange={onSelectionChange}
           onChange={() => console.log("Text changed")}
         />
         <PlayMenuItem

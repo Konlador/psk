@@ -1,5 +1,12 @@
 import AutorenewIcon from "@material-ui/icons/Autorenew";
 
+const getHeader = (title) => {
+  return (cellProps) => {
+    cellProps.showColumnMenuTool = false;
+    return <div style={{ display: 'inline-block' }}>{title}</div>
+  }
+}
+
 const renderDate = (data) => {
   const date = new Date(data);
     let formattedDate = date.getFullYear();
@@ -31,19 +38,19 @@ const ID_COLUMN = {
 
 const TIME_CREATED_COLUMN = {
   name: 'timeCreated',
-  header: 'Time created',
+  header: getHeader('Time created'),
   render: ({ data }) =>  renderDate(data.timeCreated),
 };
 
 const TIME_TRASHED_COLUMN = {
   name: 'trashedTime',
-  header: 'Time trashed',
+  header: getHeader('Time trashed'),
   render: ({ data }) => renderDate(data.trashedTime),
 };
 
 const NAME_COLUMN = {
   name: 'name',
-  header: 'Name',
+  header: getHeader('Name'),
   defaultFlex: 5,
   render: ({ data }) => {
     if (data.state === 0)
@@ -54,7 +61,7 @@ const NAME_COLUMN = {
 
 const SIZE_COLUMN = {
   name: 'size',
-  header: 'Size',
+  header: getHeader('Size'),
   type: 'number',
   render: ({ data }) => {
     let size = data.size;
