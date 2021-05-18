@@ -59,6 +59,4 @@ export const limitersSlice = createSlice({
 
 export const selectLimiters = (state) => state.limiters;
 
-// export const { updateName, updateItems, resetBin, resetRestore, resetDelete } = videosSlice.actions
-
 export default limitersSlice.reducer;
