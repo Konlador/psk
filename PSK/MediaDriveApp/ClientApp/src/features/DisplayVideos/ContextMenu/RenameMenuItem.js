@@ -5,7 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import { useDispatch } from 'react-redux';
-import { renameVideo, updateName } from '../videosSlice';
+import { renameVideo, updateName } from '../../../Redux/videosSlice';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { REQUEST_STATUS } from '../../../common/constants';
