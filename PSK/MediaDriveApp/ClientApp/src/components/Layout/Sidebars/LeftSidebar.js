@@ -6,12 +6,10 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { getLimiters, selectLimiters } from "../../../Redux/limitersSlice";
 import { REQUEST_STATUS } from "../../../common/constants";
 
-
 export const LeftSidebar = (props) => {
   const dispatch = useDispatch();
   const { limiters, status, error } = useSelector(selectLimiters);
-  const isLoading = (status === REQUEST_STATUS.loading);
-
+  const isLoading = status === REQUEST_STATUS.loading;
 
   useEffect(() => {
     if (status === REQUEST_STATUS.idle) {
@@ -46,12 +44,9 @@ export const LeftSidebar = (props) => {
     );
   }
 
-
   return (
     <div className="left-sidebar">
-      <div className="left-sidebar__content">
-        {renderContent}
-      </div>
+      <div className="left-sidebar__content">{renderContent}</div>
     </div>
   );
 };
