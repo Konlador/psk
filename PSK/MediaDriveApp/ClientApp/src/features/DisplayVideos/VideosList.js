@@ -189,8 +189,6 @@ export const VideosList = ({ queryParams }) => {
     console.log('Bin failed: ', binError);
   }
 
-  console.log(deleteStatus);
-
   if (deleteStatus === REQUEST_STATUS.success) {
     dispatch(resetLimiters());
     dispatch(resetDelete());
@@ -213,6 +211,7 @@ export const VideosList = ({ queryParams }) => {
           dataSource={getDataSource}
           enableFiltering={false} 
           renderRowContextMenu={renderRowContextMenu}
+          defaultSortInfo={{ name: 'name', dir: 1 }}
           showZebraRows={true}
           style={gridStyle}
           nativeScroll={false}
