@@ -3,7 +3,7 @@ import "./leftsidebar.scss";
 import { Limiter } from "./Limiter";
 import { useSelector, useDispatch } from "react-redux";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { getLimiters, selectLimiters } from './limiterSlice';
+import { getLimiters, selectLimiters } from "../../../Redux/limitersSlice";
 import { REQUEST_STATUS } from "../../../common/constants";
 
 

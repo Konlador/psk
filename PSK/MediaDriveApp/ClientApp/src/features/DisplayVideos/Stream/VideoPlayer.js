@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit'
-import { downloadVideoUri } from '../videosSlice';
+import { downloadVideoUri } from '../../../Redux/videosSlice';
 
 export default function VideoPlayer({ itemId, name }) {
   const dispatch = useDispatch();

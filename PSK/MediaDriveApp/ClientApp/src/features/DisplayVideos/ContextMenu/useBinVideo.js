@@ -1,6 +1,6 @@
 
 import { useDispatch } from 'react-redux';
-import { binVideo, resetBin, updateItems } from '../videosSlice';
+import { binVideo, resetBin, updateItems } from '../../../Redux/videosSlice';
 
 const useBinVideo = () => { 
   const dispatch = useDispatch();

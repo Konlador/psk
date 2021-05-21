@@ -11,9 +11,9 @@ import FileCopyRoundedIcon from "@material-ui/icons/FileCopyRounded";
 import { Snackbars } from "../Layout/Snackbars/Snackbars";
 import BorderLinearProgress from "../Loaders/BorderLinearProgress";
 import { connect } from "react-redux";
-import { start, increaseProgress, reset as resetUpload } from "./uploadSlice";
-import { getVideo } from '../../features/DisplayVideos/videosSlice';
-import { reset as resetLimiters } from "../Layout/Sidebars/limiterSlice";
+import { start, increaseProgress, reset as resetUpload } from "../../Redux/uploadSlice";
+import { getVideo } from '../../Redux/videosSlice';
+import { reset as resetLimiters } from "../../Redux/limitersSlice";
 
 class UploadFiles extends Component {
   constructor(props) {
