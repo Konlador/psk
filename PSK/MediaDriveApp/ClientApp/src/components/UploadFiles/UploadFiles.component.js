@@ -11,7 +11,8 @@ import FileCopyRoundedIcon from "@material-ui/icons/FileCopyRounded";
 import { Snackbars } from "../Layout/Snackbars/Snackbars";
 import BorderLinearProgress from "../Loaders/BorderLinearProgress";
 import { connect } from "react-redux";
-import { start, increaseProgress, reset } from "./uploadSlice";
+import { start, increaseProgress, reset as resetUpload } from "./uploadSlice";
+import { getVideo } from '../../features/DisplayVideos/videosSlice';
 import { reset as resetLimiters } from "../Layout/Sidebars/limiterSlice";
 
 class UploadFiles extends Component {
@@ -54,10 +55,11 @@ class UploadFiles extends Component {
     this.props.start();
 
     var transaction;
+    let newFileId;
 
     UploadService.startTransaction(currentFile)
       .then((response) => {
-        console.log("Responsas ", response);
+        newFileId = response.data.storageItemId;
         this.setState({
           progress: 33,
         });
@@ -87,26 +89,31 @@ class UploadFiles extends Component {
         return UploadService.commitUpload(transaction.id);
       })
       .then((response) => {
+        this.props.increaseProgress(100);
+        this.props.resetLimiters();
+        
         this.setState({
           message: "Your file has been successfully uploaded",
           isError: false,
           progress: 100,
         });
 
-        this.props.increaseProgress(100);
-        this.props.resetLimiters();
+        if (window.location.pathname === '/videos') {
+          this.props.getVideo(newFileId);
+        }
+
       })
       .catch((error) => {
         console.log(error.response);
+        this.props.resetUpload();
         this.setState({
           progress: 0,
           message: `Could not upload the file! error msg: ${error}`,
           currentFile: undefined,
           isError: true,
           fileInfos: "",
+          selectedFiles: undefined,
         });
-
-        this.props.reset();
       });
 
     this.setState({
@@ -220,6 +227,6 @@ class UploadFiles extends Component {
   }
 }
 
-const mapDispatchToProps = { start, increaseProgress, reset, resetLimiters };
+const mapDispatchToProps = { start, increaseProgress, resetUpload, resetLimiters, getVideo };
 
 export default connect(null, mapDispatchToProps)(UploadFiles);

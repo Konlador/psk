@@ -22,7 +22,9 @@ export const uploadSlice = createSlice({
         }
     },
     reset: (state) => {
-      state = initialState;
+      console.log('reseting upload');
+      state.isUploading = false;
+      state.progress = null;
     },
   },
 });
