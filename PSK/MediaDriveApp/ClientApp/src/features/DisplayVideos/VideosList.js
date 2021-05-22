@@ -2,7 +2,7 @@ import { React, useEffect, useState } from "react";
 import { Alert } from "@material-ui/lab";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useSelector, useDispatch } from "react-redux";
-import { getAllVideos, resetDelete } from "../../Redux/videosSlice";
+import { getAllVideos, resetBin, resetDelete, resetRestore } from "../../Redux/videosSlice";
 import { VIDEO_LIST_COLUMNS_MAIN, VIDEO_LIST_COLUMNS_BIN } from "./VideoListColumns";
 import { REQUEST_STATUS } from "../../common/constants";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
@@ -18,23 +18,30 @@ import useRestoreVideo from './ContextMenu/useRestoreVideo';
 import useBinVideo from './ContextMenu/useBinVideo';
 import { reset as resetLimiters } from "../../Redux/limitersSlice";
 import SearchBar from "./SearchBar";
+import PositionedSnackbar from '../../components/Layout/Snackbars/PositionedSnackbar';
 import "./videosList.scss";
 
 export const VideosList = ({ queryParams }) => {
   const dispatch = useDispatch();
-  const videos = useSelector((state) => state.videos.items);
-  const videoStatus = useSelector((state) => state.videos.status);
-  const error = useSelector((state) => state.videos.error);
   const [contextVideo, setContextVideo] = useState({});
   const [menuItemOpen, setMenuItemOpen] = useState(MENU_ITEMS.none);
   const downloadVideo = useDownloadVideo();
+
+  const videos = useSelector((state) => state.videos.items);
+  const videoStatus = useSelector((state) => state.videos.status);
+  const videosError = useSelector((state) => state.videos.error);
+
   const restoreVideo = useRestoreVideo();
-  const restoreError = useSelector((state) => state.videos.restoreVideoError);
   const restoreStatus = useSelector((state) => state.videos.restoreVideoStatus);
+  const restoreError = useSelector((state) => state.videos.restoreVideoError);
+
   const binVideo = useBinVideo();
   const binStatus = useSelector((state) => state.videos.binVideoStatus);
   const binError = useSelector((state) => state.videos.binVideoError);
+
   const deleteStatus = useSelector((state) => state.videos.deleteVideoStatus);
+  const deleteError = useSelector((state) => state.videos.deleteVideoError);
+
   const [searchString, setSearchString] = useState('');
 
   useEffect(() => {
@@ -178,20 +185,70 @@ export const VideosList = ({ queryParams }) => {
     return filter(videos, filterValue);
   };
 
-  /******************** handle actions results  *****************/  
-  if (restoreStatus === REQUEST_STATUS.failed) {
-    // TODO: show snackbar
-    console.log('Restore failed: ', restoreError);
+  /******************** handle actions results  *****************/
+  
+
+  const getSnackbar = () => {
+    const actionsResults = [];
+    actionsResults.push(
+      { 
+        status: videoStatus, 
+        error: videosError, 
+        showOnSuccess: false,
+        success: null,
+        reset: null,
+      },
+      { 
+        status: binStatus, 
+        error: `Bin operation failed. ${binError}. Refresh the page`, 
+        showOnSuccess: true, 
+        success: "Item successfully moved to bin" ,
+        reset: () => dispatch(resetBin()),
+      },
+      { 
+        status: deleteStatus, 
+        error: `Delete operation failed. ${deleteError}. Refresh the page`, 
+        showOnSuccess: true, 
+        success: "Item successfully deleted" ,
+        reset: () => dispatch(resetDelete()),
+      },
+      { 
+        status: restoreStatus, 
+        error: `Restore operation failed. ${restoreError}. Refresh the page`, 
+        showOnSuccess: true, 
+        success: "Item successfully restored" ,
+        reset: () => dispatch(resetRestore()),
+      },
+    );
+
+    for(let i = 0; i < actionsResults.length; i++) {
+      if (actionsResults[i].status === REQUEST_STATUS.failed ) {
+        return <PositionedSnackbar 
+                  open={true} 
+                  message={actionsResults[i].error} 
+                  severity="error"
+                  reset={actionsResults[i].reset ? actionsResults[i].reset : null}
+              />;
+      }
+
+      if (actionsResults[i].status === REQUEST_STATUS.success && actionsResults[i].showOnSuccess) {
+        return <PositionedSnackbar 
+                  open={true} 
+                  message={actionsResults[i].success} 
+                  severity="success"
+                  reset={actionsResults[i].reset ? actionsResults[i].reset : null}
+              />;
+      }
+    }
+
+    return null;
   }
 
-  if (binStatus === REQUEST_STATUS.failed) {
-    // TODO: show snackbar
-    console.log('Bin failed: ', binError);
-  }
+  /************************** handle action results ***************************/
+  let renderSnackbar = getSnackbar();
 
   if (deleteStatus === REQUEST_STATUS.success) {
     dispatch(resetLimiters());
-    dispatch(resetDelete());
   }
 
   /******************************* render page *******************************/
@@ -199,9 +256,7 @@ export const VideosList = ({ queryParams }) => {
 
   if (videoStatus === REQUEST_STATUS.loading) {
     renderContent = <CircularProgress />;
-  } else if (error) {
-    renderContent = <Alert severity="error">{error}</Alert>;
-  } else {
+  } if (videoStatus === REQUEST_STATUS.success) {
     renderContent = (
       <>
         <SearchBar onChange={setSearchString}/>
@@ -236,17 +291,16 @@ export const VideosList = ({ queryParams }) => {
           isOpen={menuItemOpen === MENU_ITEMS.delete}
           close={closeMenuItem}
         />
-
       </>
     );
   }
 
   return (
     <>
-      {/* <p>
-        Selected rows: {selected == null ? "none" : JSON.stringify(selected)}.
-      </p> */}
-      <div className="display-videos-table">{renderContent}</div>
+      <div className="display-videos-table">
+        {renderContent}
+        {renderSnackbar}
+      </div>
     </>
   );
 };

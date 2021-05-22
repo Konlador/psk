@@ -8,7 +8,7 @@ import "./uploadFiles.scss";
 import UploadService from "../../services/upload-files.service";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import FileCopyRoundedIcon from "@material-ui/icons/FileCopyRounded";
-import { Snackbars } from "../Layout/Snackbars/Snackbars";
+import { Snackbars } from "../Layout/Snackbars/PositionedSnackbar";
 import BorderLinearProgress from "../Loaders/BorderLinearProgress";
 import { connect } from "react-redux";
 import { start, increaseProgress, reset as resetUpload } from "../../Redux/uploadSlice";
