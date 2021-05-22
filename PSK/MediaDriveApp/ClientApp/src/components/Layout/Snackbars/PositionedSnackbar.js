@@ -22,7 +22,7 @@ export default function PositionedSnackbar({ open, message, severity, vertical, 
   return (
     <div>
       <Snackbar
-        autoHideDuration={3000}
+        autoHideDuration={5000}
         anchorOrigin={{ vertical, horizontal }}
         open={state.open}
         onClose={handleClose}
