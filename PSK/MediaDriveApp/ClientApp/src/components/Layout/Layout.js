@@ -18,8 +18,10 @@ export const Layout = (props) => {
       <Navbar name={props.name} className="layout__nav" />
       <LeftSidebar />
       <UploadLoader />
-      <main className="layout__main"> {props.children}</main>
-      {renderSnackbar}
+      <main className="layout__main"> 
+        {props.children}
+        {renderSnackbar}
+      </main>
     </div>
   );
 };

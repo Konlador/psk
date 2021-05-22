@@ -111,6 +111,7 @@ class UploadFiles extends Component {
           isError: true,
           fileInfos: "",
           selectedFiles: undefined,
+          message: "",
         });
       });
   }

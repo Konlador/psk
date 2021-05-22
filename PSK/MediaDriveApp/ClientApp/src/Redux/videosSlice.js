@@ -10,11 +10,19 @@ const initialState = {
   items: [],
   status: REQUEST_STATUS.idle,
   error: null,
+
+  userAction: null,
+  userActionItem: null,
+
   itemStatus: null,
+
+  binItem: null,
   binVideoStatus: REQUEST_STATUS.idle,
   binVideoError: null,
+
   restoreVideoStatus: REQUEST_STATUS.idle,
   restoreVideoError: null,
+
   deleteVideoStatus: REQUEST_STATUS.idle,
   deleteVideoError: null,
 };
@@ -189,6 +197,10 @@ export const videosSlice = createSlice({
     },
     resetItem: (state) => {
       state.itemStatus = null;
+    },
+    setUserAction: (state, action) => {
+      state.userAction = action.payload.userAction;
+      state.userActionItem = action.payload.userActionItem;
     }
   },
   extraReducers: {
@@ -221,20 +233,45 @@ export const videosSlice = createSlice({
       state.binVideoStatus = REQUEST_STATUS.loading;
     },
     [binVideo.fulfilled]: (state) => {
+        if (state.userAction === 'bin' && window.location.pathname === '/bin') {
+
+        const found = state.items.findIndex((item) => item.id === state.userActionItem.id);
+
+        if (found === -1) {
+          state.items.push(state.userActionItem);
+        }
+      }
+
+      state.userAction = null;
+      state.userActionItem = null;
       state.binVideoStatus = REQUEST_STATUS.success;
     },
     [binVideo.rejected]: (state, action) => {
-      console.log('action: ', action);
       state.binVideoError = ErrorParser.parseError(action);
       state.binVideoStatus = REQUEST_STATUS.failed;
-    },
-    [restoreVideo.fulfilled]: (state) => {
-      state.restoreVideoStatus = REQUEST_STATUS.success;
+      state.userAction = null;
+      state.userActionItem = null;
     },
 
+    [restoreVideo.fulfilled]: (state) => {
+      if (state.userAction === 'restore' && window.location.pathname === '/videos') {
+
+        const found = state.items.findIndex((item) => item.id === state.userActionItem.id);
+
+        if (found === -1) {
+          state.items.push(state.userActionItem);
+        }
+      }
+
+      state.userAction = null;
+      state.userActionItem = null;
+      state.restoreVideoStatus = REQUEST_STATUS.success;
+    },
     [restoreVideo.rejected]: (state, action) => {
       state.restoreVideoError = ErrorParser.parseError(action);
       state.restoreVideoStatus = REQUEST_STATUS.failed;
+      state.userAction = null;
+      state.userActionItem = null;
     },
 
     [deleteVideo.fulfilled]: (state) => {
@@ -247,6 +284,6 @@ export const videosSlice = createSlice({
   },
 });
 
-export const { updateName, updateItems, resetBin, resetRestore, resetDelete, resetItem } = videosSlice.actions;
+export const { updateName, updateItems, resetBin, resetRestore, resetDelete, resetItem, setUserAction } = videosSlice.actions;
 
 export default videosSlice.reducer;
