@@ -5,8 +5,48 @@ import { useSelector, useDispatch } from "react-redux";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { getLimiters, selectLimiters } from "../../../Redux/limitersSlice";
 import { REQUEST_STATUS } from "../../../common/constants";
+import { makeStyles } from "@material-ui/core/styles";
+import Drawer from "@material-ui/core/Drawer";
+import AppBar from "@material-ui/core/AppBar";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Toolbar from "@material-ui/core/Toolbar";
+import List from "@material-ui/core/List";
+import Typography from "@material-ui/core/Typography";
+import Divider from "@material-ui/core/Divider";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import DeleteIcon from "@material-ui/icons/Delete";
+import BackupRoundedIcon from "@material-ui/icons/BackupRounded";
+import VideoLibraryIcon from "@material-ui/icons/VideoLibrary";
+import { Link } from "react-router-dom";
 
 export const LeftSidebar = (props) => {
+  const drawerWidth = 240;
+
+  const useStyles = makeStyles((theme) => ({
+    root: {
+      display: "flex",
+    },
+    appBar: {
+      zIndex: theme.zIndex.drawer + 1,
+    },
+    drawer: {
+      width: drawerWidth,
+      flexShrink: 0,
+    },
+    drawerPaper: {
+      width: drawerWidth,
+    },
+    drawerContainer: {
+      overflow: "hidden",
+    },
+    content: {
+      flexGrow: 1,
+      padding: theme.spacing(3),
+    },
+  }));
+  const classes = useStyles();
   const dispatch = useDispatch();
   const { limiters, status, error } = useSelector(selectLimiters);
   const isLoading = status === REQUEST_STATUS.loading;
@@ -16,17 +56,16 @@ export const LeftSidebar = (props) => {
       dispatch(getLimiters({}));
     }
   }, [status]);
-
   const convertToMb = (value) => parseInt(value / (1024 * 1024));
 
-  let renderContent;
+  let renderLimiter;
 
   if (isLoading) {
-    renderContent = <CircularProgress />;
+    renderLimiter = <CircularProgress />;
   } else if (error) {
-    renderContent = <span>Something went wrong</span>;
+    renderLimiter = <span>Something went wrong</span>;
   } else {
-    renderContent = (
+    renderLimiter = (
       <>
         <Limiter
           value={(limiters.totalStorageUsed / limiters.capacity) * 100}
@@ -43,10 +82,64 @@ export const LeftSidebar = (props) => {
       </>
     );
   }
-
   return (
-    <div className="left-sidebar">
-      <div className="left-sidebar__content">{renderContent}</div>
+    <div className={classes.root}>
+      <CssBaseline />
+      <AppBar position="fixed" className={classes.appBar}>
+        <Toolbar>
+          <Typography variant="h6" noWrap>
+            Canopus
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        className={classes.drawer}
+        variant="permanent"
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+      >
+        <Toolbar />
+        <div className={classes.drawerContainer}>
+          <List>
+            {/* <Divider /> */}
+
+            <ListItem button component={Link} to="/videos">
+              <ListItemIcon>
+                <VideoLibraryIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={"Videos"}
+                className="left-sidebar__list-text"
+              />
+            </ListItem>
+            {/* <Divider /> */}
+
+            <ListItem button component={Link} to="/upload">
+              <ListItemIcon>
+                <BackupRoundedIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={"Upload"}
+                className="left-sidebar__list-text"
+              />
+            </ListItem>
+            <Divider />
+            <ListItem button component={Link} to="/bin">
+              <ListItemIcon>
+                <DeleteIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={"Bin"}
+                className="left-sidebar__list-text"
+              />
+            </ListItem>
+            <div className="left-sidebar__limiter">{renderLimiter}</div>
+
+            {/* <Divider /> */}
+          </List>
+        </div>
+      </Drawer>
     </div>
   );
 };

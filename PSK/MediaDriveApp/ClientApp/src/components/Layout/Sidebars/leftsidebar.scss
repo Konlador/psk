@@ -8,10 +8,9 @@
   bottom: 8px;
   height: 100vh;
 
-  &__content {
+  &__limiter {
     position: relative;
-    top: 0%;
-    padding-top: 7.5%;
+    padding-top: 150%;
     color: $layout-blue;
     font-weight: 500;
     height: 20%;
@@ -20,5 +19,9 @@
     top: 1rem;
     position: relative;
     font-size: 0.8rem;
+  }
+  &__list-text {
+    color: $layout-blue;
+    font-weight: 900;
   }
 }
