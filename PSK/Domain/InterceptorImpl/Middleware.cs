@@ -20,15 +20,9 @@ namespace Domain
 
         public async Task Invoke(HttpContext context)
         {
-            var bodyStr = "";
+            var requestLog = $"REQUEST HttpMethod: {context.Request.Method}, Path: {context.Request.Path}";
 
-            using (StreamReader reader
-                 = new StreamReader(context.Request.Body, Encoding.UTF8, true, 1024, true))
-            {
-                bodyStr = await reader.ReadToEndAsync();
-            }
-
-            _logger.LogInformation($"Performing {context.Request.Method} with url: {context.Request.Path} and request body: {bodyStr}");
+            _logger.LogInformation(requestLog);
  
             await _next.Invoke(context);
 
