@@ -39,7 +39,6 @@ class UploadFiles extends Component {
     });
   }
   // selectFile(event) {
-  //   console.log(event);
   //   this.setState({
   //     selectedFiles: event.target.files,
   //   });
@@ -62,7 +61,7 @@ class UploadFiles extends Component {
     var transaction;
     let newFileId;
 
-    UploadService.startTransaction(currentFile)
+    UploadService.startTransaction(currentFile.file)
       .then((response) => {
         newFileId = response.data.storageItemId;
         this.setState({
@@ -80,7 +79,7 @@ class UploadFiles extends Component {
         //   }
         // );
         transaction = response.data;
-        return UploadService.uploadFile(response.data, currentFile);
+        return UploadService.uploadFile(response.data, currentFile.file);
       })
       .then((response) => {
         this.setState({
@@ -205,7 +204,7 @@ class UploadFiles extends Component {
         </Button>
         <div className="file-name">
           {selectedFiles && selectedFiles.length > 0
-            ? selectedFiles[0].name
+            ? selectedFiles[0].file.name
             : null}
         </div>
         <Typography
