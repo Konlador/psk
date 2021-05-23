@@ -3,11 +3,25 @@ import PropTypes from "prop-types";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
+import "./limiter.scss";
 
 export const Limiter = (props) => {
   return (
     <Box position="relative" display="inline-flex">
-      <CircularProgress variant="determinate" {...props} />
+      <CircularProgress
+        variant="determinate"
+        {...props}
+        thickness={10}
+        className="top-circle"
+        size={60}
+      />
+      <CircularProgress
+        variant="determinate"
+        value={100}
+        thickness={10}
+        className="bottom-circle"
+        size={60}
+      ></CircularProgress>
       <Box
         top={0}
         left={0}
