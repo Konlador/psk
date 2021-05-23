@@ -95,7 +95,7 @@ namespace MediaDriveApp
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-            // app.UseApiKey();
+            app.UseApiKey();
           
 
             app.UseRouting();

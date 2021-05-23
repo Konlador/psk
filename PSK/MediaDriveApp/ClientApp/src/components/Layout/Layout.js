@@ -5,14 +5,10 @@ import { LeftSidebar } from "./Sidebars/LeftSidebar";
 import BorderLinearProgress from "../Loaders/BorderLinearProgress";
 import withUploadLoader from "../Loaders/withUploadLoader";
 import "./layout.scss";
-import useSnackbar from "./useSnackbar";
 
 const UploadLoader = withUploadLoader(BorderLinearProgress);
 
 export const Layout = (props) => {
-  const snackbar = useSnackbar();
-
-  let renderSnackbar = snackbar();
   return (
     <div className="layout">
       <Navbar name={props.name} className="layout__nav" />
@@ -20,7 +16,6 @@ export const Layout = (props) => {
       <UploadLoader />
       <main className="layout__main"> 
         {props.children}
-        {renderSnackbar}
       </main>
     </div>
   );
