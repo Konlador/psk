@@ -33,10 +33,10 @@ namespace MediaDriveApp.Controllers
             {
             using var driveScope = driveScopeFactory.CreateInstance();
             var drive = await m_globalScope.Drives.GetAsync(driveScope.DriveId, cancellationToken);
-            if (drive.Capacity - drive.TotalStorageUsed < item.Size)
-            {
-                return BadRequest("Not enough space in Drive"); 
-            }
+            if(drive.Capacity - drive.TotalStorageUsed < item.Size)
+                {
+                return BadRequest("Not enough space in Drive");
+                }
 
             if(item.ParentId != null)
                 {
@@ -70,7 +70,8 @@ namespace MediaDriveApp.Controllers
         [HttpPut]
         [Route("upload/{transactionId:guid}")]
         public async Task<ActionResult<bool>> CommitUploadTransaction(
-            [FromRoute, ModelBinder] IDriveScopeFactory driveScopeFactory, Guid transactionId, CancellationToken cancellationToken)
+            [FromRoute, ModelBinder] IDriveScopeFactory driveScopeFactory, Guid transactionId,
+            CancellationToken cancellationToken)
             {
             using var driveScope = driveScopeFactory.CreateInstance();
 
@@ -79,9 +80,9 @@ namespace MediaDriveApp.Controllers
             var item = await driveScope.StorageItems.GetAsync(transaction.StorageItemId, cancellationToken);
 
             item.State = StorageItemState.Uploaded;
-            await driveScope.StorageItems.UpdateAsync(item, cancellationToken);
+            await driveScope.StorageItems.UpdateAsync(item, null, cancellationToken);
 
-            if (await m_uploadTransactionService.CommitTransaction(transactionId, item, cancellationToken))
+            if(await m_uploadTransactionService.CommitTransaction(transactionId, item, cancellationToken))
                 {
                 drive.NumberOfFiles += 1;
                 drive.TotalStorageUsed += item.Size;
@@ -89,14 +90,9 @@ namespace MediaDriveApp.Controllers
                 return Ok();
                 }
 
-            else
-                {
-                await driveScope.StorageItems.RemoveAsync(transaction.StorageItemId, cancellationToken);
-                await m_transactions.RemoveAsync(transactionId, cancellationToken);
-                return BadRequest("File size is different than promised");
-                }
-
+            await driveScope.StorageItems.RemoveAsync(transaction.StorageItemId, cancellationToken);
+            await m_transactions.RemoveAsync(transactionId, cancellationToken);
+            return BadRequest("File size is different than promised");
             }
-
-    }
+        }
     }
