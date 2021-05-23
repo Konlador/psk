@@ -100,11 +100,13 @@ namespace Domain.Impl
             return addedEntry.Entity;
             }
 
-        public async Task<StorageItem> UpdateAsync(StorageItem item, CancellationToken cancellationToken)
+        public async Task<StorageItem> UpdateAsync(StorageItem item, byte[] rowVersion, CancellationToken cancellationToken)
             {
-            var modifiedEntry = m_dbContext.StorageItems.Attach(item);
+            if (rowVersion != null)
+                m_dbContext.Entry(item).Property("RowVersion").OriginalValue = rowVersion;
+
             await m_dbContext.SaveChangesAsync(cancellationToken);
-            return modifiedEntry.Entity;
+            return item;
             }
 
         public async Task<bool> RemoveAsync(Guid itemId, CancellationToken cancellationToken)
