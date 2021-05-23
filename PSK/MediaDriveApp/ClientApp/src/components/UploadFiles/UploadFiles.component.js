@@ -130,24 +130,6 @@ class UploadFiles extends Component {
 
     return (
       <div className="mg20">
-        {currentFile && (
-          <Box className="mb25" display="flex" alignItems="center">
-            <Box width="100%" mr={1}>
-              <BorderLinearProgress
-                variant="buffer"
-                value={progress}
-                valueBuffer={0}
-              />
-            </Box>
-            <Box minWidth={35}>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-              >{`${progress}%`}</Typography>
-            </Box>
-          </Box>
-        )}
-
         <label htmlFor="btn-upload">
           <input
             id="btn-upload"
