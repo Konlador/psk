@@ -1,9 +1,5 @@
 import React, { Component } from "react";
-import {
-  Box,
-  Typography,
-  Button,
-} from "@material-ui/core";
+import { Box, Typography, Button } from "@material-ui/core";
 import "./uploadFiles.scss";
 import UploadService from "../../services/upload-files.service";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
@@ -11,10 +7,14 @@ import FileCopyRoundedIcon from "@material-ui/icons/FileCopyRounded";
 import { Snackbars } from "../Layout/Snackbars/Snackbars";
 import BorderLinearProgress from "../Loaders/BorderLinearProgress";
 import { connect } from "react-redux";
-import { start, increaseProgress, reset as resetUpload } from "../../Redux/uploadSlice";
-import { getVideo } from '../../Redux/videosSlice';
+import {
+  start,
+  increaseProgress,
+  reset as resetUpload,
+} from "../../Redux/uploadSlice";
+import { getVideo } from "../../Redux/videosSlice";
 import { reset as resetLimiters } from "../../Redux/limitersSlice";
-
+import { DropzoneAreaBase } from "material-ui-dropzone";
 class UploadFiles extends Component {
   constructor(props) {
     super(props);
@@ -32,13 +32,18 @@ class UploadFiles extends Component {
       showSnackbar: false,
     };
   }
-  // const [showSnack, setShowSnack] = useState(false);
 
-  selectFile(event) {
+  selectFile(file) {
     this.setState({
-      selectedFiles: event.target.files,
+      selectedFiles: file,
     });
   }
+  // selectFile(event) {
+  //   console.log(event);
+  //   this.setState({
+  //     selectedFiles: event.target.files,
+  //   });
+  // }
   //---------------------UPLOAD---------------------------
 
   // async
@@ -91,17 +96,16 @@ class UploadFiles extends Component {
       .then((response) => {
         this.props.increaseProgress(100);
         this.props.resetLimiters();
-        
+
         this.setState({
           message: "Your file has been successfully uploaded",
           isError: false,
           progress: 100,
         });
 
-        if (window.location.pathname === '/videos') {
+        if (window.location.pathname === "/videos") {
           this.props.getVideo(newFileId);
         }
-
       })
       .catch((error) => {
         console.log(error.response);
@@ -152,8 +156,7 @@ class UploadFiles extends Component {
             </Box>
           </Box>
         )}
-
-        <label htmlFor="btn-upload">
+        {/* <label htmlFor="btn-upload">
           <input
             id="btn-upload"
             name="btn-upload"
@@ -170,8 +173,25 @@ class UploadFiles extends Component {
           >
             Choose Video File
           </Button>
-        </label>
-
+        </label> */}
+        {/*   
+        <br></br>
+        <br></br> */}
+        <DropzoneAreaBase
+          acceptedFiles={["video/*"]}
+          dropzoneText={"Drag and drop a video here or click"}
+          filesLimit={1}
+          // Icon={<CloudUploadIcon />}
+          onAdd={this.selectFile}
+          maxFileSize={1024 * 1024 * 100}
+          showFileNames={true}
+          showFileNamesInPreview={true}
+          alertSnackbarProps={{
+            anchorOrigin: { vertical: "bottom", horizontal: "right" },
+          }}
+        />
+        <br />
+        <br />
         <Button
           className="btn-upload"
           color="primary"
@@ -183,9 +203,6 @@ class UploadFiles extends Component {
         >
           Upload
         </Button>
-        <br></br>
-        <br></br>
-
         <div className="file-name">
           {selectedFiles && selectedFiles.length > 0
             ? selectedFiles[0].name
@@ -198,35 +215,23 @@ class UploadFiles extends Component {
           {message}
         </Typography>
         <br></br>
-
         <a href="/videos" className="link_to_videos">
           {uploadedLink}
         </a>
-
         <Typography variant="h6" className="list-header">
           {fileName}
         </Typography>
-        {/* <div>
-          <Snackbars
-            text="Your file has been successfully uploaded"
-            type="success"
-            show={showSnackbar}
-          ></Snackbars>
-        </div> */}
-
-        <span className="list-group">
-          {/* {fileInfos &&
-            fileInfos.map((file, index) => (
-              <ListItem divider key={index}>
-                <a href={file.url}>{file.name}</a>
-              </ListItem>
-            ))} */}
-        </span>
       </div>
     );
   }
 }
 
-const mapDispatchToProps = { start, increaseProgress, resetUpload, resetLimiters, getVideo };
+const mapDispatchToProps = {
+  start,
+  increaseProgress,
+  resetUpload,
+  resetLimiters,
+  getVideo,
+};
 
 export default connect(null, mapDispatchToProps)(UploadFiles);
