@@ -8,10 +8,9 @@ import "./uploadFiles.scss";
 import UploadService from "../../services/upload-files.service";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import FileCopyRoundedIcon from "@material-ui/icons/FileCopyRounded";
-import { Snackbars } from "../Layout/Snackbars/Snackbars";
 import BorderLinearProgress from "../Loaders/BorderLinearProgress";
 import { connect } from "react-redux";
-import { start, increaseProgress, reset as resetUpload } from "../../Redux/uploadSlice";
+import { start, increaseProgress, reset as resetUpload, reject as rejectUpload } from "../../Redux/uploadSlice";
 import { getVideo } from '../../Redux/videosSlice';
 import { reset as resetLimiters } from "../../Redux/limitersSlice";
 
@@ -49,7 +48,7 @@ class UploadFiles extends Component {
       progress: 0,
       currentFile: currentFile,
       fileInfos: currentFile.name,
-      message: "Initiating upload",
+      message: "Initiating upload...",
     });
 
     this.props.start();
@@ -79,7 +78,7 @@ class UploadFiles extends Component {
       })
       .then((response) => {
         this.setState({
-          message: "Uploading started",
+          message: "Uploading started...",
           isError: false,
           progress: 66,
         });
@@ -89,36 +88,32 @@ class UploadFiles extends Component {
         return UploadService.commitUpload(transaction.id);
       })
       .then((response) => {
+        if (window.location.pathname === '/videos') {
+          this.props.getVideo(newFileId);
+        }
+        
         this.props.increaseProgress(100);
         this.props.resetLimiters();
         
         this.setState({
-          message: "Your file has been successfully uploaded",
+          message: "",
           isError: false,
           progress: 100,
+          currentFile: undefined,
+          selectedFiles: undefined,
         });
-
-        if (window.location.pathname === '/videos') {
-          this.props.getVideo(newFileId);
-        }
-
       })
       .catch((error) => {
-        console.log(error.response);
-        this.props.resetUpload();
+        this.props.rejectUpload();
         this.setState({
           progress: 0,
-          message: `Could not upload the file! error msg: ${error}`,
           currentFile: undefined,
           isError: true,
           fileInfos: "",
           selectedFiles: undefined,
+          message: "",
         });
       });
-
-    this.setState({
-      selectedFiles: undefined,
-    });
   }
   //------------------------------------------------------
   render() {
@@ -135,24 +130,6 @@ class UploadFiles extends Component {
 
     return (
       <div className="mg20">
-        {currentFile && (
-          <Box className="mb25" display="flex" alignItems="center">
-            <Box width="100%" mr={1}>
-              <BorderLinearProgress
-                variant="buffer"
-                value={progress}
-                valueBuffer={0}
-              />
-            </Box>
-            <Box minWidth={35}>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-              >{`${progress}%`}</Typography>
-            </Box>
-          </Box>
-        )}
-
         <label htmlFor="btn-upload">
           <input
             id="btn-upload"
@@ -227,6 +204,6 @@ class UploadFiles extends Component {
   }
 }
 
-const mapDispatchToProps = { start, increaseProgress, resetUpload, resetLimiters, getVideo };
+const mapDispatchToProps = { start, increaseProgress, resetUpload, rejectUpload, resetLimiters, getVideo };
 
 export default connect(null, mapDispatchToProps)(UploadFiles);

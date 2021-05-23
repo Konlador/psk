@@ -1,20 +1,28 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { REQUEST_STATUS } from "../common/constants";
 import http from "../http-common";
+import ErrorParser from "../common/ErrorParser";
 
 // TODO: get drive id after authentication
 const driveId = "982ecb26-309b-451a-973d-2d6f6e1b2e34";
-const NETWORK_ERROR = "Something went wrong. Try again later."
 
 const initialState = {
   items: [],
   status: REQUEST_STATUS.idle,
   error: null,
+
+  userAction: null,
+  userActionItem: null,
+
   itemStatus: null,
+
+  binItem: null,
   binVideoStatus: REQUEST_STATUS.idle,
   binVideoError: null,
+
   restoreVideoStatus: REQUEST_STATUS.idle,
   restoreVideoError: null,
+
   deleteVideoStatus: REQUEST_STATUS.idle,
   deleteVideoError: null,
 };
@@ -30,12 +38,11 @@ export const getAllVideos = createAsyncThunk(
     } catch (err) {
       const error = err;
 
-      // response was not returned - return err to rejected promise
       if (!error.response) {
         throw err;
       }
-      // response was returned - return validation errors from server to rejected promise
-      return rejectWithValue(err.response.status);
+      
+      return rejectWithValue(err.response);
     }
   }
 );
@@ -49,12 +56,11 @@ export const getVideo = createAsyncThunk(
     } catch (err) {
       const error = err;
 
-      // response was not returned - return err to rejected promise
       if (!error.response) {
         throw err;
       }
-      // response was returned - return validation errors from server to rejected promise
-      return rejectWithValue(err.response.status);
+
+      return rejectWithValue(err.response);
     }
   }
 );
@@ -74,7 +80,7 @@ export const downloadVideoUri = createAsyncThunk(
         throw err;
       }
 
-      return rejectWithValue(err.response.status);
+      return rejectWithValue(err.response);
     }
   }
 );
@@ -84,21 +90,21 @@ export const renameVideo = createAsyncThunk(
   async (params, { rejectWithValue }) => {
     const itemId = params.itemId;
     const newName = params.newName;
+    const rowVersion = params.rowVersion;
 
     try {
-      const response = await http.put(
-        `/api/drive/${driveId}/files/${itemId}/rename?newName=${newName}`
+      const response = await http.patch(
+        `/api/drive/${driveId}/files/${itemId}/rename?newName=${newName}&rowVersion=${rowVersion}`
       );
       return response.data;
     } catch (err) {
       const error = err;
 
-      // response was not returned - return err to rejected promise
       if (!error.response) {
         throw err;
       }
-      // response was returned - return validation errors from server to rejected promise
-      return rejectWithValue(err.response.data);
+
+      return rejectWithValue(err.response);
     }
   }
 );
@@ -114,12 +120,11 @@ export const binVideo = createAsyncThunk(
     } catch (err) {
       const error = err;
 
-      // response was not returned - return err to rejected promise
       if (!error.response) {
         throw err;
       }
-      // response was returned - return validation errors from server to rejected promise
-      return rejectWithValue(err.response.data);
+    
+      return rejectWithValue(err.response);
     }
   }
 );
@@ -135,12 +140,11 @@ export const restoreVideo = createAsyncThunk(
     } catch (err) {
       const error = err;
 
-      // response was not returned - return err to rejected promise
       if (!error.response) {
         throw err;
       }
-      // response was returned - return validation errors from server to rejected promise
-      return rejectWithValue(err.response.data);
+     
+      return rejectWithValue(err.response);
     }
   }
 );
@@ -156,12 +160,11 @@ export const deleteVideo = createAsyncThunk(
     } catch (err) {
       const error = err;
 
-      // response was not returned - return err to rejected promise
       if (!error.response) {
         throw err;
       }
-      // response was returned - return validation errors from server to rejected promise
-      return rejectWithValue(err.response.data);
+
+      return rejectWithValue(err.response);
     }
   }
 );
@@ -195,6 +198,10 @@ export const videosSlice = createSlice({
     },
     resetItem: (state) => {
       state.itemStatus = null;
+    },
+    setUserAction: (state, action) => {
+      state.userAction = action.payload.userAction;
+      state.userActionItem = action.payload.userActionItem;
     }
   },
   extraReducers: {
@@ -206,14 +213,10 @@ export const videosSlice = createSlice({
       state.status = REQUEST_STATUS.success;
     },
     [getAllVideos.rejected]: (state, action) => {
-      // get errors from payload if response was returned
-      if (action.payload) {
-        state.error = action.payload;
-      } else {
-        state.error = NETWORK_ERROR;
-      }
+      state.error = ErrorParser.parseError(action);
       state.status = REQUEST_STATUS.failed;
     },
+    
     [getVideo.fulfilled]: (state, action) => {
       const id = action.payload.id;
       const itemToUpdateIndex = state.items.findIndex((item) => item.id === id);
@@ -231,41 +234,57 @@ export const videosSlice = createSlice({
       state.binVideoStatus = REQUEST_STATUS.loading;
     },
     [binVideo.fulfilled]: (state) => {
+        if (state.userAction === 'bin' && window.location.pathname === '/bin') {
+
+        const found = state.items.findIndex((item) => item.id === state.userActionItem.id);
+
+        if (found === -1) {
+          state.items.push(state.userActionItem);
+        }
+      }
+
+      state.userAction = null;
+      state.userActionItem = null;
       state.binVideoStatus = REQUEST_STATUS.success;
     },
     [binVideo.rejected]: (state, action) => {
-      if (action.payload) {
-        state.binVideoError = action.payload;;
-      } else {
-        state.binVideoError = NETWORK_ERROR;
-      }
+      state.binVideoError = ErrorParser.parseError(action);
       state.binVideoStatus = REQUEST_STATUS.failed;
+      state.userAction = null;
+      state.userActionItem = null;
     },
+
     [restoreVideo.fulfilled]: (state) => {
+      if (state.userAction === 'restore' && window.location.pathname === '/videos') {
+
+        const found = state.items.findIndex((item) => item.id === state.userActionItem.id);
+
+        if (found === -1) {
+          state.items.push(state.userActionItem);
+        }
+      }
+
+      state.userAction = null;
+      state.userActionItem = null;
       state.restoreVideoStatus = REQUEST_STATUS.success;
     },
     [restoreVideo.rejected]: (state, action) => {
-      if (action.payload) {
-        state.restoreVideoError = action.payload;;
-      } else {
-        state.restoreVideoError = NETWORK_ERROR;
-      }
+      state.restoreVideoError = ErrorParser.parseError(action);
       state.restoreVideoStatus = REQUEST_STATUS.failed;
+      state.userAction = null;
+      state.userActionItem = null;
     },
+
     [deleteVideo.fulfilled]: (state) => {
       state.deleteVideoStatus = REQUEST_STATUS.success;
     },
     [deleteVideo.rejected]: (state, action) => {
-      if (action.payload) {
-        state.deleteVideoError = action.payload;;
-      } else {
-        state.deleteVideoError = NETWORK_ERROR;
-      }
+      state.deleteVideoError = ErrorParser.parseError(action);
       state.deleteVideoStatus = REQUEST_STATUS.failed;
     },
   },
 });
 
-export const { updateName, updateItems, resetBin, resetRestore, resetDelete, resetItem } = videosSlice.actions;
+export const { updateName, updateItems, resetBin, resetRestore, resetDelete, resetItem, setUserAction } = videosSlice.actions;
 
 export default videosSlice.reducer;

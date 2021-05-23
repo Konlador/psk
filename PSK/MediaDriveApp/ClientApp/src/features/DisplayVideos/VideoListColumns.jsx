@@ -35,6 +35,12 @@ const ID_COLUMN = {
   defaultVisible: false,
 };
 
+const ROW_VERSION_COLUMN = {
+  name: 'rowVersion',
+  header: 'RowVersion',
+  defaultVisible: false,
+};
+
 
 const TIME_CREATED_COLUMN = {
   name: 'timeCreated',
@@ -81,6 +87,7 @@ const SIZE_COLUMN = {
 
 export const VIDEO_LIST_COLUMNS_MAIN = [
   ID_COLUMN,
+  ROW_VERSION_COLUMN,
   NAME_COLUMN,
   TIME_CREATED_COLUMN,
   SIZE_COLUMN
