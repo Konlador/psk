@@ -44,18 +44,18 @@ const RenameMenuItem = ({ video, isOpen, close }) => {
     else if(newName !== video.name) {
       setRenameStatus(REQUEST_STATUS.loading);
 
-      dispatch(renameVideo({itemId: video.id, newName}))
+      dispatch(renameVideo({itemId: video.id, newName, rowVersion: video.rowVersion}))
         .then(unwrapResult)
         .then(() => {
           setRenameStatus(REQUEST_STATUS.success);
           handleClose(true);
         }) 
         .catch((error) => {
-          if(error.message){
-            setErrorText(error.message)
+          if(error.data){
+            setErrorText(error.data)
           }
           else {
-            setErrorText(error)
+            setErrorText('Something went wrong');
           }
 
           setRenameStatus(REQUEST_STATUS.failed);

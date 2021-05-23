@@ -90,10 +90,11 @@ export const renameVideo = createAsyncThunk(
   async (params, { rejectWithValue }) => {
     const itemId = params.itemId;
     const newName = params.newName;
+    const rowVersion = params.rowVersion;
 
     try {
-      const response = await http.put(
-        `/api/drive/${driveId}/files/${itemId}/rename?newName=${newName}`
+      const response = await http.patch(
+        `/api/drive/${driveId}/files/${itemId}/rename?newName=${newName}&rowVersion=${rowVersion}`
       );
       return response.data;
     } catch (err) {

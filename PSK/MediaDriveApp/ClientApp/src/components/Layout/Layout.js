@@ -11,8 +11,8 @@ export const Layout = (props) => {
   return (
     <div className="layout">
       <LeftSidebar />
-      <UploadLoader />
       <main className="layout__main"> 
+        <UploadLoader />
         {props.children}
       </main>
     </div>
