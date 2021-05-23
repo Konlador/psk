@@ -7,7 +7,7 @@ const useRestoreVideo = () => {
   const restore = async (video) => {
     dispatch(resetRestore());
     dispatch(updateItems(video.id));
-    dispatch(setUserAction({ userAction: 'bin', userActionItem: video }));
+    dispatch(setUserAction({ userAction: 'restore', userActionItem: video }));
     dispatch(restoreVideo(video.id));
   }
 
