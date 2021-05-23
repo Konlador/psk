@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { REQUEST_STATUS } from '../../common/constants';
-import PositionedSnackbar from './Snackbars/PositionedSnackbar';
-import { resetRestore, resetDelete, resetBin } from '../../Redux/videosSlice';
-import { reset as resetUpload } from '../../Redux/uploadSlice';
+import { REQUEST_STATUS } from '../../../common/constants';
+import PositionedSnackbar from './PositionedSnackbar';
+import { resetRestore, resetDelete, resetBin } from '../../../Redux/videosSlice';
+import { reset as resetUpload } from '../../../Redux/uploadSlice';
 
 const useSnackbar = () => { 
   const dispatch = useDispatch();

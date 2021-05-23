@@ -7,7 +7,7 @@ import BinPage from "./pages/BinPage/BinPage";
 import { getBuildDate } from "./utils/utils";
 import withClearCache from "./ClearCache";
 import packageJson from "../package.json";
-import useSnackbar from "./components/Layout/useSnackbar";
+import useSnackbar from "./components/Layout/Snackbars/useSnackbar";
 
 const ClearCacheComponent = withClearCache(MainApp);
 
