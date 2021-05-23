@@ -50,11 +50,30 @@ namespace MediaDriveApp.Controllers
             var itemsResult = items.Select(i => new
                                           {
                                           i.Id, i.DriveId, i.ParentId, i.Name, i.TimeCreated, i.Size,
-                                          i.State, i.Trashed, i.TrashedExplicitly, i.TrashedTime
+                                          i.State, i.Trashed, i.TrashedExplicitly, i.TrashedTime,
+                                          i.RowVersion
                                           });
 
             return Ok(new {Parents = parentsResult, Items = itemsResult});
             }
+
+        [HttpGet]
+        [Route("files/{id}")]
+        public async Task<ActionResult<dynamic>> GetFile(
+           [FromRoute, ModelBinder] IDriveScopeFactory driveScopeFactory,
+           [FromRoute] Guid id, CancellationToken cancellationToken)
+        {
+            using var driveScope = driveScopeFactory.CreateInstance();
+
+            var file = await driveScope.StorageItems.GetAsync(id, cancellationToken);
+
+            if(file == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(file);
+        }
 
         [HttpGet]
         [Route("files/{itemId:guid}/download")]

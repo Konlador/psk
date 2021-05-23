@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { REQUEST_STATUS } from "../../common/constants";
-import http from "../../http-common";
+import { REQUEST_STATUS } from "../common/constants";
+import http from "../http-common";
 
 // TODO: get drive id after authentication
 const driveId = "982ecb26-309b-451a-973d-2d6f6e1b2e34";
@@ -10,6 +10,7 @@ const initialState = {
   items: [],
   status: REQUEST_STATUS.idle,
   error: null,
+  itemStatus: null,
   binVideoStatus: REQUEST_STATUS.idle,
   binVideoError: null,
   restoreVideoStatus: REQUEST_STATUS.idle,
@@ -25,6 +26,25 @@ export const getAllVideos = createAsyncThunk(
       const response = await http.get(`/api/drive/${driveId}/files`, {
         params,
       });
+      return response.data;
+    } catch (err) {
+      const error = err;
+
+      // response was not returned - return err to rejected promise
+      if (!error.response) {
+        throw err;
+      }
+      // response was returned - return validation errors from server to rejected promise
+      return rejectWithValue(err.response.status);
+    }
+  }
+);
+
+export const getVideo = createAsyncThunk(
+  "videos/getVideo",
+  async (fileId, { rejectWithValue }) => {
+    try {
+      const response = await http.get(`/api/drive/${driveId}/files/${fileId}`);
       return response.data;
     } catch (err) {
       const error = err;
@@ -159,10 +179,11 @@ export const videosSlice = createSlice({
       state.binVideoError = "";
       state.binVideoStatus = REQUEST_STATUS.idle;
     },
+    //update items after restore or delete -> remove element from list
     updateItems: (state, action) => {
       const id = action.payload;
-      const itemToRestoreIndex = state.items.findIndex((item) => item.id === id);
-      state.items.splice(itemToRestoreIndex, 1);
+      const itemToRemoveIndex = state.items.findIndex((item) => item.id === id);
+      state.items.splice(itemToRemoveIndex, 1);
     },
     resetRestore: (state) => {
       state.restoreVideoError = "";
@@ -171,6 +192,9 @@ export const videosSlice = createSlice({
     resetDelete: (state) => {
       state.deleteVideoError = "";
       state.deleteVideoStatus = REQUEST_STATUS.idle;
+    },
+    resetItem: (state) => {
+      state.itemStatus = null;
     }
   },
   extraReducers: {
@@ -189,6 +213,17 @@ export const videosSlice = createSlice({
         state.error = NETWORK_ERROR;
       }
       state.status = REQUEST_STATUS.failed;
+    },
+    [getVideo.fulfilled]: (state, action) => {
+      const id = action.payload.id;
+      const itemToUpdateIndex = state.items.findIndex((item) => item.id === id);
+      if (itemToUpdateIndex !== -1) {
+        state.items[itemToUpdateIndex] = action.payload;
+      } else {
+        state.items.push(action.payload);
+      }
+
+      state.itemStatus = REQUEST_STATUS.success;
     },
 
     [binVideo.pending]: (state,) => {
@@ -231,6 +266,6 @@ export const videosSlice = createSlice({
   },
 });
 
-export const { updateName, updateItems, resetBin, resetRestore, resetDelete } = videosSlice.actions;
+export const { updateName, updateItems, resetBin, resetRestore, resetDelete, resetItem } = videosSlice.actions;
 
 export default videosSlice.reducer;

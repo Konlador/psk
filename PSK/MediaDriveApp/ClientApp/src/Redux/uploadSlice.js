@@ -22,7 +22,8 @@ export const uploadSlice = createSlice({
         }
     },
     reset: (state) => {
-      state = initialState;
+      state.isUploading = false;
+      state.progress = null;
     },
   },
 });

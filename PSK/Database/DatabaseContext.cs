@@ -32,6 +32,9 @@ namespace Database
                     .IsRequired(false)
                     .OnDelete(DeleteBehavior.Restrict);
                 });
+
+            modelBuilder.Entity<StorageItem>()
+                        .Property(p => p.RowVersion).IsRowVersion();
             }
         }
     }

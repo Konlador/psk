@@ -1,8 +1,8 @@
-import { React, useEffect, useState, useCallback } from "react";
+import { React, useEffect, useState } from "react";
 import { Alert } from "@material-ui/lab";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useSelector, useDispatch } from "react-redux";
-import { getAllVideos, resetDelete } from "./videosSlice";
+import { getAllVideos, resetDelete } from "../../Redux/videosSlice";
 import { VIDEO_LIST_COLUMNS_MAIN, VIDEO_LIST_COLUMNS_BIN } from "./VideoListColumns";
 import { REQUEST_STATUS } from "../../common/constants";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
@@ -16,7 +16,7 @@ import { MENU_ITEMS } from './videosConstants';
 import useDownloadVideo from './ContextMenu/useDownloadVideo';
 import useRestoreVideo from './ContextMenu/useRestoreVideo';
 import useBinVideo from './ContextMenu/useBinVideo';
-import { reset as resetLimiters } from "../../components/Layout/Sidebars/limiterSlice";
+import { reset as resetLimiters } from "../../Redux/limitersSlice";
 import SearchBar from "./SearchBar";
 import "./videosList.scss";
 
@@ -189,8 +189,6 @@ export const VideosList = ({ queryParams }) => {
     console.log('Bin failed: ', binError);
   }
 
-  console.log(deleteStatus);
-
   if (deleteStatus === REQUEST_STATUS.success) {
     dispatch(resetLimiters());
     dispatch(resetDelete());
@@ -213,6 +211,7 @@ export const VideosList = ({ queryParams }) => {
           dataSource={getDataSource}
           enableFiltering={false} 
           renderRowContextMenu={renderRowContextMenu}
+          defaultSortInfo={{ name: 'name', dir: 1 }}
           showZebraRows={true}
           style={gridStyle}
           nativeScroll={false}
