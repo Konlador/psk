@@ -36,8 +36,6 @@ class UploadFiles extends Component {
     });
   }
 
-  //---------------------UPLOAD---------------------------
-
   // async
   upload() {
     let currentFile = this.state.selectedFiles[0];
@@ -54,7 +52,7 @@ class UploadFiles extends Component {
     var transaction;
     let newFileId;
 
-    UploadService.startTransaction(currentFile)
+    UploadService.startTransaction(currentFile.file)
       .then((response) => {
         newFileId = response.data.storageItemId;
         this.setState({
@@ -63,7 +61,7 @@ class UploadFiles extends Component {
 
         this.props.increaseProgress(33);
         transaction = response.data;
-        return UploadService.uploadFile(response.data, currentFile);
+        return UploadService.uploadFile(response.data, currentFile.file);
       })
       .then((response) => {
         this.setState({
@@ -138,35 +136,35 @@ class UploadFiles extends Component {
             </Box>
           </Box>
         )}
-        {!fileAdded && (
-          <DropzoneAreaBase
-            acceptedFiles={["video/*"]}
-            dropzoneText={"Drag and drop a video here or click"}
-            filesLimit={1}
-            onAdd={this.selectFile}
-            maxFileSize={1024 * 1024 * 100}
-            showFileNames={true}
-            showFileNamesInPreview={true}
-            alertSnackbarProps={{
-              anchorOrigin: { vertical: "bottom", horizontal: "right" },
-            }}
-          />
-        )}
+        {/* {!fileAdded && ( */}
+        <DropzoneAreaBase
+          acceptedFiles={["video/*"]}
+          dropzoneText={"Drag and drop a video here or click"}
+          filesLimit={1}
+          onAdd={this.selectFile}
+          maxFileSize={1024 * 1024 * 100}
+          showFileNames={true}
+          showFileNamesInPreview={true}
+          alertSnackbarProps={{
+            anchorOrigin: { vertical: "bottom", horizontal: "right" },
+          }}
+        />
+        {/* )} */}
         <br />
         <br />
-        {!fileAdded && (
-          <button
-            className="btn-upload"
-            disabled={!selectedFiles}
-            onClick={this.upload}
-          >
-            Upload
-          </button>
-        )}
+        {/* {!fileAdded && ( */}
+        <button
+          className="btn-upload"
+          disabled={!selectedFiles}
+          onClick={this.upload}
+        >
+          Upload
+        </button>
+        {/* )} */}
 
         <div className="file-name">
           {selectedFiles && selectedFiles.length > 0
-            ? selectedFiles[0].name
+            ? selectedFiles[0].file.name
             : null}
         </div>
 
