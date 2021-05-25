@@ -3,8 +3,6 @@ import { Box, Typography, Button } from "@material-ui/core";
 import "./uploadFiles.scss";
 import UploadService from "../../services/upload-files.service";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import FileCopyRoundedIcon from "@material-ui/icons/FileCopyRounded";
-import { Snackbars } from "../Layout/Snackbars/Snackbars";
 import BorderLinearProgress from "../Loaders/BorderLinearProgress";
 import { connect } from "react-redux";
 import {
@@ -27,23 +25,17 @@ class UploadFiles extends Component {
       progress: 0,
       message: "",
       isError: false,
-      fileName: "",
-      uploadedLink: "",
-      showSnackbar: false,
+      fileAdded: false,
     };
   }
 
   selectFile(file) {
     this.setState({
       selectedFiles: file,
+      // fileAdded: true,
     });
   }
-  // selectFile(event) {
-  //   console.log(event);
-  //   this.setState({
-  //     selectedFiles: event.target.files,
-  //   });
-  // }
+
   //---------------------UPLOAD---------------------------
 
   // async
@@ -70,15 +62,6 @@ class UploadFiles extends Component {
         });
 
         this.props.increaseProgress(33);
-        // UploadService.uploadToURI(
-        //   response.data.uploadUri,
-        //   currentFile,
-        //   (event) => {
-        //     this.setState({
-        //       progress: Math.round((100 * event.loaded) / event.total),
-        //     });
-        //   }
-        // );
         transaction = response.data;
         return UploadService.uploadFile(response.data, currentFile);
       })
@@ -124,6 +107,7 @@ class UploadFiles extends Component {
       selectedFiles: undefined,
     });
   }
+
   //------------------------------------------------------
   render() {
     const {
@@ -131,10 +115,8 @@ class UploadFiles extends Component {
       currentFile,
       progress,
       message,
-      fileName,
       isError,
-      uploadedLink,
-      //  showSnackbar,
+      fileAdded,
     } = this.state;
 
     return (
@@ -156,70 +138,43 @@ class UploadFiles extends Component {
             </Box>
           </Box>
         )}
-        {/* <label htmlFor="btn-upload">
-          <input
-            id="btn-upload"
-            name="btn-upload"
-            style={{ display: "none" }}
-            type="file"
-            onChange={this.selectFile}
-            accept="video/*"
+        {!fileAdded && (
+          <DropzoneAreaBase
+            acceptedFiles={["video/*"]}
+            dropzoneText={"Drag and drop a video here or click"}
+            filesLimit={1}
+            onAdd={this.selectFile}
+            maxFileSize={1024 * 1024 * 100}
+            showFileNames={true}
+            showFileNamesInPreview={true}
+            alertSnackbarProps={{
+              anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            }}
           />
-          <Button
-            className="btn-choose"
-            variant="outlined"
-            component="span"
-            startIcon={<FileCopyRoundedIcon />}
+        )}
+        <br />
+        <br />
+        {!fileAdded && (
+          <button
+            className="btn-upload"
+            disabled={!selectedFiles}
+            onClick={this.upload}
           >
-            Choose Video File
-          </Button>
-        </label> */}
-        {/*   
-        <br></br>
-        <br></br> */}
-        <DropzoneAreaBase
-          acceptedFiles={["video/*"]}
-          dropzoneText={"Drag and drop a video here or click"}
-          filesLimit={1}
-          // Icon={<CloudUploadIcon />}
-          onAdd={this.selectFile}
-          maxFileSize={1024 * 1024 * 100}
-          showFileNames={true}
-          showFileNamesInPreview={true}
-          alertSnackbarProps={{
-            anchorOrigin: { vertical: "bottom", horizontal: "right" },
-          }}
-        />
-        <br />
-        <br />
-        <Button
-          className="btn-upload"
-          color="primary"
-          variant="contained"
-          component="span"
-          disabled={!selectedFiles}
-          onClick={this.upload}
-          startIcon={<CloudUploadIcon />}
-        >
-          Upload
-        </Button>
+            Upload
+          </button>
+        )}
+
         <div className="file-name">
           {selectedFiles && selectedFiles.length > 0
             ? selectedFiles[0].name
             : null}
         </div>
+
         <Typography
           variant="subtitle2"
           className={`upload-message ${isError ? "error" : ""}`}
         >
           {message}
-        </Typography>
-        <br></br>
-        <a href="/videos" className="link_to_videos">
-          {uploadedLink}
-        </a>
-        <Typography variant="h6" className="list-header">
-          {fileName}
         </Typography>
       </div>
     );
