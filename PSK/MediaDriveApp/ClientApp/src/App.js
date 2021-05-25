@@ -2,12 +2,12 @@ import "./App.css";
 import { useEffect } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import UploadPage from "./pages/UploadPage/UploadPage";
-import HomePage from "./pages/HomePage/HomePage";
 import VideosPage from "./pages/VideosPage/VideosPage";
 import BinPage from "./pages/BinPage/BinPage";
 import { getBuildDate } from "./utils/utils";
 import withClearCache from "./ClearCache";
 import packageJson from "../package.json";
+import useSnackbar from "./components/Layout/Snackbars/useSnackbar";
 
 const ClearCacheComponent = withClearCache(MainApp);
 
@@ -16,11 +16,17 @@ function App() {
 }
 
 function MainApp() {
+    const snackbar = useSnackbar();
+
     useEffect(() => {
         console.log("Build date: " + getBuildDate(packageJson.buildDate));
     }, [])
+
+    let renderSnackbar = snackbar();
+
     return (
         <div className="App">
+            {renderSnackbar}
             <BrowserRouter>
                 <Switch>
                     <Route exact path="/" component={VideosPage}></Route>
