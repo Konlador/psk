@@ -1,14 +1,15 @@
 import React, { Component } from "react";
-import { Box, Typography, Button } from "@material-ui/core";
+import { Box, Typography } from "@material-ui/core";
 import "./uploadFiles.scss";
 import UploadService from "../../services/upload-files.service";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+
 import BorderLinearProgress from "../Loaders/BorderLinearProgress";
 import { connect } from "react-redux";
 import {
   start,
   increaseProgress,
   reset as resetUpload,
+  reject as rejectUpload,
 } from "../../Redux/uploadSlice";
 import { getVideo } from "../../Redux/videosSlice";
 import { reset as resetLimiters } from "../../Redux/limitersSlice";
@@ -44,7 +45,7 @@ class UploadFiles extends Component {
       progress: 0,
       currentFile: currentFile,
       fileInfos: currentFile.name,
-      message: "Initiating upload",
+      message: "Initiating upload...",
     });
 
     this.props.start();
@@ -65,7 +66,7 @@ class UploadFiles extends Component {
       })
       .then((response) => {
         this.setState({
-          message: "Uploading started",
+          message: "Uploading started...",
           isError: false,
           progress: 66,
         });
@@ -75,35 +76,32 @@ class UploadFiles extends Component {
         return UploadService.commitUpload(transaction.id);
       })
       .then((response) => {
+        if (window.location.pathname === "/videos") {
+          this.props.getVideo(newFileId);
+        }
+
         this.props.increaseProgress(100);
         this.props.resetLimiters();
 
         this.setState({
-          message: "Your file has been successfully uploaded",
+          message: "",
           isError: false,
           progress: 100,
+          currentFile: undefined,
+          selectedFiles: undefined,
         });
-
-        if (window.location.pathname === "/videos") {
-          this.props.getVideo(newFileId);
-        }
       })
       .catch((error) => {
-        console.log(error.response);
-        this.props.resetUpload();
+        this.props.rejectUpload();
         this.setState({
           progress: 0,
-          message: `Could not upload the file! error msg: ${error}`,
           currentFile: undefined,
           isError: true,
           fileInfos: "",
           selectedFiles: undefined,
+          message: "",
         });
       });
-
-    this.setState({
-      selectedFiles: undefined,
-    });
   }
 
   //------------------------------------------------------
@@ -114,7 +112,7 @@ class UploadFiles extends Component {
       progress,
       message,
       isError,
-      fileAdded,
+      // fileAdded,
     } = this.state;
 
     return (
@@ -151,6 +149,12 @@ class UploadFiles extends Component {
         />
         {/* )} */}
         <br />
+        <div className="file-name">
+          {selectedFiles && selectedFiles.length > 0
+            ? selectedFiles[0].file.name
+            : null}
+        </div>
+        <br />
         <br />
         {/* {!fileAdded && ( */}
         <button
@@ -161,12 +165,6 @@ class UploadFiles extends Component {
           Upload
         </button>
         {/* )} */}
-
-        <div className="file-name">
-          {selectedFiles && selectedFiles.length > 0
-            ? selectedFiles[0].file.name
-            : null}
-        </div>
 
         <Typography
           variant="subtitle2"
@@ -183,6 +181,7 @@ const mapDispatchToProps = {
   start,
   increaseProgress,
   resetUpload,
+  rejectUpload,
   resetLimiters,
   getVideo,
 };

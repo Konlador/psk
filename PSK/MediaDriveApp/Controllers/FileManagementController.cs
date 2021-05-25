@@ -40,7 +40,7 @@ namespace MediaDriveApp.Controllers
             catch(DbUpdateConcurrencyException)
                 {
                 return BadRequest(
-                    "This item you attempted to rename was modified by another request after you got the item information.");
+                    "The name has been changed by another user. Please refresh the page and try again.");
                 }
 
             return Ok(item);

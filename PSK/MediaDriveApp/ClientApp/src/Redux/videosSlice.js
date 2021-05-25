@@ -41,7 +41,6 @@ export const getAllVideos = createAsyncThunk(
       if (!error.response) {
         throw err;
       }
-
       return rejectWithValue(err.response);
     }
   }
@@ -123,7 +122,6 @@ export const binVideo = createAsyncThunk(
       if (!error.response) {
         throw err;
       }
-
       return rejectWithValue(err.response);
     }
   }
@@ -143,7 +141,6 @@ export const restoreVideo = createAsyncThunk(
       if (!error.response) {
         throw err;
       }
-
       return rejectWithValue(err.response);
     }
   }
@@ -216,7 +213,6 @@ export const videosSlice = createSlice({
       state.error = ErrorParser.parseError(action);
       state.status = REQUEST_STATUS.failed;
     },
-
     [getVideo.fulfilled]: (state, action) => {
       const id = action.payload.id;
       const itemToUpdateIndex = state.items.findIndex((item) => item.id === id);
