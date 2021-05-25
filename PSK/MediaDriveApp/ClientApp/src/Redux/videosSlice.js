@@ -41,7 +41,6 @@ export const getAllVideos = createAsyncThunk(
       if (!error.response) {
         throw err;
       }
-      
       return rejectWithValue(err.response);
     }
   }
@@ -123,7 +122,6 @@ export const binVideo = createAsyncThunk(
       if (!error.response) {
         throw err;
       }
-    
       return rejectWithValue(err.response);
     }
   }
@@ -143,7 +141,6 @@ export const restoreVideo = createAsyncThunk(
       if (!error.response) {
         throw err;
       }
-     
       return rejectWithValue(err.response);
     }
   }
@@ -202,10 +199,10 @@ export const videosSlice = createSlice({
     setUserAction: (state, action) => {
       state.userAction = action.payload.userAction;
       state.userActionItem = action.payload.userActionItem;
-    }
+    },
   },
   extraReducers: {
-    [getAllVideos.pending]: (state,) => {
+    [getAllVideos.pending]: (state) => {
       state.status = REQUEST_STATUS.loading;
     },
     [getAllVideos.fulfilled]: (state, action) => {
@@ -216,7 +213,6 @@ export const videosSlice = createSlice({
       state.error = ErrorParser.parseError(action);
       state.status = REQUEST_STATUS.failed;
     },
-    
     [getVideo.fulfilled]: (state, action) => {
       const id = action.payload.id;
       const itemToUpdateIndex = state.items.findIndex((item) => item.id === id);
@@ -229,14 +225,15 @@ export const videosSlice = createSlice({
       state.itemStatus = REQUEST_STATUS.success;
     },
 
-    [binVideo.pending]: (state,) => {
+    [binVideo.pending]: (state) => {
       state.binVideoError = "";
       state.binVideoStatus = REQUEST_STATUS.loading;
     },
     [binVideo.fulfilled]: (state) => {
-        if (state.userAction === 'bin' && window.location.pathname === '/bin') {
-
-        const found = state.items.findIndex((item) => item.id === state.userActionItem.id);
+      if (state.userAction === "bin" && window.location.pathname === "/bin") {
+        const found = state.items.findIndex(
+          (item) => item.id === state.userActionItem.id
+        );
 
         if (found === -1) {
           state.items.push(state.userActionItem);
@@ -255,9 +252,13 @@ export const videosSlice = createSlice({
     },
 
     [restoreVideo.fulfilled]: (state) => {
-      if (state.userAction === 'restore' && window.location.pathname === '/videos') {
-
-        const found = state.items.findIndex((item) => item.id === state.userActionItem.id);
+      if (
+        state.userAction === "restore" &&
+        window.location.pathname === "/videos"
+      ) {
+        const found = state.items.findIndex(
+          (item) => item.id === state.userActionItem.id
+        );
 
         if (found === -1) {
           state.items.push(state.userActionItem);
@@ -285,6 +286,14 @@ export const videosSlice = createSlice({
   },
 });
 
-export const { updateName, updateItems, resetBin, resetRestore, resetDelete, resetItem, setUserAction } = videosSlice.actions;
+export const {
+  updateName,
+  updateItems,
+  resetBin,
+  resetRestore,
+  resetDelete,
+  resetItem,
+  setUserAction,
+} = videosSlice.actions;
 
 export default videosSlice.reducer;

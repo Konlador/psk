@@ -14,9 +14,7 @@ export const Layout = (props) => {
       <div className="layout__loader">
         <UploadLoader />
       </div>
-      <main className="layout__main">
-        {props.children}
-      </main>
+      <main className="layout__main">{props.children}</main>
     </div>
   );
 };
