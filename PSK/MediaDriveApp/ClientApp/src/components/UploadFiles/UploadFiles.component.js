@@ -3,7 +3,6 @@ import { Box, Typography } from "@material-ui/core";
 import "./uploadFiles.scss";
 import UploadService from "../../services/upload-files.service";
 
-import BorderLinearProgress from "../Loaders/BorderLinearProgress";
 import { connect } from "react-redux";
 import {
   start,
@@ -117,23 +116,6 @@ class UploadFiles extends Component {
 
     return (
       <div className="mg20">
-        {currentFile && (
-          <Box className="mb25" display="flex" alignItems="center">
-            <Box width="100%" mr={1}>
-              <BorderLinearProgress
-                variant="buffer"
-                value={progress}
-                valueBuffer={0}
-              />
-            </Box>
-            <Box minWidth={35}>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-              >{`${progress}%`}</Typography>
-            </Box>
-          </Box>
-        )}
         {/* {!fileAdded && ( */}
         <DropzoneAreaBase
           acceptedFiles={["video/*"]}
