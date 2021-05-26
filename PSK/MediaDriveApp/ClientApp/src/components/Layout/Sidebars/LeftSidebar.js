@@ -20,6 +20,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import BackupRoundedIcon from "@material-ui/icons/BackupRounded";
 import VideoLibraryIcon from "@material-ui/icons/VideoLibrary";
 import { Link } from "react-router-dom";
+import ExitToAppOutlinedIcon from "@material-ui/icons/ExitToAppOutlined";
 
 export const LeftSidebar = (props) => {
   const drawerWidth = 240;
@@ -27,6 +28,7 @@ export const LeftSidebar = (props) => {
   const useStyles = makeStyles((theme) => ({
     root: {
       display: "flex",
+      flexGrow: 1,
     },
     appBar: {
       zIndex: theme.zIndex.drawer + 1,
@@ -86,10 +88,13 @@ export const LeftSidebar = (props) => {
     <div className={classes.root}>
       <CssBaseline />
       <AppBar position="fixed" className={classes.appBar}>
-        <Toolbar>
+        <Toolbar className="appbar__toolbar">
           <Typography variant="h6" noWrap>
-            Canopus
+            Canopus videoteka
           </Typography>
+          <button className="appbar__logout">
+            <ExitToAppOutlinedIcon fontSize="large" style={{ fill: "white" }} />
+          </button>
         </Toolbar>
       </AppBar>
       <Drawer
