@@ -26,3 +26,19 @@
     font-weight: 900;
   }
 }
+.appbar {
+  &__toolbar {
+    justify-content: space-between;
+  }
+  &__logout {
+    left: 23px;
+    position: relative;
+    background-color: transparent;
+    border: none;
+    height: 64px;
+    width: 64px;
+  }
+  &__logout:hover {
+    background-color: rgb(32, 51, 128);
+  }
+}
