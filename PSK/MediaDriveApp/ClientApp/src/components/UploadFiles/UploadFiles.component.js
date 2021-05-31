@@ -23,7 +23,6 @@ class UploadFiles extends Component {
       selectedFiles: undefined,
       currentFile: undefined,
       progress: 0,
-      message: "",
       isError: false,
       fileAdded: false,
     };
@@ -44,7 +43,7 @@ class UploadFiles extends Component {
       progress: 0,
       currentFile: currentFile,
       fileInfos: currentFile.name,
-      message: "Initiating upload...",
+      selectedFiles: undefined,
     });
 
     this.props.start();
@@ -65,7 +64,6 @@ class UploadFiles extends Component {
       })
       .then((response) => {
         this.setState({
-          message: "Uploading started...",
           isError: false,
           progress: 66,
         });
@@ -83,7 +81,6 @@ class UploadFiles extends Component {
         this.props.resetLimiters();
 
         this.setState({
-          message: "",
           isError: false,
           progress: 100,
           currentFile: undefined,
@@ -98,7 +95,6 @@ class UploadFiles extends Component {
           isError: true,
           fileInfos: "",
           selectedFiles: undefined,
-          message: "",
         });
       });
   }
@@ -109,7 +105,6 @@ class UploadFiles extends Component {
       selectedFiles,
       currentFile,
       progress,
-      message,
       isError,
       // fileAdded,
     } = this.state;
@@ -147,13 +142,6 @@ class UploadFiles extends Component {
           Upload
         </button>
         {/* )} */}
-
-        <Typography
-          variant="subtitle2"
-          className={`upload-message ${isError ? "error" : ""}`}
-        >
-          {message}
-        </Typography>
       </div>
     );
   }

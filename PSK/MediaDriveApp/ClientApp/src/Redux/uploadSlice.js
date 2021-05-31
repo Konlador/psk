@@ -5,6 +5,7 @@ const initialState = {
   isUploading: false,
   progress: null,
   status: REQUEST_STATUS.idle,
+  message: '',
 };
 
 export const uploadSlice = createSlice({
@@ -15,9 +16,11 @@ export const uploadSlice = createSlice({
       state.progress = 0;
       state.isUploading = true;
       state.status = REQUEST_STATUS.loading;
+      state.message = "Initiating upload";
     },
     increaseProgress: (state, action) => {
       state.progress = action.payload;
+      state.message = "Uploading is in progress"
 
       if (state.progress === 100) {
         state.isUploading = false;

@@ -11,10 +11,10 @@ export const Layout = (props) => {
   return (
     <div className="layout">
       <LeftSidebar />
-      <div className="layout__loader">
+      <main className="layout__main">
         <UploadLoader />
-      </div>
-      <main className="layout__main">{props.children}</main>
+        {props.children}
+      </main>
     </div>
   );
 };
