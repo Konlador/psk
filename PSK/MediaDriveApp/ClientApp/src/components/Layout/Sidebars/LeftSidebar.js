@@ -21,6 +21,7 @@ import BackupRoundedIcon from "@material-ui/icons/BackupRounded";
 import VideoLibraryIcon from "@material-ui/icons/VideoLibrary";
 import { Link } from "react-router-dom";
 import ExitToAppOutlinedIcon from "@material-ui/icons/ExitToAppOutlined";
+import { useMsal } from "@azure/msal-react";
 
 export const LeftSidebar = (props) => {
   const drawerWidth = 240;
@@ -69,6 +70,12 @@ export const LeftSidebar = (props) => {
   const dispatch = useDispatch();
   const { limiters, status, error } = useSelector(selectLimiters);
   const isLoading = status === REQUEST_STATUS.loading;
+  const { instance } = useMsal();
+  const handleLogout = () => {
+    instance.logoutRedirect({
+    postLogoutRedirectUri: "/",
+    });
+  }
 
   useEffect(() => {
     if (status === REQUEST_STATUS.idle) {
@@ -109,7 +116,7 @@ export const LeftSidebar = (props) => {
           <Typography variant="h6" noWrap>
             Canopus videoteka
           </Typography>
-          <button className="appbar__logout">
+          <button className="appbar__logout" onClick={handleLogout}>
             <ExitToAppOutlinedIcon fontSize="large" style={{ fill: "white" }} />
           </button>
         </Toolbar>

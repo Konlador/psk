@@ -5,10 +5,12 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediaDriveApp.Controllers
     {
+    [AllowAnonymous]
     [ApiController]
     [Route("api/drive/{driveId:guid}")]
     public class FileManagementController : ControllerBase
