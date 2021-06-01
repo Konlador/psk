@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MediaDriveApp.Controllers
     {
-
+    [AllowAnonymous]
     [ApiController]
     [Route("api/drive/{driveId:guid}")]
     public class UploadController : ControllerBase

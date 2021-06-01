@@ -1,10 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { REQUEST_STATUS } from "../common/constants";
-import http from "../http-common";
 import ErrorParser from "../common/ErrorParser";
-
-// TODO: get drive id after authentication
-const driveId = "982ecb26-309b-451a-973d-2d6f6e1b2e34";
+import { callApi } from "../apiClient";
 
 const initialState = {
   items: [],
@@ -31,9 +28,7 @@ export const getAllVideos = createAsyncThunk(
   "videos/getAllVideos",
   async (params, { rejectWithValue }) => {
     try {
-      const response = await http.get(`/api/drive/${driveId}/files`, {
-        params,
-      });
+      const response = await callApi("GET", (driveId) => `/api/drive/${driveId}/files`, {params});
       return response.data;
     } catch (err) {
       const error = err;
@@ -50,7 +45,7 @@ export const getVideo = createAsyncThunk(
   "videos/getVideo",
   async (fileId, { rejectWithValue }) => {
     try {
-      const response = await http.get(`/api/drive/${driveId}/files/${fileId}`);
+      const response = await callApi("GET", (driveId) => `/api/drive/${driveId}/files/${fileId}`);
       return response.data;
     } catch (err) {
       const error = err;
@@ -68,9 +63,7 @@ export const downloadVideoUri = createAsyncThunk(
   "videos/downloadVideoUri",
   async (itemId, { rejectWithValue }) => {
     try {
-      const response = await http.get(
-        `/api/drive/${driveId}/files/${itemId}/download`
-      );
+      const response = await callApi("GET", (driveId) => `/api/drive/${driveId}/files/${itemId}/download`);
       return response.data;
     } catch (err) {
       const error = err;
@@ -92,9 +85,7 @@ export const renameVideo = createAsyncThunk(
     const rowVersion = params.rowVersion;
 
     try {
-      const response = await http.patch(
-        `/api/drive/${driveId}/files/${itemId}/rename?newName=${newName}&rowVersion=${rowVersion}`
-      );
+      const response = await callApi("PATCH", (driveId) => `/api/drive/${driveId}/files/${itemId}/rename?newName=${newName}&rowVersion=${rowVersion}`);
       return response.data;
     } catch (err) {
       const error = err;
@@ -112,9 +103,7 @@ export const binVideo = createAsyncThunk(
   "videos/binVideo",
   async (itemId, { rejectWithValue }) => {
     try {
-      const response = await http.post(
-        `/api/drive/${driveId}/files/${itemId}/trash`
-      );
+      const response = await callApi("POST", (driveId) => `/api/drive/${driveId}/files/${itemId}/trash`);
       return response.data;
     } catch (err) {
       const error = err;
@@ -131,9 +120,7 @@ export const restoreVideo = createAsyncThunk(
   "videos/restoreVideo",
   async (itemId, { rejectWithValue }) => {
     try {
-      const response = await http.post(
-        `/api/drive/${driveId}/files/${itemId}/restore`
-      );
+      const response = await callApi("POST", (driveId) => `/api/drive/${driveId}/files/${itemId}/restore`);
       return response.data;
     } catch (err) {
       const error = err;
@@ -150,9 +137,7 @@ export const deleteVideo = createAsyncThunk(
   "videos/deleteVideo",
   async (itemId, { rejectWithValue }) => {
     try {
-      const response = await http.delete(
-        `/api/drive/${driveId}/files/${itemId}`
-      );
+      const response = await callApi("DELETE", (driveId) => `/api/drive/${driveId}/files/${itemId}`);
       return response.data;
     } catch (err) {
       const error = err;

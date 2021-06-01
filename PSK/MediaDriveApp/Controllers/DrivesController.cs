@@ -3,11 +3,14 @@ using Domain.Drives;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MediaDriveApp.Controllers
     {
+    [AllowAnonymous]
     [ApiController]
     [Route("api/drives")]
     public class DrivesController : ControllerBase
@@ -20,42 +23,27 @@ namespace MediaDriveApp.Controllers
             }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Drive>>> GetAll(CancellationToken cancellationToken)
-            {
-            return Ok(await m_globalScope.Drives.GetAllAsync(cancellationToken));
-            }
-
-        [HttpGet]
         [Route("{driveId:guid}")]
         public async Task<ActionResult<Drive>> Get(Guid driveId, CancellationToken cancellationToken)
             {
             var drive = await m_globalScope.Drives.GetAsync(driveId, cancellationToken);
+
+            if(null == drive)
+                {
+                var newDrive = new Drive
+                                   {
+                                   Id = driveId,
+                                   Capacity = 1000000000
+                                   };
+
+                await m_globalScope.Drives.AddAsync(newDrive, CancellationToken.None);
+                Debug.WriteLine($"Added a new drive {driveId}");
+                }
+
             if (null == drive)
                 return NotFound();
 
             return Ok(drive);
-            }
-
-        [HttpPost]
-        public async Task<ActionResult<Drive>> Post(CancellationToken cancellationToken)
-            {
-            var drive = new Drive
-                            {
-                            Id = Guid.NewGuid(),
-                            Capacity = 1000000
-                            };
-
-            return Ok(await m_globalScope.Drives.AddAsync(drive, cancellationToken));
-            }
-
-        [HttpDelete]
-        [Route("{driveId:guid}")]
-        public async Task<ActionResult> Delete(Guid driveId, CancellationToken cancellationToken)
-            {
-            if (await m_globalScope.Drives.RemoveAsync(driveId, cancellationToken))
-                return Ok();
-
-            return NotFound();
             }
         }
     }

@@ -16,9 +16,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Azure.Storage.Queues;
-using Azure.Core.Extensions;
-using System;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Identity.Web;
 
 namespace MediaDriveApp
     {
@@ -34,7 +35,16 @@ namespace MediaDriveApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
             {
-            services.AddControllersWithViews();
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
+
+            services.AddControllersWithViews(options =>
+                                                 {
+                                                 var policy = new AuthorizationPolicyBuilder()
+                                                              .RequireAuthenticatedUser()
+                                                              .Build();
+                                                 options.Filters.Add(new AuthorizeFilter(policy));
+                                                 });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -48,16 +58,15 @@ namespace MediaDriveApp
             services.AddMvc(options =>
                 options.ModelBinderProviders.Insert(0, new DriveScopeBinderProvider()));
 
-            services.AddCors(opt =>
-            {
-                opt.AddPolicy("CorsPolicy", policy =>
-                {
-                    policy
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .WithOrigins("http://localhost:3000");
-                });
-            });
+            services.AddCors(options =>
+                                 {
+                                 options.AddPolicy("CorsApi",
+                                     builder => builder
+                                                .SetIsOriginAllowed(_ => true) //for all origins
+                                                .AllowCredentials()
+                                                .AllowAnyHeader()
+                                                .AllowAnyMethod());
+                                 });
 
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "MediaDrives", Version = "v1" }); });
@@ -77,16 +86,7 @@ namespace MediaDriveApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
             {
-            // if (env.IsDevelopment())
-            //     {
             app.UseDeveloperExceptionPage();
-            //     }
-            // else
-            //     {
-            //     app.UseExceptionHandler("/Error");
-            //     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-            //     app.UseHsts();
-            //     }
 
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
@@ -96,17 +96,16 @@ namespace MediaDriveApp
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
             app.UseApiKey();
-          
 
             app.UseRouting();
+            app.UseCors("CorsApi");
 
-            app.UseCors("CorsPolicy");
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    "default",
-                    "{controller}/{action=Index}/{id?}");
+            endpoints.MapControllers();
             });
 
             app.UseSpa(spa =>
@@ -118,31 +117,6 @@ namespace MediaDriveApp
                     spa.UseReactDevelopmentServer(npmScript: "start");
                     }
             });
-            }
-        }
-    internal static class StartupExtensions
-        {
-        public static IAzureClientBuilder<BlobServiceClient, BlobClientOptions> AddBlobServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
-            {
-            if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
-                {
-                return builder.AddBlobServiceClient(serviceUri);
-                }
-            else
-                {
-                return builder.AddBlobServiceClient(serviceUriOrConnectionString);
-                }
-            }
-        public static IAzureClientBuilder<QueueServiceClient, QueueClientOptions> AddQueueServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
-            {
-            if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
-                {
-                return builder.AddQueueServiceClient(serviceUri);
-                }
-            else
-                {
-                return builder.AddQueueServiceClient(serviceUriOrConnectionString);
-                }
             }
         }
     }
