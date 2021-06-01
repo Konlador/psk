@@ -5,9 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 
 namespace MediaDriveApp.Controllers
     {
+    [AllowAnonymous]
     [ApiController]
     [Route("api/drive/{driveId:guid}")]
     public class BinController : ControllerBase

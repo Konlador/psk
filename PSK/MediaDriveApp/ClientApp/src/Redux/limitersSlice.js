@@ -1,9 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { REQUEST_STATUS } from "../common/constants";
-import http from "../http-common";
+import { callApi } from "../apiClient";
 
-// TODO: get drive id after authentication
-const driveId = "982ecb26-309b-451a-973d-2d6f6e1b2e34";
 const NETWORK_ERROR = "Something went wrong. Try again later."
 
 const initialState = {
@@ -16,7 +14,7 @@ export const getLimiters = createAsyncThunk(
   "limiters/getLimiters",
   async (params, { rejectWithValue }) => {
     try {
-      const response = await http.get(`/api/drives/${driveId}`);
+      const response = await callApi("GET", (driveId) => `/api/drives/${driveId}`);
       return response.data;
     } catch (err) {
       const error = err;

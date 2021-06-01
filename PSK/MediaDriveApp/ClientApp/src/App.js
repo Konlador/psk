@@ -32,9 +32,7 @@ function ProtectedRoutes() {
 function UnprotectedRoutes() {
   return (
     <Switch>
-      <Route exact path="/" component={LoginPage}></Route>
-      <Route path="/videos" component={LoginPage}></Route>
-      {/* Pakeisti i login */}
+      <Route path="/" component={LoginPage}></Route>
     </Switch>
   );
 }

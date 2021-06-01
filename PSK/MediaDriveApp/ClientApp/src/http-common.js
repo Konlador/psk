@@ -2,7 +2,6 @@ import axios from "axios";
 import Qs from "qs";
 import config from "./assets/config.json";
 
-
 export default axios.create({
     baseURL: config.ApiUrl,
     headers: {

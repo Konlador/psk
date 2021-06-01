@@ -2,9 +2,11 @@
 using Domain.Impl;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Domain.Drives;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MediaDriveApp
@@ -31,7 +33,14 @@ namespace MediaDriveApp
 
             if (!await globalScope.Drives.ExistsAsync(driveId, CancellationToken.None))
                 {
-                throw new Exception($"DriveId {driveId} does not exist.");
+                var newDrive = new Drive
+                                   {
+                                   Id = driveId,
+                                   Capacity = 1000000000
+                                   };
+
+                await globalScope.Drives.AddAsync(newDrive, CancellationToken.None);
+                Debug.WriteLine($"Added a new drive {driveId}");
                 }
 
             var driveScopeFactory = new DriveScopeFactory(bindingContext.HttpContext.RequestServices, driveId);
