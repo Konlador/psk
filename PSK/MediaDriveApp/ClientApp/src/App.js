@@ -53,13 +53,13 @@ function MainApp() {
 
       <BrowserRouter>
          <AuthenticatedTemplate> 
-          <ProtectedRoutes >
-         <AuthenticatedTemplate> 
+          <ProtectedRoutes />
+         </AuthenticatedTemplate> 
          <UnauthenticatedTemplate>
-          <UnprotectedRoutes >
-        <UnauthenticatedTemplate> 
-      <BrowserRouter>
-    <div>
+          <UnprotectedRoutes />
+        </UnauthenticatedTemplate> 
+      </BrowserRouter>
+    </div>
   );
 }
 
