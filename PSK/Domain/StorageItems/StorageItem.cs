@@ -40,9 +40,11 @@ namespace Domain.StorageItems
 
         public DateTime? TrashedTime { get; set; }
         }
+        
 
     public class Folder : StorageItem
         {
         public virtual ICollection<StorageItem> Children { get; set; } = new List<StorageItem>();
+
         }
     }

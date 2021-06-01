@@ -1,6 +1,14 @@
+import http from "../../http-common";
 import { React, useEffect, useState, useCallback } from "react";
 import { Alert } from "@material-ui/lab";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import {
+  Button,
+  CircularProgress,
+  Breadcrumbs,
+  Typography
+}  
+ from "@material-ui/core";
+import Link from '@material-ui/core/Link';
 import { useSelector, useDispatch } from "react-redux";
 import { getAllVideos } from "./videosSlice";
 import { VIDEO_LIST_COLUMNS_MAIN, VIDEO_LIST_COLUMNS_BIN } from "./VideoListColumns";
@@ -16,6 +24,7 @@ import { MENU_ITEMS } from './videosConstants';
 import useDownloadVideo from './ContextMenu/useDownloadVideo';
 import useRestoreVideo from './ContextMenu/useRestoreVideo';
 import useBinVideo from './ContextMenu/useBinVideo';
+import useMoveFile from './ContextMenu/useMoveFile';
 import SearchBar from "./SearchBar";
 import "./videosList.scss";
 
@@ -31,6 +40,7 @@ export const VideosList = ({ queryParams }) => {
   const restoreError = useSelector((state) => state.videos.restoreVideoError);
   const restoreStatus = useSelector((state) => state.videos.restoreVideoStatus);
   const binVideo = useBinVideo();
+  const moveFile = useMoveFile();
   const binStatus = useSelector((state) => state.videos.binVideoStatus);
   const binError = useSelector((state) => state.videos.binVideoError);
   const [searchString, setSearchString] = useState('');
@@ -116,6 +126,50 @@ export const VideosList = ({ queryParams }) => {
         </div>
       ),
     };
+    const moveToPreviousDirectory = {
+      label: (
+        <div 
+          className="context-menu-item" 
+          onClick={() =>  
+          {//moveFile()
+            
+            const driveId = "982ecb26-309b-451a-973d-2d6f6e1b2e34";
+            const url_base = `/api/drive/${driveId}`;
+            let axiosConfig = {
+            headers: { "Content-Type": "application/json" },
+          };
+          for(var x in selected){
+            http.put(`${url_base}/files/${selected[x].id}/move?newParentId=${rowProps.data.id}`, axiosConfig);
+          }
+          dispatch(getAllVideos(queryParams));
+          }}
+        >
+          Move to folder
+        </div>
+      ),
+    };
+    const moveToFolder = {
+      label: (
+        <div 
+          className="context-menu-item" 
+          onClick={() =>  
+          {//moveFile()
+            
+            const driveId = "982ecb26-309b-451a-973d-2d6f6e1b2e34";
+            const url_base = `/api/drive/${driveId}`;
+            let axiosConfig = {
+            headers: { "Content-Type": "application/json" },
+          };
+          for(var x in selected){
+            http.put(`${url_base}/files/${selected[x].id}/move?newParentId=${rowProps.data.id}`, axiosConfig);
+          }
+          dispatch(getAllVideos(queryParams));
+          }}
+        >
+          Move to folder
+        </div>
+      ),
+    };
 
     const deleteItem = {
       label: (
@@ -127,8 +181,11 @@ export const VideosList = ({ queryParams }) => {
         </div>
       ),
     };
-
-    if (video.state === 1 && !video.trashedExplicitly) {
+    
+    if(video.type == "Domain.StorageItems.Folder"){
+      menuProps.items.push(renameItem, binItem, moveToFolder)
+    }
+    if (video.state === 1 && !video.trashedExplicitly && video.type == "Domain.StorageItems.StorageItem") {
       menuProps.items.push(playItem, downloadItem, renameItem, binItem);
     } else if (video.state === 0) {
       menuProps.items.push(renameItem);
@@ -136,6 +193,48 @@ export const VideosList = ({ queryParams }) => {
       menuProps.items.push(restoreItem, deleteItem);
     }
   };
+  const [selected, setSelected] = useState({ 1: true, 2: true })
+
+  const onSelectionChange = useCallback(({ selected: selectedMap, data }) => {
+    setSelected(selectedMap)
+  }, [])
+
+  const rowClicked = useCallback((rowProps, event) => {
+    console.log(rowProps.data);
+    if(rowProps.data.type =="Domain.StorageItems.Folder"){
+
+      const driveId = "982ecb26-309b-451a-973d-2d6f6e1b2e34";
+      let data = {
+        driveId: driveId,
+        parentId: rowProps.data.id,
+        states: [0, 1],
+        isTrashedExplicitly: false
+      }
+      dispatch(getAllVideos(data));
+    }
+  }, []);
+
+  const createNewFolder = () => { 
+    console.log('loool');
+    let data = {
+      name: 'folderenijus2',
+      type: 1, //file.type, 0 - file, 1 - folder
+      /*parentId: this.folder */
+    };
+    const driveId = "982ecb26-309b-451a-973d-2d6f6e1b2e34";
+    const url_base = `/api/drive/${driveId}`;
+    let axiosConfig = {
+    headers: { "Content-Type": "application/json" },
+  };
+  http.post(`${url_base}/new-folder`, data, axiosConfig);
+  }
+
+  
+ // const rowClicked = (menuProps, { rowProps }) => {
+   // const video = rowProps.data;
+  //}
+
+
 
   // const [selected, setSelected] = useState(null);
 
@@ -188,6 +287,8 @@ export const VideosList = ({ queryParams }) => {
   }
 
   /******************************* render page *******************************/
+
+
   let renderContent;
 
   if (videoStatus === REQUEST_STATUS.loading) {
@@ -196,8 +297,19 @@ export const VideosList = ({ queryParams }) => {
     renderContent = <Alert severity="error">{error}</Alert>;
   } else {
     renderContent = (
+     
       <>
         <SearchBar onChange={setSearchString}/>
+        <Button
+          className="btn-upload"
+          color="primary"
+          variant="contained"
+          component="span"
+          onClick={createNewFolder}
+         // startIcon={<CloudUploadIcon />}
+        >
+          Upload
+  </Button>
         <ReactDataGrid
           idProperty="id"
           columns={queryParams.isTrashedExplicitly ? VIDEO_LIST_COLUMNS_BIN : VIDEO_LIST_COLUMNS_MAIN}
@@ -208,6 +320,8 @@ export const VideosList = ({ queryParams }) => {
           style={gridStyle}
           nativeScroll={false}
           enableSelection
+          onRowClick={rowClicked}
+          onSelectionChange={onSelectionChange}
           multiSelect
           theme="default-light"
           scrollProps={scrollProps}
@@ -235,15 +349,30 @@ export const VideosList = ({ queryParams }) => {
 
   return (
     <>
-      {/* <p>
-        Selected rows: {selected == null ? "none" : JSON.stringify(selected)}.
-      </p> */}
+ <Breadcrumbs maxItems={2} aria-label="breadcrumb">
+      <Link color="inherit" href="#" onClick={rowClicked}>
+        Home
+      </Link>
+      <Link color="inherit" href="#" onClick={rowClicked}>
+        Catalog
+      </Link>
+      <Link color="inherit" href="#" onClick={rowClicked}>
+        Accessories
+      </Link>
+      <Link color="inherit" href="#" onClick={rowClicked}>
+        New Collection
+      </Link>
+      <Typography color="textPrimary">Belts</Typography>
+    </Breadcrumbs>
       <div className="display-videos-table">{renderContent}</div>
+      <p>
+        Selected rows: {selected == null ? 'none' : JSON.stringify(Object.keys(selected))}.
+      </p>
     </>
   );
 };
 
 VideosList.propTypes = { queryParams: PropTypes.objectOf(PropTypes.object) };
 VideosList.defaultProps = {
-  queryParams: { states: [0, 1], isTrashedExplicitly: false },
+  queryParams: { states: [0, 1], isTrashedExplicitly: false, parentId: null},
 };
