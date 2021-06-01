@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { restoreVideo, resetRestore, updateItems } from '../videosSlice';
+import { restoreVideo, resetRestore, setUserAction, updateItems } from '../../../Redux/videosSlice';
 
 const useRestoreVideo = () => { 
   const dispatch = useDispatch();
@@ -7,6 +7,7 @@ const useRestoreVideo = () => {
   const restore = async (video) => {
     dispatch(resetRestore());
     dispatch(updateItems(video.id));
+    dispatch(setUserAction({ userAction: 'restore', userActionItem: video }));
     dispatch(restoreVideo(video.id));
   }
 

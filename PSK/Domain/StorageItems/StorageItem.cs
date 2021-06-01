@@ -39,6 +39,8 @@ namespace Domain.StorageItems
         public bool TrashedExplicitly { get; set; }
 
         public DateTime? TrashedTime { get; set; }
+
+        public byte[] RowVersion { get; set; }
         }
         
 

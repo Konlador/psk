@@ -75,9 +75,11 @@ namespace Domain.Impl.Management
                 }
             
             await DeleteBlob(item);
-
-            driveStatistics.StorageSize += item.Size;
-            driveStatistics.NumberOfFiles += 1;
+            if (!(item is Folder))
+            {
+                driveStatistics.StorageSize += item.Size;
+                driveStatistics.NumberOfFiles += 1;
+            }
             await driveScope.StorageItems.RemoveAsync(item.Id, CancellationToken.None);
             }
 

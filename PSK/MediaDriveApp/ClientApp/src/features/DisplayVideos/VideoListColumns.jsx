@@ -1,5 +1,5 @@
 import AutorenewIcon from "@material-ui/icons/Autorenew";
-
+import FolderIcon from '@material-ui/icons/Folder';
 const getHeader = (title) => {
   return (cellProps) => {
     cellProps.showColumnMenuTool = false;
@@ -35,6 +35,12 @@ const ID_COLUMN = {
   defaultVisible: false,
 };
 
+const ROW_VERSION_COLUMN = {
+  name: 'rowVersion',
+  header: 'RowVersion',
+  defaultVisible: false,
+};
+
 
 const TIME_CREATED_COLUMN = {
   name: 'timeCreated',
@@ -53,8 +59,14 @@ const NAME_COLUMN = {
   header: getHeader('Name'),
   defaultFlex: 5,
   render: ({ data }) => {
+    if (data.type==="Domain.StorageItems.Folder")
+      return (<div style={{display: "flex", alignItems: "center"}}>
+              <FolderIcon />&nbsp;&nbsp;&nbsp; {data.name} 
+              </div>); 
     if (data.state === 0)
-      return (<div style={{display: "flex", alignItems: "center"}}> {data.name} &nbsp;&nbsp;&nbsp; <AutorenewIcon /></div>); 
+      return (<div style={{display: "flex", alignItems: "center"}}>
+              <AutorenewIcon />&nbsp; {data.name} 
+              </div>); 
     return data.name;
   }
 }
@@ -67,7 +79,9 @@ const SIZE_COLUMN = {
     let size = data.size;
     const divider = 1024;
     const metrics = ['B', 'KB', 'MB', 'GB', 'TB'];
-
+    if( data.type ==="Domain.StorageItems.Folder"){
+      return "-"
+    }
     let possibleReduceCount = metrics.length-1;
     while(size >= divider && possibleReduceCount > 0){
       size = size/divider;
@@ -81,6 +95,7 @@ const SIZE_COLUMN = {
 
 export const VIDEO_LIST_COLUMNS_MAIN = [
   ID_COLUMN,
+  ROW_VERSION_COLUMN,
   NAME_COLUMN,
   TIME_CREATED_COLUMN,
   SIZE_COLUMN

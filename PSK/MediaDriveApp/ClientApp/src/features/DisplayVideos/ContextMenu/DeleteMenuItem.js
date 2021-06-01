@@ -6,7 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import { useDispatch, useSelector } from 'react-redux';
 import useErrorStyles from "./useErrorStyles";
-import { deleteVideo, resetDelete, updateItems } from '../videosSlice';
+import { deleteVideo, resetDelete, updateItems } from '../../../Redux/videosSlice';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { REQUEST_STATUS } from '../../../common/constants';
 
@@ -29,7 +29,7 @@ const DeleteMenuItem = ({ video, isOpen, close }) => {
   };
 
 
-  const handleBin = (e) => {
+  const handleDelete = (e) => {
     dispatch(resetDelete());
     dispatch(updateItems(video.id));
     dispatch(deleteVideo(video.id));
@@ -40,7 +40,7 @@ const DeleteMenuItem = ({ video, isOpen, close }) => {
   return (
     <div>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <form onSubmit={handleBin}>
+        <form onSubmit={handleDelete}>
           <DialogContent>
             <DialogContentText>
                 Do you really want to delete <b>{video.name}</b> permanently?

@@ -5,7 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import { useDispatch } from 'react-redux';
-import { renameVideo, updateName } from '../videosSlice';
+import { renameVideo, updateName } from '../../../Redux/videosSlice';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { REQUEST_STATUS } from '../../../common/constants';
@@ -44,18 +44,18 @@ const RenameMenuItem = ({ video, isOpen, close }) => {
     else if(newName !== video.name) {
       setRenameStatus(REQUEST_STATUS.loading);
 
-      dispatch(renameVideo({itemId: video.id, newName}))
+      dispatch(renameVideo({itemId: video.id, newName, rowVersion: video.rowVersion}))
         .then(unwrapResult)
         .then(() => {
           setRenameStatus(REQUEST_STATUS.success);
           handleClose(true);
         }) 
         .catch((error) => {
-          if(error.message){
-            setErrorText(error.message)
+          if(error.data){
+            setErrorText(error.data)
           }
           else {
-            setErrorText(error)
+            setErrorText('Something went wrong');
           }
 
           setRenameStatus(REQUEST_STATUS.failed);

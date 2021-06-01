@@ -4,7 +4,7 @@
   height: 100%;
   &__main {
     // background-color: $primary-color;
-    padding-left: 15%;
+    padding-left: 240px;
     height: 100%;
     max-width: 1440px;
     margin: auto;
@@ -15,5 +15,6 @@
     max-width: $container-content-width;
     z-index: 5;
     padding-bottom: 5vw;
+    top: 5%;
   }
 }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace MediaDriveApp.Controllers
     {
@@ -12,14 +13,16 @@ namespace MediaDriveApp.Controllers
     [Route("api/drive/{driveId:guid}")]
     public class FileManagementController : ControllerBase
         {
-        [HttpPut]
+        [HttpPatch]
         [Route("files/{itemId:guid}/rename")]
         public async Task<ActionResult<string>> Rename(
             [FromRoute, ModelBinder] IDriveScopeFactory driveScopeFactory,
-            Guid itemId, [FromQuery, BindRequired] string newName, CancellationToken cancellationToken)
+            Guid itemId, [FromQuery, BindRequired] string newName, [FromQuery, BindRequired] byte[] rowVersion, CancellationToken cancellationToken)
             {
             if(string.IsNullOrWhiteSpace(newName))
                 return BadRequest("Name is required");
+            if(rowVersion == null)
+                return BadRequest("RowVersion is required");
 
             newName = newName.Trim();
 
@@ -30,7 +33,16 @@ namespace MediaDriveApp.Controllers
 
             item.Name = newName;
 
-            await driveScope.StorageItems.UpdateAsync(item, cancellationToken);
+            try
+                {
+                await driveScope.StorageItems.UpdateAsync(item, rowVersion ,cancellationToken);
+                }
+            catch(DbUpdateConcurrencyException)
+                {
+                return BadRequest(
+                    "The name has been changed by another user. Please refresh the page and try again.");
+                }
+
             return Ok(item);
             }
 
@@ -95,7 +107,7 @@ namespace MediaDriveApp.Controllers
 
             item.ParentId = newParentId;
 
-            var i = await driveScope.StorageItems.UpdateAsync(item, cancellationToken);
+            var i = await driveScope.StorageItems.UpdateAsync(item, null, cancellationToken);
             return Ok(new
                           {
                           i.Id, i.DriveId, i.ParentId, i.Name, i.TimeCreated, i.Size,

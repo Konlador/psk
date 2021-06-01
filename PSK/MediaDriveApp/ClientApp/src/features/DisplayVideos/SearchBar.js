@@ -17,7 +17,6 @@ const useStyles = makeStyles((theme) => ({
     '&:hover': {
       backgroundColor: fade(theme.palette.common.white, 0.25),
     },
-    marginBottom: '10px',
     width: '30%',
   },
   searchIcon: {

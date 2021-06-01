@@ -1,18 +1,18 @@
 import React, { Component } from "react";
-import {
-  Box,
-  Typography,
-  Button,
-} from "@material-ui/core";
+import { Box, Typography } from "@material-ui/core";
 import "./uploadFiles.scss";
 import UploadService from "../../services/upload-files.service";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import FileCopyRoundedIcon from "@material-ui/icons/FileCopyRounded";
-import { Snackbars } from "../Layout/Snackbars/Snackbars";
-import BorderLinearProgress from "../Loaders/BorderLinearProgress";
-import { connect } from "react-redux";
-import { start, increaseProgress, reset } from "./uploadSlice";
 
+import { connect } from "react-redux";
+import {
+  start,
+  increaseProgress,
+  reset as resetUpload,
+  reject as rejectUpload,
+} from "../../Redux/uploadSlice";
+import { getVideo } from "../../Redux/videosSlice";
+import { reset as resetLimiters } from "../../Redux/limitersSlice";
+import { DropzoneAreaBase } from "material-ui-dropzone";
 class UploadFiles extends Component {
   constructor(props) {
     super(props);
@@ -23,21 +23,17 @@ class UploadFiles extends Component {
       selectedFiles: undefined,
       currentFile: undefined,
       progress: 0,
-      message: "",
       isError: false,
-      fileName: "",
-      uploadedLink: "",
-      showSnackbar: false,
+      fileAdded: false,
     };
   }
-  // const [showSnack, setShowSnack] = useState(false);
 
-  selectFile(event) {
+  selectFile(file) {
     this.setState({
-      selectedFiles: event.target.files,
+      selectedFiles: file,
+      // fileAdded: true,
     });
   }
-  //---------------------UPLOAD---------------------------
 
   // async
   upload() {
@@ -47,36 +43,27 @@ class UploadFiles extends Component {
       progress: 0,
       currentFile: currentFile,
       fileInfos: currentFile.name,
-      message: "Initiating upload",
+      selectedFiles: undefined,
     });
 
-    this.props.start();
+    this.props.start(currentFile.file.name);
 
     var transaction;
+    let newFileId;
 
-    UploadService.startTransaction(currentFile)
+    UploadService.startTransaction(currentFile.file)
       .then((response) => {
-        console.log("Responsas ", response);
+        newFileId = response.data.storageItemId;
         this.setState({
           progress: 33,
         });
 
         this.props.increaseProgress(33);
-        // UploadService.uploadToURI(
-        //   response.data.uploadUri,
-        //   currentFile,
-        //   (event) => {
-        //     this.setState({
-        //       progress: Math.round((100 * event.loaded) / event.total),
-        //     });
-        //   }
-        // );
         transaction = response.data;
-        return UploadService.uploadFile(response.data, currentFile);
+        return UploadService.uploadFile(response.data, currentFile.file);
       })
       .then((response) => {
         this.setState({
-          message: "Uploading started",
           isError: false,
           progress: 66,
         });
@@ -86,138 +73,87 @@ class UploadFiles extends Component {
         return UploadService.commitUpload(transaction.id);
       })
       .then((response) => {
-        this.setState({
-          message: "Your file has been successfully uploaded",
-          isError: false,
-          progress: 100,
-        });
+        if (window.location.pathname === "/videos") {
+          this.props.getVideo(newFileId);
+        }
 
         this.props.increaseProgress(100);
+        this.props.resetLimiters();
+
+        this.setState({
+          isError: false,
+          progress: 100,
+          currentFile: undefined,
+          selectedFiles: undefined,
+        });
       })
       .catch((error) => {
-        console.log(error.response);
+        this.props.rejectUpload();
         this.setState({
           progress: 0,
-          message: `Could not upload the file! error msg: ${error}`,
           currentFile: undefined,
           isError: true,
           fileInfos: "",
+          selectedFiles: undefined,
         });
-
-        this.props.reset();
       });
-
-    this.setState({
-      selectedFiles: undefined,
-    });
   }
+
   //------------------------------------------------------
   render() {
     const {
       selectedFiles,
       currentFile,
       progress,
-      message,
-      fileName,
       isError,
-      uploadedLink,
-      //  showSnackbar,
+      // fileAdded,
     } = this.state;
 
     return (
       <div className="mg20">
-        {currentFile && (
-          <Box className="mb25" display="flex" alignItems="center">
-            <Box width="100%" mr={1}>
-              <BorderLinearProgress
-                variant="buffer"
-                value={progress}
-                valueBuffer={0}
-              />
-            </Box>
-            <Box minWidth={35}>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-              >{`${progress}%`}</Typography>
-            </Box>
-          </Box>
-        )}
-
-        <label htmlFor="btn-upload">
-          <input
-            id="btn-upload"
-            name="btn-upload"
-            style={{ display: "none" }}
-            type="file"
-            onChange={this.selectFile}
-            accept="video/*"
-          />
-          <Button
-            className="btn-choose"
-            variant="outlined"
-            component="span"
-            startIcon={<FileCopyRoundedIcon />}
-          >
-            Choose Video File
-          </Button>
-        </label>
-
-        <Button
-          className="btn-upload"
-          color="primary"
-          variant="contained"
-          component="span"
-          disabled={!selectedFiles}
-          onClick={this.upload}
-          startIcon={<CloudUploadIcon />}
-        >
-          Upload
-        </Button>
-        <br></br>
-        <br></br>
-
+        {/* {!fileAdded && ( */}
+        <DropzoneAreaBase
+          acceptedFiles={["video/*"]}
+          dropzoneText={"Drag and drop a video here or click"}
+          filesLimit={1}
+          onAdd={this.selectFile}
+          maxFileSize={1024 * 1024 * 100}
+          showFileNames={true}
+          showFileNamesInPreview={true}
+          alertSnackbarProps={{
+            anchorOrigin: { vertical: "bottom", horizontal: "right" },
+          }}
+        />
+        {/* )} */}
+        <br />
         <div className="file-name">
           {selectedFiles && selectedFiles.length > 0
-            ? selectedFiles[0].name
+            ? selectedFiles[0].file.name
             : null}
         </div>
-        <Typography
-          variant="subtitle2"
-          className={`upload-message ${isError ? "error" : ""}`}
+        <br />
+        <br />
+        {/* {!fileAdded && ( */}
+        <button
+          className="btn-upload"
+          disabled={!selectedFiles}
+          onClick={this.upload}
         >
-          {message}
-        </Typography>
-        <br></br>
-
-        <a href="/videos" className="link_to_videos">
-          {uploadedLink}
-        </a>
-
-        <Typography variant="h6" className="list-header">
-          {fileName}
-        </Typography>
-        {/* <div>
-          <Snackbars
-            text="Your file has been successfully uploaded"
-            type="success"
-            show={showSnackbar}
-          ></Snackbars>
-        </div> */}
-
-        <span className="list-group">
-          {/* {fileInfos &&
-            fileInfos.map((file, index) => (
-              <ListItem divider key={index}>
-                <a href={file.url}>{file.name}</a>
-              </ListItem>
-            ))} */}
-        </span>
+          Upload
+        </button>
+        {/* )} */}
       </div>
     );
   }
 }
 
-const mapDispatchToProps = { start, increaseProgress, reset };
+const mapDispatchToProps = {
+  start,
+  increaseProgress,
+  resetUpload,
+  rejectUpload,
+  resetLimiters,
+  getVideo,
+};
 
 export default connect(null, mapDispatchToProps)(UploadFiles);

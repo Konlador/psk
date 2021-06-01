@@ -9,8 +9,10 @@ import {
 }  
  from "@material-ui/core";
 import Link from '@material-ui/core/Link';
+
 import { useSelector, useDispatch } from "react-redux";
-import { getAllVideos } from "./videosSlice";
+// import { getAllVideos } from "../../Redux/videosSlice";
+import {getAllVideos } from "../../Redux/videosSlice";
 import { VIDEO_LIST_COLUMNS_MAIN, VIDEO_LIST_COLUMNS_BIN } from "./VideoListColumns";
 import { REQUEST_STATUS } from "../../common/constants";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
@@ -25,37 +27,32 @@ import useDownloadVideo from './ContextMenu/useDownloadVideo';
 import useRestoreVideo from './ContextMenu/useRestoreVideo';
 import useBinVideo from './ContextMenu/useBinVideo';
 import useMoveFile from './ContextMenu/useMoveFile';
+import { reset as resetLimiters } from "../../Redux/limitersSlice";
 import SearchBar from "./SearchBar";
 import "./videosList.scss";
 
 export const VideosList = ({ queryParams }) => {
   const dispatch = useDispatch();
-  const videos = useSelector((state) => state.videos.items);
-  const videoStatus = useSelector((state) => state.videos.status);
-  const error = useSelector((state) => state.videos.error);
   const [contextVideo, setContextVideo] = useState({});
   const [menuItemOpen, setMenuItemOpen] = useState(MENU_ITEMS.none);
   const downloadVideo = useDownloadVideo();
+
+  const videos = useSelector((state) => state.videos.items);
+  const videoStatus = useSelector((state) => state.videos.status);
+
   const restoreVideo = useRestoreVideo();
-  const restoreError = useSelector((state) => state.videos.restoreVideoError);
-  const restoreStatus = useSelector((state) => state.videos.restoreVideoStatus);
   const binVideo = useBinVideo();
   const moveFile = useMoveFile();
   const binStatus = useSelector((state) => state.videos.binVideoStatus);
   const binError = useSelector((state) => state.videos.binVideoError);
+
+  const deleteStatus = useSelector((state) => state.videos.deleteVideoStatus);
+
   const [searchString, setSearchString] = useState('');
 
   useEffect(() => {
     dispatch(getAllVideos(queryParams));
   }, []);
-
-  const gridStyle = { minHeight: 550 };
-
-  /*const defaultFilterValue = [
-    { name: "name", operator: "contains", type: "string", value: '' },
-    { name: queryParams.isTrashedExplicitly ? "trashedTime" : "timeCreated", operator: "after", type: "date", value: '' },
-    { name: "size", operator: "gte", type: "number", value: '' },
-  ];*/
 
   const openMenuItem = (video, menuItem) => {
     setContextVideo(video);
@@ -210,25 +207,49 @@ export const VideosList = ({ queryParams }) => {
         states: [0, 1],
         isTrashedExplicitly: false
       }
+      queryParams.parentId = rowProps.data.id;
       dispatch(getAllVideos(data));
     }
   }, []);
 
+  const backClicked = () => {
+
+      const driveId = "982ecb26-309b-451a-973d-2d6f6e1b2e34";
+      let data = {
+        driveId: driveId,
+        parentId: null,
+        states: [0, 1],
+        isTrashedExplicitly: false
+      }
+      queryParams.parentId = null;
+      dispatch(getAllVideos(data));
+  }
+
   const createNewFolder = () => { 
     console.log('loool');
     let data = {
-      name: 'folderenijus2',
+      name: 'New Folder',
       type: 1, //file.type, 0 - file, 1 - folder
+      parentId: queryParams.parentId
       /*parentId: this.folder */
     };
+
     const driveId = "982ecb26-309b-451a-973d-2d6f6e1b2e34";
     const url_base = `/api/drive/${driveId}`;
     let axiosConfig = {
     headers: { "Content-Type": "application/json" },
   };
-  http.post(`${url_base}/new-folder`, data, axiosConfig);
+  let thisFolderData = {
+    driveId: driveId,
+    parentId: queryParams.parentId,
+    states: [0, 1],
+    isTrashedExplicitly: false,
   }
-
+  http.post(`${url_base}/new-folder`, data, axiosConfig)
+  .then((response) => {
+    dispatch(getAllVideos(thisFolderData));
+  });
+}
   
  // const rowClicked = (menuProps, { rowProps }) => {
    // const video = rowProps.data;
@@ -236,29 +257,13 @@ export const VideosList = ({ queryParams }) => {
 
 
 
-  // const [selected, setSelected] = useState(null);
+  const gridStyle = { minHeight: "90%" };
 
-  // const onSelectionChange = useCallback(({ selected: selectedMap, data }) => {
-  //   console.log(selectedMap);
-  //   const newSelected = Object.keys(selectedMap).map((name) => name);
-
-  //   setSelected(newSelected);
-  // }, []);
-
-  // const loadData = () => {
-  //   return fetch(DATASET_URL).then(
-  //     (response) => {
-  //       return response.json();
-  //     }
-  //   );
-  // };
-
-  // const dataSource = useCallback(getAllVideos(), []);
   const scrollProps = Object.assign(
     {},
     ReactDataGrid.defaultProps.scrollProps,
     {
-      autoHide: true,
+      autoHide: true, 
       alwaysShowTrack: false,
       scrollThumbWidth: 10,
       scrollThumbOverWidth: 15,
@@ -275,15 +280,9 @@ export const VideosList = ({ queryParams }) => {
     return filter(videos, filterValue);
   };
 
-  /******************** show errors if restore or bin failed *****************/  
-  if (restoreStatus === REQUEST_STATUS.failed) {
-    // TODO: show snackbar
-    console.log('Restore failed: ', restoreError);
-  }
-
-  if (binStatus === REQUEST_STATUS.failed) {
-    // TODO: show snackbar
-    console.log('Bin failed: ', binError);
+  /******************** handle actions results  *****************/
+  if (deleteStatus === REQUEST_STATUS.success) {
+    dispatch(resetLimiters());
   }
 
   /******************************* render page *******************************/
@@ -293,34 +292,50 @@ export const VideosList = ({ queryParams }) => {
 
   if (videoStatus === REQUEST_STATUS.loading) {
     renderContent = <CircularProgress />;
-  } else if (error) {
-    renderContent = <Alert severity="error">{error}</Alert>;
-  } else {
+  } if (videoStatus === REQUEST_STATUS.success) {
     renderContent = (
      
       <>
         <SearchBar onChange={setSearchString}/>
+        <div className="buttons">
         <Button
-          className="btn-upload"
+          className="btn-back"
+          color="disabled"
+          variant="contained"
+          component="span"
+          onClick={backClicked}
+          style={
+            {visibility:queryParams.parentId==null?"hidden":"visible"}
+          }
+         // startIcon={<CloudUploadIcon />}
+        >
+          {'<Back'}
+        </Button>
+        
+        <Button
+          className="btn-create-folder"
           color="primary"
           variant="contained"
           component="span"
           onClick={createNewFolder}
          // startIcon={<CloudUploadIcon />}
         >
-          Upload
-  </Button>
+          Create folder
+        </Button>
+        </div>
         <ReactDataGrid
           idProperty="id"
           columns={queryParams.isTrashedExplicitly ? VIDEO_LIST_COLUMNS_BIN : VIDEO_LIST_COLUMNS_MAIN}
           dataSource={getDataSource}
           enableFiltering={false} 
           renderRowContextMenu={renderRowContextMenu}
+          defaultSortInfo={{ name: 'size', dir: 1 }}
           showZebraRows={true}
           style={gridStyle}
+
           nativeScroll={false}
           enableSelection
-          onRowClick={rowClicked}
+          onRowClick={!queryParams.isTrashedExplicitly && rowClicked}
           onSelectionChange={onSelectionChange}
           multiSelect
           theme="default-light"
@@ -342,32 +357,18 @@ export const VideosList = ({ queryParams }) => {
           isOpen={menuItemOpen === MENU_ITEMS.delete}
           close={closeMenuItem}
         />
-
       </>
     );
   }
 
   return (
     <>
- <Breadcrumbs maxItems={2} aria-label="breadcrumb">
-      <Link color="inherit" href="#" onClick={rowClicked}>
-        Home
-      </Link>
-      <Link color="inherit" href="#" onClick={rowClicked}>
-        Catalog
-      </Link>
-      <Link color="inherit" href="#" onClick={rowClicked}>
-        Accessories
-      </Link>
-      <Link color="inherit" href="#" onClick={rowClicked}>
-        New Collection
-      </Link>
-      <Typography color="textPrimary">Belts</Typography>
-    </Breadcrumbs>
       <div className="display-videos-table">{renderContent}</div>
-      <p>
+      {/* <p>
         Selected rows: {selected == null ? 'none' : JSON.stringify(Object.keys(selected))}.
-      </p>
+      </p> */}
+
+
     </>
   );
 };

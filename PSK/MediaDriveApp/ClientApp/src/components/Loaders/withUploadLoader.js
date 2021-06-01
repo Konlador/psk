@@ -1,14 +1,33 @@
 import React from "react";
+import {
+  Box,
+  Typography,
+} from "@material-ui/core";
 import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
 
 const withUploadLoader = (Component) => () => {
-    const location = useLocation();
     const isUploading = useSelector((state) => state.upload.isUploading);
     const progress = useSelector((state) => state.upload.progress);
+    const message = useSelector((state) => state.upload.message);
 
-    if(isUploading && location.pathname !== "/upload") {
-      return <Component variant="buffer" value={progress} valueBuffer={0} />;
+    if(isUploading) {
+      return (
+        <Box
+          className="mb25"
+          display="flex"
+          alignItems="center"
+          style={{ marginTop: "-1vw", marginRight: "5px", marginLeft: "5px" }}
+        >
+          <Box width="100%">
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              align="center"
+            >{`${message} ${progress}%`}</Typography>
+            <Component variant="buffer" value={progress} valueBuffer={0} />
+          </Box>
+        </Box>
+      );
     }
 
     return null;
