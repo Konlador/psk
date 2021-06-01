@@ -26,14 +26,11 @@ export const LeftSidebar = (props) => {
   const drawerWidth = 240;
 
   const getIndex = () => {
-    if(window.location.pathname === "/videos") return 0
+    if(window.location.pathname === "/bin") return 2
     if(window.location.pathname === "/upload") return 1
-    return 2
+    return 0
   }
   const selectedIndex = getIndex()
-
-  console.log("indexas lol ---- " + selectedIndex)
-  console.log("window path ---- " + window.location.pathname)
 
   const useStyles = makeStyles((theme) => ({
     listItem: {

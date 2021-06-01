@@ -79,7 +79,7 @@ namespace MediaDriveApp.Controllers
                              };
 
             await driveScope.StorageItems.AddAsync(folder, cancellationToken);
-            return Ok(folder);
+            return Ok();
             }
 
         [HttpPut]
