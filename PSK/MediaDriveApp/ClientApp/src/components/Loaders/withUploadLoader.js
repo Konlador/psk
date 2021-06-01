@@ -11,16 +11,23 @@ const withUploadLoader = (Component) => () => {
     const message = useSelector((state) => state.upload.message);
 
     if(isUploading) {
-      return  (<Box className="mb25" display="flex" alignItems="center" style={{ marginTop: "-1vw" }}>
-      <Box width="100%">
-        <Typography
-          variant="body2"
-          color="textSecondary"
-          align="center"
-        >{`${message} ${progress}%`}</Typography>
-        <Component variant="buffer" value={progress} valueBuffer={0} />
-      </Box>
-    </Box>)
+      return (
+        <Box
+          className="mb25"
+          display="flex"
+          alignItems="center"
+          style={{ marginTop: "-1vw", marginRight: "5px", marginLeft: "5px" }}
+        >
+          <Box width="100%">
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              align="center"
+            >{`${message} ${progress}%`}</Typography>
+            <Component variant="buffer" value={progress} valueBuffer={0} />
+          </Box>
+        </Box>
+      );
     }
 
     return null;

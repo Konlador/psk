@@ -46,7 +46,7 @@ class UploadFiles extends Component {
       selectedFiles: undefined,
     });
 
-    this.props.start();
+    this.props.start(currentFile.file.name);
 
     var transaction;
     let newFileId;
