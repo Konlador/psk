@@ -52,7 +52,6 @@ namespace MediaDriveApp.Controllers
             if(string.IsNullOrWhiteSpace(fileName))
                 return BadRequest("File name can not be empty or only white space.");
             fileName = fileName.Trim();
-
             var file = new StorageItem
                            {
                            Id = Guid.NewGuid(),

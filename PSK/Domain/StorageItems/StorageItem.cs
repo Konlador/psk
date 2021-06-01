@@ -42,9 +42,11 @@ namespace Domain.StorageItems
 
         public byte[] RowVersion { get; set; }
         }
+        
 
     public class Folder : StorageItem
         {
         public virtual ICollection<StorageItem> Children { get; set; } = new List<StorageItem>();
+
         }
     }

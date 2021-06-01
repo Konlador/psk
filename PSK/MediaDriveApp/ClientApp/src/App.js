@@ -51,12 +51,12 @@ function MainApp() {
       {renderSnackbar}
 
       <BrowserRouter>
-        <AuthenticatedTemplate>
+         {/*<AuthenticatedTemplate>*/} 
           <ProtectedRoutes />
-        </AuthenticatedTemplate>
-        <UnauthenticatedTemplate>
-          <UnprotectedRoutes />
-        </UnauthenticatedTemplate>
+         {/*</AuthenticatedTemplate>*/} 
+         {/*<UnauthenticatedTemplate>*/}
+          {/*<UnprotectedRoutes />*/}
+        {/*</UnauthenticatedTemplate>*/}
       </BrowserRouter>
     </div>
   );

@@ -26,7 +26,24 @@ import { useMsal } from "@azure/msal-react";
 export const LeftSidebar = (props) => {
   const drawerWidth = 240;
 
+  const getIndex = () => {
+    if(window.location.pathname === "/bin") return 2
+    if(window.location.pathname === "/upload") return 1
+    return 0
+  }
+  const selectedIndex = getIndex()
+
   const useStyles = makeStyles((theme) => ({
+    listItem: {
+      "&$selected": {
+        backgroundColor: "red",
+        color: "white",
+        "& .MuiListItemIcon-root": {
+          color: "white"
+        }
+      }
+    },
+    selected: {},
     root: {
       display: "flex",
       flexGrow: 1,
@@ -116,7 +133,10 @@ export const LeftSidebar = (props) => {
           <List>
             {/* <Divider /> */}
 
-            <ListItem button component={Link} to="/videos">
+            <ListItem 
+            className={classes.listItem} 
+            selected={selectedIndex === 0}
+            button component={Link} to="/videos">
               <ListItemIcon>
                 <VideoLibraryIcon />
               </ListItemIcon>
@@ -125,9 +145,12 @@ export const LeftSidebar = (props) => {
                 className="left-sidebar__list-text"
               />
             </ListItem>
-            {/* <Divider /> */}
+             <Divider /> 
 
-            <ListItem button component={Link} to="/upload">
+            <ListItem
+            className={classes.listItem} 
+            selected={selectedIndex === 1}
+            button component={Link} to="/upload">
               <ListItemIcon>
                 <BackupRoundedIcon />
               </ListItemIcon>
@@ -137,7 +160,11 @@ export const LeftSidebar = (props) => {
               />
             </ListItem>
             <Divider />
-            <ListItem button component={Link} to="/bin">
+            <ListItem 
+            className={classes.listItem} 
+             selected={selectedIndex === 2}
+            button component={Link} to="/bin"
+            >
               <ListItemIcon>
                 <DeleteIcon />
               </ListItemIcon>

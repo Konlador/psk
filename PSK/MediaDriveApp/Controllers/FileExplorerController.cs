@@ -50,12 +50,10 @@ namespace MediaDriveApp.Controllers
 
             var items = await driveScope.StorageItems.GetWithQueryAsync(query, cancellationToken);
             var itemsResult = items.Select(i => new
-                                          {
-                                          i.Id, i.DriveId, i.ParentId, i.Name, i.TimeCreated, i.Size,
-                                          i.State, i.Trashed, i.TrashedExplicitly, i.TrashedTime,
-                                          i.RowVersion
-                                          });
-
+                {
+                i.Id, i.DriveId, i.ParentId, i.Name, i.TimeCreated, i.Size,
+                i.State, i.Trashed, i.TrashedExplicitly, i.TrashedTime, Type = i.GetType().ToString(), i.RowVersion
+            });
             return Ok(new {Parents = parentsResult, Items = itemsResult});
             }
 
